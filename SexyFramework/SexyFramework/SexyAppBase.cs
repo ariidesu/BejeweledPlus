@@ -1457,7 +1457,11 @@ namespace SexyFramework
 				mGamepadDriver.InitGamepadDriver(this);
 			}
 			long tick = DateTime.Now.Ticks;
-			mResourceManager = ((XNAFileDriver)mFileDriver).GetContentManager().Load<ResourceManager>("properties/resources.xml");
+			mResourceManager = ((XNAFileDriver)mFileDriver).GetContentManager().Load<ResourceManager>("properties/resources.xml"); //new ResourceManager(this); //((XNAFileDriver)mFileDriver).GetContentManager().Load<ResourceManager>("properties/resources.xml");
+			/*if (!mResourceManager.ParseResourcesFile("properties/resources.xml"))
+			{
+				Console.WriteLine("Error while parsing resources: " + mResourceManager.mError);
+			}*/
 			mResourceManager.mApp = this;
 			long tick2 = DateTime.Now.Ticks;
 		}

@@ -660,7 +660,7 @@ namespace SexyFramework.Resource
 						}
 						continue;
 					}
-					if (xMLElement.mValue.ToString() == "File")
+					if (xMLElement.mValue.ToString() == "GenericResFile")
 					{
 						if (!ParseGenericResFileResource(xMLElement))
 						{
@@ -811,7 +811,7 @@ namespace SexyFramework.Resource
 								}
 								if (xMLElement2.mType != XMLElement.XMLElementType.TYPE_END)
 								{
-									Fail("Unexpected element found.");
+									Fail("Unexpected element found. (mType " + xMLElement2.mType + ' ' + xMLElement2.mValue.ToString() + ")");
 									break;
 								}
 							}

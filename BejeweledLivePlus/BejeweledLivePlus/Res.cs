@@ -1,3 +1,4 @@
+using System;
 using SexyFramework.Graphics;
 using SexyFramework.Misc;
 using SexyFramework.Resource;
@@ -37,6 +38,7 @@ namespace BejeweledLivePlus
 				text = id.ToString();
 				text = text.Substring(0, text.IndexOf("_ID"));
 			}
+			;
 			mGlobalRes[(int)id] = mResMgr.RegisterGlobalPtr(text);
 			if (mGlobalRes[(int)id] != null)
 			{
@@ -46,6 +48,7 @@ namespace BejeweledLivePlus
 				}
 				mResMgr.LoadImage(text);
 			}
+
 			return mGlobalRes[(int)id].mResObject as Image;
 		}
 

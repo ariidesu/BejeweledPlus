@@ -530,7 +530,7 @@ namespace BejeweledLivePlus.UI
 			}
 			graphics3D.SetTexture(0, GlobalMembersResourcesWP.IMAGE_LOADER_WHITEDOT);
 			float num5 = (float)((0.5 * Math.Sin((float)mUpdateCnt * GlobalMembers.M(0.03f)) * 0.5 * (double)GlobalMembers.M(0.5f) + (double)GlobalMembers.M(0.75f)) * (double)mLoaderAlpha);
-			graphics3D.DrawPrimitive(708u, Graphics3D.EPrimitiveType.PT_TriangleStrip, array, NUM_LOADERBAR_POINTS * 2 - 2, new Color(70, 136, 247, (int)(255f * num5)), 1, 0f, 0f, true, 0u);
+			graphics3D.DrawPrimitive(708u, Graphics3D.EPrimitiveType.PT_TriangleStrip, array, NUM_LOADERBAR_POINTS * 2 - 2, new Color(243, 229, 215, (int)(255f * num5)), 1, 0f, 0f, true, 0u);
 		}
 
 		public override void Show()

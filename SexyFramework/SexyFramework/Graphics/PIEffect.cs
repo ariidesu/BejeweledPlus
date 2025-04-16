@@ -1118,7 +1118,8 @@ namespace SexyFramework.Graphics
 				}
 				}
 			}
-			theParticleDefInstance.mNumberAcc += num3 / num * 0.16f;
+
+			theParticleDefInstance.mNumberAcc += num3 / num;// * 0.16f * 5f;
 			if ((!mEmitterInstanceDef.mIsSuperEmitter && !theEmitterInstance.mWasActive) || !theEmitterInstance.mWithinLifeFrame)
 			{
 				theParticleDefInstance.mNumberAcc = 0f;
@@ -1142,9 +1143,9 @@ namespace SexyFramework.Graphics
 				}
 				theParticleDefInstance.mNumberAcc = num8 - num9;
 			}
-			while (theParticleDefInstance.mNumberAcc >= 1.1f)
+			while (theParticleDefInstance.mNumberAcc >= 1f)
 			{
-				theParticleDefInstance.mNumberAcc -= 1.1f;
+				theParticleDefInstance.mNumberAcc -= 1f;
 				PIParticleInstance pIParticleInstance2 = null;
 				if (theParticleGroup.mIsSuperEmitter)
 				{

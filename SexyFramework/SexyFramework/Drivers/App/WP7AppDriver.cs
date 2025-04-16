@@ -79,6 +79,7 @@ namespace SexyFramework.Drivers.App
 			mApp.mDrawCount = 0;
 			mApp.mSleepCount = 0;
 			mApp.mUpdateCount.value = 0;
+			mApp.mMaxUpdateBacklog = 200;
 			mApp.mUpdateAppState = 0;
 			mApp.mUpdateAppDepth = 0;
 			mApp.mPendingUpdatesAcc = 0.0;
@@ -87,7 +88,7 @@ namespace SexyFramework.Drivers.App
 			mApp.mIsDrawing = false;
 			mApp.mLastDrawWasEmpty = false;
 			mApp.mLastTimeCheck = 0;
-			mApp.mUpdateMultiplier = 1.0;
+			mApp.mUpdateMultiplier = 1;
 			mApp.mMaxNonDrawCount = 10;
 			mApp.mPaused = false;
 			mApp.mFastForwardToUpdateNum = 0;
@@ -127,7 +128,7 @@ namespace SexyFramework.Drivers.App
 			mApp.mCtrlDown = false;
 			mApp.mAltDown = false;
 			mApp.mAllowAltEnter = true;
-			mApp.mStepMode = 1;
+			mApp.mStepMode = 0;
 			mApp.mCleanupSharedImages = false;
 			mApp.mStandardWordWrap = true;
 			mApp.mbAllowExtendedChars = true;
@@ -239,23 +240,28 @@ namespace SexyFramework.Drivers.App
 			{
 				return false;
 			}
-			mApp.mUpdateAppState = 1;
+			if (mApp.mUpdateAppState == 3 || mApp.mUpdateAppState == 0) mApp.mUpdateAppState = 1;
 			mApp.mUpdateAppDepth++;
 			if (mApp.mStepMode != 0)
 			{
-				DoUpdateFrames();
-				DoUpdateFrames();
-				DoUpdateFramesF(2f);
-				updated = true;
+				if (mApp.mStepMode == 2)
+				{
+					Thread.Sleep((int)mApp.mFrameTime);
+					mApp.mUpdateAppState = 3;
+				}
+				else
+				{
+					mApp.mStepMode = 2;
+					DoUpdateFrames();
+					DoUpdateFramesF(1.0f);
+					DrawDirtyStuff();
+				}
 			}
 			else
 			{
-				int num = mApp.mUpdateCount;
-				DoUpdateFrames();
-				DoUpdateFrames();
-				DoUpdateFramesF(2f);
-				updated = (int)mApp.mUpdateCount != num;
-				updated = true;
+				int oldUpdateCnt = mApp.mUpdateCount.value;
+				Process();
+				updated = mApp.mUpdateCount.value != oldUpdateCnt;
 			}
 			mApp.mUpdateAppDepth--;
 			mApp.ProcessSafeDeleteList();
@@ -743,17 +749,17 @@ namespace SexyFramework.Drivers.App
 				mApp.Shutdown();
 			}
 			bool flag = mApp.mVSyncUpdates && !mApp.mLastDrawWasEmpty && !mApp.mVSyncBroken && (!mApp.mIsPhysWindowed || (mApp.mIsPhysWindowed && mApp.mWaitForVSync && !mApp.mSoftVSyncWait));
-			double num = 0.0;
-			double num2 = 0.0;
+			double aFrameFTime = 0.0;
+			double anUpdatesPerUpdateF = 0.0;
 			if (mApp.mVSyncUpdates)
 			{
-				num = 1000.0 / (double)mApp.mSyncRefreshRate / mApp.mUpdateMultiplier;
-				num2 = (float)(1000.0 / (double)(mApp.mFrameTime * (float)mApp.mSyncRefreshRate));
+				aFrameFTime = 1000.0 / (double)mApp.mSyncRefreshRate / mApp.mUpdateMultiplier;
+				anUpdatesPerUpdateF = (float)(1000.0 / (double)(mApp.mFrameTime * (float)mApp.mSyncRefreshRate));
 			}
 			else
 			{
-				num = (double)mApp.mFrameTime / mApp.mUpdateMultiplier;
-				num2 = 1.0;
+				aFrameFTime = (double)mApp.mFrameTime / mApp.mUpdateMultiplier;
+				anUpdatesPerUpdateF = 1.0;
 			}
 			if (!mApp.mPaused && mApp.mUpdateMultiplier > 0.0)
 			{
@@ -769,7 +775,7 @@ namespace SexyFramework.Drivers.App
 					if (++mApp.mNonDrawCount < (int)Math.Ceiling((double)mApp.mMaxNonDrawCount * mApp.mUpdateMultiplier) || !mApp.mLoaded)
 					{
 						bool flag3 = false;
-						if (true)
+						if (true /*mApp.mUpdateFTimeAcc >= aFrameFTime*/)
 						{
 							if (mApp.mUpdateMultiplier == 1.0)
 							{
@@ -804,8 +810,8 @@ namespace SexyFramework.Drivers.App
 				else if (mApp.mUpdateAppState == 2)
 				{
 					mApp.mUpdateAppState = 3;
-					mApp.mPendingUpdatesAcc += num2;
-					mApp.mPendingUpdatesAcc -= 1.0;
+					mApp.mPendingUpdatesAcc += anUpdatesPerUpdateF;
+					//mApp.mPendingUpdatesAcc -= 1.0;
 					while (mApp.mPendingUpdatesAcc >= 1.0)
 					{
 						mApp.mNonDrawCount++;
@@ -813,16 +819,16 @@ namespace SexyFramework.Drivers.App
 						{
 							break;
 						}
-						mApp.mPendingUpdatesAcc -= 1.0;
+						mApp.mPendingUpdatesAcc -= 0.45f; // Changed this to put the game's update framerate back to how it's expected
 					}
-					DoUpdateFramesF((float)num2);
+					DoUpdateFramesF((float)anUpdatesPerUpdateF);
 					if (flag)
 					{
-						mApp.mUpdateFTimeAcc = Math.Max(mApp.mUpdateFTimeAcc - num - 0.20000000298023224, 0.0);
+						mApp.mUpdateFTimeAcc = Math.Max(mApp.mUpdateFTimeAcc - aFrameFTime - 0.2f, 0.0);
 					}
 					else
 					{
-						mApp.mUpdateFTimeAcc -= num;
+						mApp.mUpdateFTimeAcc -= aFrameFTime;
 					}
 					if (mApp.mRelaxUpdateBacklogCount > 0)
 					{
@@ -840,11 +846,11 @@ namespace SexyFramework.Drivers.App
 					}
 					else
 					{
-						int num5 = (int)num - (int)mApp.mUpdateFTimeAcc;
+						int num5 = (int)anUpdatesPerUpdateF - (int)mApp.mUpdateFTimeAcc;
 						if (num5 > 0)
 						{
 							mApp.mSleepCount++;
-							Thread.Sleep(num5);
+							//Thread.Sleep(num5);
 							num4 += num5;
 						}
 					}
