@@ -1273,7 +1273,17 @@ namespace SexyFramework.Resource
 
 		public virtual bool DoLoadRenderEffect(RenderEffectRes theRes)
 		{
-			return true;
+			lock (mLoadCrit)
+			{
+				RenderEffectDefinition renderEffectDefinition = new RenderEffectDefinition();
+				renderEffectDefinition.LoadFromFile(theRes.mPath, theRes.mSrcFilePath);
+				if (theRes.mGlobalPtr != null)
+				{
+					theRes.mGlobalPtr.mResObject = renderEffectDefinition;
+				}
+				theRes.mRenderEffectDefinition = renderEffectDefinition;
+				return true;
+			}
 		}
 
 		public virtual bool DoLoadGenericResFile(GenericResFileRes theRes)
@@ -1900,7 +1910,29 @@ namespace SexyFramework.Resource
 
 		public RenderEffectDefinition LoadRenderEffect(string theName)
 		{
-			throw new NotImplementedException();
+			RenderEffectRes renderEffectRes = (RenderEffectRes)GetBaseRes(5, theName);
+			if (renderEffectRes == null)
+			{
+				return null;
+			}
+			if (!renderEffectRes.mDirectLoaded)
+			{
+				renderEffectRes.mRefCount++;
+				renderEffectRes.mDirectLoaded = true;
+			}
+			if (renderEffectRes.mRenderEffectDefinition != null)
+			{
+				return renderEffectRes.mRenderEffectDefinition;
+			}
+			if (renderEffectRes.mFromProgram)
+			{
+				return null;
+			}
+			if (!DoLoadRenderEffect(renderEffectRes))
+			{
+				return null;
+			}
+			return renderEffectRes.mRenderEffectDefinition;
 		}
 
 		public void DeleteGenericResFile(string theName)

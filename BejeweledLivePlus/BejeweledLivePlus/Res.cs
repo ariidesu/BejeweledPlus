@@ -160,6 +160,30 @@ namespace BejeweledLivePlus
 			return mGlobalRes[(int)id].mResObject as PopAnim;
 		}
 
+		public static RenderEffect GetRenderEffectByID(ResourceId id)
+		{
+			if (mGlobalRes[(int)id] != null)
+			{
+				return mGlobalRes[(int)id].mResObject as RenderEffect;
+			}
+			string text = id.ToString();
+			int num = text.IndexOf("_ID");
+			if (num > 0)
+			{
+				text = text.Substring(0, num);
+			}
+			mGlobalRes[(int)id] = mResMgr.RegisterGlobalPtr(text);
+			if (mGlobalRes[(int)id] != null)
+			{
+				if (mGlobalRes[(int)id].mResObject != null)
+				{
+					return mGlobalRes[(int)id].mResObject as RenderEffect;
+				}
+				mResMgr.LoadRenderEffect(text);
+			}
+			return mGlobalRes[(int)id].mResObject as RenderEffect;
+		}
+
 		public static int GetOffsetXByID(ResourceId id)
 		{
 			Point point = mGlobalResOffset[(int)id];
