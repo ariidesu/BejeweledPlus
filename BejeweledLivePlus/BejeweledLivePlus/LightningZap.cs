@@ -91,7 +91,7 @@ namespace BejeweledLivePlus
 			float num4 = ConstantsWP.LIGHTNING_THICKNESS;
 			float num5 = num4 * num2 / num3;
 			float num6 = num4 * num / num3;
-			if ((flag && mUpdates % GlobalMembers.M(10) != 0) || (!flag && mUpdates % GlobalMembers.M(5) != 0))
+			if ((flag && mUpdates % GlobalMembers.M(7) == 0) || (!flag && mUpdates % GlobalMembers.M(4) == 0))
 			{
 				mPoints[0].Clear();
 				mPoints[1].Clear();
@@ -108,7 +108,7 @@ namespace BejeweledLivePlus
 					int num9 = 1;
 					if (i != 0 && i < num7 - 1)
 					{
-						num9 = Math.Max(GlobalMembers.M(80), (int)(GlobalMembers.M(160f) * mTimer / mDoneTime));
+						num9 = Math.Max(GlobalMembers.M(80), (int)(GlobalMembers.M(160f) * 0.5f * mTimer / mDoneTime));
 					}
 					if (flag)
 					{
@@ -166,8 +166,8 @@ namespace BejeweledLivePlus
 			}
 			for (int i = 0; i < num4 - 1; i++)
 			{
-				float v = 0f;
-				float v2 = 1f;
+				float v = 0.1f;
+				float v2 = 0.9f;
 				float num8 = GlobalMembers.M(0f);
 				SexyVertex2D[] lZ_Draw_aTriVertices = LZ_Draw_aTriVertices;
 				float num9 = mPoints[0][i].mX - mPoints[0][i + 1].mX + mPoints[1][i].mX - mPoints[1][i + 1].mX;
@@ -218,16 +218,16 @@ namespace BejeweledLivePlus
 				LZ_Draw_aTriList_2[num5 + 1, 1] = LZ_Draw_aTriVertices[3];
 				LZ_Draw_aTriList_2[num5 + 1, 2] = LZ_Draw_aTriVertices[0];
 				num5 += 2;
-				if (num5 >= Bej3Com.MAX_TRIS)
-				{
-					break;
-				}
+				// if (num5 >= Bej3Com.MAX_TRIS)
+				// {
+				// 	break;
+				// }
 			}
 			if (flag)
 			{
 				g.DrawTrianglesTex(GlobalMembersResourcesWP.IMAGE_GRITTYBLURRY, LZ_Draw_aTriList_1, num5, color, 1, 0f, 0f, true, Rect.INVALIDATE_RECT);
 				g.DrawTrianglesTex(GlobalMembersResourcesWP.IMAGE_GRITTYBLURRY, LZ_Draw_aTriList_1, num5, color, 1, 0f, 0f, true, Rect.INVALIDATE_RECT);
-				g.DrawTrianglesTex(iMAGE_LIGHTNING, LZ_Draw_aTriList_2, num5, theColor, 1, 0f, 0f, true, Rect.INVALIDATE_RECT);
+				g.DrawTrianglesTex(iMAGE_LIGHTNING, LZ_Draw_aTriList_1, num5, theColor, 1, 0f, 0f, true, Rect.INVALIDATE_RECT);
 				g.DrawTrianglesTex(iMAGE_LIGHTNING, LZ_Draw_aTriList_2, num5, theColor, 1, 0f, 0f, true, Rect.INVALIDATE_RECT);
 			}
 			else
@@ -235,8 +235,6 @@ namespace BejeweledLivePlus
 				g.SetColor(color);
 				g.SetDrawMode(1);
 				g.DrawTrianglesTex(iMAGE_LIGHTNING, LZ_Draw_aTriList_1, num5);
-				g.DrawTrianglesTex(iMAGE_LIGHTNING, LZ_Draw_aTriList_1, num5);
-				g.DrawTrianglesTex(iMAGE_LIGHTNING, LZ_Draw_aTriList_2, num5);
 				g.DrawTrianglesTex(iMAGE_LIGHTNING, LZ_Draw_aTriList_2, num5);
 			}
 			g.PopState();

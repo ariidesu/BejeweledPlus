@@ -288,7 +288,7 @@ namespace BejeweledLivePlus
 					UL_aMatchingPieces[num3++] = piece;
 				}
 			}
-			int num4 = 20 / (num + 1) + 5;
+			int num4 = (int)((20f / (num + 1f) + 5f) / 1.67f);
 			if (flag)
 			{
 				num4 = (int)((float)num4 * GlobalMembers.M(1.4f));
@@ -365,7 +365,7 @@ namespace BejeweledLivePlus
 					continue;
 				}
 				float num8 = Math.Max(0f, 1f - (1f - lightning.mPercentDone) * 3f);
-				if ((!flag || mUpdateCnt % GlobalMembers.M(8) != 0) && (flag || mUpdateCnt % 4 != 0))
+				if ((!flag || mUpdateCnt % GlobalMembers.M(5) != 0) && (flag || mUpdateCnt % 2 != 0))
 				{
 					continue;
 				}
@@ -617,7 +617,7 @@ namespace BejeweledLivePlus
 				LightningZap lightningZap = mZaps[i];
 				lightningZap.Update();
 			}
-			mGemAlpha = Math.Max(0f, mGemAlpha - GlobalMembers.M(0.01f));
+			mGemAlpha = Math.Max(0f, mGemAlpha - GlobalMembers.M(0.01f) * 1.67f);
 			if (mStormType == 7)
 			{
 				UpdateLightning();

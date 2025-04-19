@@ -632,9 +632,9 @@ namespace BejeweledLivePlus.Misc
 			mCurvedValLookupTable[255].SetCurve("b+0,1,0,1,####  &####       {~###");
 			mCurvedValLookupTable[256].SetCurve("b+0,1,0.01,1,9###    EH###Ba###   <~### ~~###");
 			mCurvedValLookupTable[257].SetCurve("b+0,1,0,1,####~####        ~~####~###");
-			mCurvedValLookupTable[258].SetCurve("b+1.5,3.0,0.013333,1,#4I(         ~~P##");
+			mCurvedValLookupTable[258].SetCurve("b+0,1.5,0.013333,1,#4I(         ~~P##");
 			mCurvedValLookupTable[259].SetCurve("b+0,1,0,1,####    e~###     <####");
-			mCurvedValLookupTable[260].SetCurve("b+2,4,0.006667,1,####   ^X### bX### S~###   /####");
+			mCurvedValLookupTable[260].SetCurve("b+0,2,0.006667,1,####   ^X### bX### S~###   /####");
 			mCurvedValLookupTable[261].SetCurve("b+0,1,0,1,#### o~###     Y}###  V####");
 			mCurvedValLookupTable[262].SetCurve("b;0,1,0.00885,1,####oCh;uZV###X^8.tQ<###Uqh*Kzk###QG###R~###hI###u~### $#### 2y### *####");
 			mCurvedValLookupTable[263].SetCurve("b+0,1,0.015,1,~### )~###     S####   G####");

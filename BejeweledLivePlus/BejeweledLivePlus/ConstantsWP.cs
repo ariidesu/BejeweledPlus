@@ -472,7 +472,7 @@ namespace BejeweledLivePlus
 
 		public static int UI_CENTER_DEFAULT = 0;
 
-		public static float LIGHTNING_THICKNESS = 64f;
+		public static float LIGHTNING_THICKNESS = 80f;
 
 		public static int HYPERSPACE_TUNNEL_TIME = 80;
 
