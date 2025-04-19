@@ -8,7 +8,16 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <PackageReference Include="ManagedBass" Version="3.1.1" />
       <PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.1.303" />
+    </ItemGroup>
+    <ItemGroup>
+        <None Include="runtimes\**\native\*">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+    </ItemGroup>
+    <ItemGroup>
+      <Folder Include="SexyFramework\runtimes\" />
     </ItemGroup>
 
 </Project>

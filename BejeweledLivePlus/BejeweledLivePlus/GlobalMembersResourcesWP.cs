@@ -7142,6 +7142,7 @@ namespace BejeweledLivePlus
 			InitResourceManager(theManager);
 			try
 			{
+				RESFILE_PROPERTIES_MUSIC = GetGenericResFileThrow(theManager, 14, "RESFILE_PROPERTIES_MUSIC", 0, 0);
 				PIEFFECT_ANIMS_CARD_GEM_SPARKLE2 = GetPIEffectThrow(theManager, 1477, "PIEFFECT_ANIMS_CARD_GEM_SPARKLE2", 0, 0);
 				PIEFFECT_HELP_BUTTERFLY_HELP = GetPIEffectThrow(theManager, 1478, "PIEFFECT_HELP_BUTTERFLY_HELP", 0, 0);
 				PIEFFECT_HELP_CARD_GEM_SPARKLE2 = GetPIEffectThrow(theManager, 1479, "PIEFFECT_HELP_CARD_GEM_SPARKLE2", 0, 0);

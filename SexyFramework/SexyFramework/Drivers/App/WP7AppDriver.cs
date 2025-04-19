@@ -221,7 +221,7 @@ namespace SexyFramework.Drivers.App
 				mApp.mRandSeed = (uint)GetTickCount();
 				mXNAGraphicsDriver.Init();
 				mApp.mSoundManager = mApp.mAudioDriver.CreateSoundManager();
-				mApp.mMusicInterface = new SoundEffectMusicInterface();
+				mApp.mMusicInterface = new CustomBassMusicInterface();
 				mApp.SetMusicVolume(mApp.mMusicVolume);
 				IsScreenSaver();
 				mApp.mScreenBounds.mWidth = mApp.mWidth;

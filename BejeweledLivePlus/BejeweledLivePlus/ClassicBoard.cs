@@ -1,5 +1,6 @@
 using BejeweledLivePlus.Misc;
 using BejeweledLivePlus.UI;
+using SexyFramework;
 using SexyFramework.Graphics;
 
 namespace BejeweledLivePlus
@@ -62,7 +63,8 @@ namespace BejeweledLivePlus
 		{
 			new Announcement(this, GlobalMembers._ID("NO MORE\nMOVES", 164));
 			GlobalMembers.gApp.PlayVoice(GlobalMembersResourcesWP.SOUND_VOICE_NOMOREMOVES);
-			GlobalMembers.gApp.mMusic.PlaySongNoDelay(3, false);
+			(GlobalMembers.gApp.mMusicInterface as CustomBassMusicInterface).QueueEvent("Play", "Classic_lose", true);
+			// GlobalMembers.gApp.mMusic.PlaySongNoDelay(3, false);
 		}
 
 		public override void HyperspaceEvent(HYPERSPACEEVENT inEvent)
@@ -118,7 +120,9 @@ namespace BejeweledLivePlus
 
 		public override void PlayMenuMusic()
 		{
-			GlobalMembers.gApp.mMusic.PlaySongNoDelay(2, true);
+			
+			(GlobalMembers.gApp.mMusicInterface as CustomBassMusicInterface).QueueEvent("Play", "MainMenu", true);
+			// GlobalMembers.gApp.mMusic.PlaySongNoDelay(2, true);
 		}
 
 		public override void SubmitHighscore()

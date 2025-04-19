@@ -195,7 +195,8 @@ namespace BejeweledLivePlus
 			if (mIsPerpetual && !flag && mGameOverCount > 0)
 			{
 				GlobalMembers.gApp.PlaySample(GlobalMembersResourcesWP.SOUND_DIAMOND_MINE_DEATH, 0, GlobalMembers.M(1.0));
-				GlobalMembers.gApp.mMusic.PlaySongNoDelay(14, false);
+				(GlobalMembers.gApp.mMusicInterface as CustomBassMusicInterface).QueueEvent("Play", "BuriedTreasure_lose", true);
+				// GlobalMembers.gApp.mMusic.PlaySongNoDelay(14, false);
 			}
 		}
 
@@ -774,7 +775,8 @@ namespace BejeweledLivePlus
 		{
 			if (mGameOverCount == 0)
 			{
-				GlobalMembers.gApp.mMusic.PlaySongNoDelay(13, true);
+				// GlobalMembers.gApp.mMusic.PlaySongNoDelay(13, true);
+				(GlobalMembers.gApp.mMusicInterface as CustomBassMusicInterface).QueueEvent("Play", "MainMenu", true);
 			}
 		}
 

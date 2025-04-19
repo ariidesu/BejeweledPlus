@@ -479,7 +479,8 @@ namespace BejeweledLivePlus
 				{
 					mPreHurrahPoints = mPoints;
 					GlobalMembers.gApp.mCurveValCache.GetCurvedVal(PreCalculatedCurvedValManager.CURVED_VAL_ID.eSPEED_BOARD_COLLECTED_TIME_ALPHA, mCollectedTimeAlpha);
-					GlobalMembers.gApp.mMusic.PlaySongNoDelay(12, false);
+					// GlobalMembers.gApp.mMusic.PlaySongNoDelay(12, false);
+					(GlobalMembers.gApp.mMusicInterface as CustomBassMusicInterface).QueueEvent("Play", "Speed_lose", true);
 					GlobalMembers.gApp.PlaySample(GlobalMembersResourcesWP.SOUND_BOMB_EXPLODE, 0, GlobalMembers.M(1), GlobalMembers.M(-2.0));
 					GlobalMembers.gApp.PlayVoice(new VoicePlayArgs(GlobalMembersResourcesWP.SOUND_VOICE_TIMEUP, 0, 1.0, -2, new SoundPlayConditionWaitUpdates(GlobalMembersResourcesWP.SOUND_BOMB_EXPLODE)));
 					mDidTimeUp = true;
@@ -1166,7 +1167,8 @@ namespace BejeweledLivePlus
 
 		public override void PlayMenuMusic()
 		{
-			GlobalMembers.gApp.mMusic.PlaySongNoDelay(11, true);
+			(GlobalMembers.gApp.mMusicInterface as CustomBassMusicInterface).QueueEvent("Play", "MainMenu", true);
+			// GlobalMembers.gApp.mMusic.PlaySongNoDelay(11, true);
 		}
 
 		public override Color GetWarningGlowColor()

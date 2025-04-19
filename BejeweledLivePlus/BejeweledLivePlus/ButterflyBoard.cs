@@ -291,7 +291,8 @@ namespace BejeweledLivePlus
 
 		public override void PlayMenuMusic()
 		{
-			GlobalMembers.gApp.mMusic.PlaySongNoDelay(5, true);
+			(GlobalMembers.gApp.mMusicInterface as CustomBassMusicInterface).QueueEvent("Play", "MainMenu", true);
+			// GlobalMembers.gApp.mMusic.PlaySongNoDelay(5, true);
 		}
 
 		public override void SetupBackground(int theDeltaIdx)
@@ -416,7 +417,8 @@ namespace BejeweledLivePlus
 		{
 			if (!mCountingForGameOver)
 			{
-				GlobalMembers.gApp.mMusic.PlaySongNoDelay(6, false);
+				(GlobalMembers.gApp.mMusicInterface as CustomBassMusicInterface).QueueEvent("Play", "Butterflies_lose", true);
+				// GlobalMembers.gApp.mMusic.PlaySongNoDelay(6, false);
 				mSpotOnSpider = true;
 				mCountingForGameOver = true;
 				mGameOverCountdown = 200;

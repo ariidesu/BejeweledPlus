@@ -728,7 +728,8 @@ namespace BejeweledLivePlus
 
 		public override void PlayMenuMusic()
 		{
-			GlobalMembers.gApp.mMusic.PlaySongNoDelay(4, true);
+			(GlobalMembers.gApp.mMusicInterface as CustomBassMusicInterface).QueueEvent("Play", "MainMenu", true);
+			// GlobalMembers.gApp.mMusic.PlaySongNoDelay(4, true);
 		}
 
 		public override void InitUI()
