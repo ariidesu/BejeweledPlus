@@ -118,9 +118,16 @@ namespace BejeweledLivePlus
 			base.DrawGameElements(g);
 		}
 
+		public override void Update()
+		{
+			CustomBassMusicInterface theMusicInterface =
+				(CustomBassMusicInterface)(GlobalMembers.gApp.mMusicInterface);
+			theMusicInterface.SetTempo("Classic", 110);
+			base.Update();
+		}
+
 		public override void PlayMenuMusic()
 		{
-			
 			CustomBassMusicInterface theMusicInterface =
 				(CustomBassMusicInterface)(GlobalMembers.gApp.mMusicInterface);
 			if (theMusicInterface.mSongName != "Classic")
