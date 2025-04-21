@@ -291,7 +291,13 @@ namespace BejeweledLivePlus
 
 		public override void PlayMenuMusic()
 		{
-			(GlobalMembers.gApp.mMusicInterface as CustomBassMusicInterface).QueueEvent("Play", "MainMenu", true);
+			CustomBassMusicInterface theMusicInterface =
+				(CustomBassMusicInterface)(GlobalMembers.gApp.mMusicInterface);
+			if (theMusicInterface.mSongName != "Butterflies")
+			{
+				theMusicInterface.QueueEvent("FadeOut", theMusicInterface.mSongName, false);
+				theMusicInterface.QueueEvent("Play", "Butterflies", false);
+			}
 			// GlobalMembers.gApp.mMusic.PlaySongNoDelay(5, true);
 		}
 

@@ -381,7 +381,7 @@ namespace BejeweledLivePlus
 			}
 
 			(mMusicInterface as CustomBassMusicInterface).ReadMusicXML();
-			(mMusicInterface as CustomBassMusicInterface).QueueEvent("Play", "LoadingScreen", false);
+			(mMusicInterface as CustomBassMusicInterface).QueueEvent("Play", "LoadingScreen", true);
 			// mMusic = new Music(mMusicInterface);
 			// mMusic.RegisterCallBack();
 			mSoundPlayer = new SoundEffects(mSoundManager);

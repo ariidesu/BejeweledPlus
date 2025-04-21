@@ -538,6 +538,14 @@ namespace BejeweledLivePlus.UI
 			if (mInterfaceState != 0)
 			{
 				BejeweledLivePlusApp.LoadContent("MainMenu");
+				CustomBassMusicInterface theMusicInterface =
+					(CustomBassMusicInterface)(GlobalMembers.gApp.mMusicInterface);
+				if (theMusicInterface.mSongName != "MainMenu")
+				{
+					theMusicInterface.QueueEvent("Switch", theMusicInterface.mSongName, false);
+					theMusicInterface.QueueEvent("FadeOut", theMusicInterface.mSongName, false);
+					theMusicInterface.QueueEvent("Play", "MainMenu", false);
+				}
 			}
 			if (mContainer != null && mInterfaceState != 0)
 			{
@@ -594,14 +602,18 @@ namespace BejeweledLivePlus.UI
 		{
 			if (!GlobalMembers.gApp.mMusicInterface.isPlayingUserMusic())
 			{
+				CustomBassMusicInterface theMusicInterface =
+					(CustomBassMusicInterface)(GlobalMembers.gApp.mMusicInterface);
+				
 				if (mInterfaceState == InterfaceState.INTERFACE_STATE_LOADING)
 				{
-					(GlobalMembers.gApp.mMusicInterface as CustomBassMusicInterface).QueueEvent("Play", "LoadingScreen", true);
+					// theMusicInterface.QueueEvent("Play", "LoadingScreen", false);
 					// GlobalMembers.gApp.mMusic.PlaySongNoDelay(0, true);
 				}
 				else
 				{
-					(GlobalMembers.gApp.mMusicInterface as CustomBassMusicInterface).QueueEvent("Play", "MainMenu", true);
+					// theMusicInterface.QueueEvent("FadeOut", "LoadingScreen", false);
+					// theMusicInterface.QueueEvent("Play", "MainMenu", false);
 					// GlobalMembers.gApp.mMusic.PlaySongNoDelay(1, true);
 				}
 			}

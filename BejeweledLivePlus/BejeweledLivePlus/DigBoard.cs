@@ -776,7 +776,13 @@ namespace BejeweledLivePlus
 			if (mGameOverCount == 0)
 			{
 				// GlobalMembers.gApp.mMusic.PlaySongNoDelay(13, true);
-				(GlobalMembers.gApp.mMusicInterface as CustomBassMusicInterface).QueueEvent("Play", "MainMenu", true);
+				CustomBassMusicInterface theMusicInterface =
+					(CustomBassMusicInterface)(GlobalMembers.gApp.mMusicInterface);
+				if (theMusicInterface.mSongName != "BuriedTreasure")
+				{
+					theMusicInterface.QueueEvent("FadeOut", theMusicInterface.mSongName, false);
+					theMusicInterface.QueueEvent("Play", "BuriedTreasure", false);
+				}
 			}
 		}
 
