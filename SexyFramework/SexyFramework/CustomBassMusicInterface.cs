@@ -87,7 +87,7 @@ namespace SexyFramework
         public bool mStopAll = false;
         public XMLParser mXMLParser;
 
-        public CustomBassMusicInterface() : base()
+        public CustomBassMusicInterface()
         {
             _mGcHandle = GCHandle.Alloc(this);
         }
@@ -147,22 +147,18 @@ namespace SexyFramework
 
         public void CheckQueue()
         {
-            if (!mCurCommandDone)
-                return;
-
-            if (mQueuedSongCommandVector.Count > 0)
+            if (mCurCommandDone && mQueuedSongCommandVector.Count > 0)
             {
                 QueuedSongCommand command = mQueuedSongCommandVector[0];
+                mQueuedSongCommandVector.RemoveAt(0);
                 bool changed = true;
                 string newSongName = !string.IsNullOrEmpty(command.mSongName) ? command.mSongName : mSongName;
-
                 bool restartSong = newSongName != mSongName || command.mForceRestart;
                 mSongName = newSongName;
 
                 SongInfo songInfo = FindSong(mSongName);
                 if (songInfo != null)
-                {;
-                    mQueuedSongCommandVector.RemoveAt(0);
+                {
                     if (restartSong)
                     {
                         if (mMusicMap.TryGetValue(songInfo.mMusicId, out BassMusicInfo musicInfo))
@@ -171,7 +167,7 @@ namespace SexyFramework
                             {
                                 TrackInfo track = songInfo.mTracks[i];
                                 track.mVolume.SetConstant(track.mOrigVolume);
-                                Bass_MusicSetChannelVolumeInt(i, musicInfo.mHMusic, 0);
+                                Bass_MusicSetChannelVolumeInt(musicInfo.mHMusic, i, 0);
                             }
 
                             songInfo.mTempo.SetConstant(songInfo.mOrigTempo);
@@ -187,25 +183,21 @@ namespace SexyFramework
                             musicInfo.mVolumeAdd = 0.0;
                             musicInfo.mStopOnFade = !songInfo.mLoop;
 
-                            int hStream = musicInfo.mHMusic != 0 ? musicInfo.mHMusic : musicInfo.mHStream;
-                            Bass_ChannelSetAttributes(hStream, (int)(volume * 100.0));
-
                             int handle = musicInfo.mHMusic != 0 ? musicInfo.mHMusic : musicInfo.mHStream;
-                            Bass.ChannelStop(handle);
+                            Bass_ChannelSetAttributes(handle, (int)(volume * 100.0));
 
                             if (musicInfo.mHMusic != 0)
                             {
-                                Bass.ChannelPlay(musicInfo.mHMusic);
-                                Bass_MusicPlayEx(musicInfo.mHMusic, (ushort)startPos,
+                                Bass_MusicPlayEx(handle, startPos,
                                     (BassFlags)((songInfo.mLoop ? 4 : 0) | 0x400200), false);
                             }
                             else
                             {
-                                Bass_StreamPlay(musicInfo.mHStream, startPos != -1,
+                                Bass_StreamPlay(handle, startPos != -1,
                                     (BassFlags)(songInfo.mLoop ? 4 : 0));
                                 if (startPos > 0)
                                 {
-                                    Bass_ChannelSetPosition(musicInfo.mHStream, startPos, (PositionFlags)
+                                    Bass_ChannelSetPosition(handle, startPos, (PositionFlags)
                                         (startPos >> 31));
                                 }
                             }
@@ -233,7 +225,7 @@ namespace SexyFramework
                     mStopAll = true;
                 }
             }
-
+            
             mCurCommandDone = true;
 
             SongInfo curSong = FindSong(mSongName);
@@ -272,7 +264,7 @@ namespace SexyFramework
                     if (updateTrack)
                     {
                         double volume = track.mVolume.GetOutVal() * 100.0;
-                        Bass_MusicSetChannelVolumeInt(i, curMusic.mHMusic, (int)volume);
+                        Bass_MusicSetChannelVolumeInt(curMusic.mHMusic, i, (int)volume);
                     }
                 }
 
@@ -308,8 +300,9 @@ namespace SexyFramework
             {
                 foreach (int trackId in theSongEventInfo.mTracks)
                 {
-                    if (trackId >= 0 && trackId < theSongInfo.mTracks.Count)
-                        theSongInfo.mTracks[trackId].mVolume.SetConstant(theSongInfo.mTracks[trackId].mOrigVolume);
+                    int theRealTrackId = trackId - 1;
+                    if (theRealTrackId >= 0 && theRealTrackId < theSongInfo.mTracks.Count)
+                        theSongInfo.mTracks[theRealTrackId].mVolume.SetConstant(theSongInfo.mTracks[theRealTrackId].mOrigVolume);
                 }
             }
             else
@@ -319,12 +312,13 @@ namespace SexyFramework
 
             foreach (int trackId in theSongEventInfo.mTracks)
             {
-                if (!mMusicMap.TryGetValue(trackId, out var music))
+                if (!mMusicMap.TryGetValue(theSongInfo.mMusicId, out var music))
                     continue;
 
                 double prevVolume = music.mVolume;
-
-                ProcessDataString(theSongEventInfo.mVolumeData, ref theSongInfo.mTracks[trackId].mVolume);
+                int theRealTrackId = trackId - 1;
+                if (theRealTrackId >= 0 && theRealTrackId < theSongInfo.mTracks.Count)
+                    ProcessDataString(theSongEventInfo.mVolumeData, ref theSongInfo.mTracks[theRealTrackId].mVolume);
 
                 if (theSongEventInfo.mMultVolume)
                 {
@@ -334,11 +328,11 @@ namespace SexyFramework
 
             if (!string.IsNullOrEmpty(theSongEventInfo.mOffsetData))
             {
-                if (mMusicMap.TryGetValue((int)mMusicLoadFlags, out var music))
+                if (mMusicMap.TryGetValue(theSongInfo.mMusicId, out var music))
                 {
                     if (int.TryParse(theSongEventInfo.mOffsetData, out int offset))
                     {
-                        Bass.ChannelSetPosition(music.mHMusic, offset, PositionFlags.Bytes);
+                        Bass.ChannelSetPosition(music.mHMusic, BitHelper.MakeLong((short)offset, 0), PositionFlags.MusicOrders);
                     }
                 }
             }
@@ -520,7 +514,7 @@ namespace SexyFramework
             int aTempo;
             if (!int.TryParse(theXMLElement.GetAttribute("Tempo"), out aTempo))
             {
-                aTempo = (int)Bass.ChannelGetAttribute(mMusicMap[musicId].mHMusic, ChannelAttribute.MusicBPM);
+                aTempo = (int)Bass_MusicGetBPM(mMusicMap[musicId].mHMusic);
             }
 
             theSongInfo.mOrigTempo = aTempo;
@@ -530,7 +524,7 @@ namespace SexyFramework
             {
                 double trackVol = Bass.ChannelGetAttribute(mMusicMap[musicId].mHMusic,
                     (ChannelAttribute.MusicVolumeChannel + channelIndex));
-                if (Bass.LastError != Errors.OK)
+                if (trackVol == 0f)
                     break;
                 TrackInfo trackInfo = new TrackInfo();
                 trackInfo.mVolume.SetConstant(trackVol);
@@ -686,6 +680,25 @@ namespace SexyFramework
             {
                 if (int.TryParse(part.Trim(), out var value))
                     theVector.Add(value);
+            }
+        }
+        
+        public void SetTempo(string theSongName, double theTempo)
+        {
+            SongInfo aSongInfo = FindSong(theSongName);
+            if (aSongInfo != null)
+            {
+                if (mMusicMap.TryGetValue(aSongInfo.mMusicId, out BassMusicInfo info))
+                {
+                    double tempo = theTempo switch
+                    {
+                        > 255 => 255,
+                        < 0 => 0,
+                        _ => theTempo
+                    };
+                    aSongInfo.mTempo.SetConstant(theTempo);
+                    Bass_MusicSetBPM(info.mHMusic, tempo);
+                }
             }
         }
 

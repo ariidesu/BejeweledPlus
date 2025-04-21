@@ -35,20 +35,16 @@ namespace SexyFramework
             mMusicLoadFlags = BassFlags.Loop | BassFlags.MusicRamp | BassFlags.Prescan;
             mMusicMap = new Dictionary<int, BassMusicInfo>();
         }
-        
-        private static uint MakeMusicPos(int order, int row)
-        {
-            return 0x80000000 | ((uint)(order & 0xFFFF) | ((uint)row << 16));
-        }
 
         public static bool Bass_MusicPlayEx(int handle, int pos, BassFlags flags, bool reset)
         {
-            uint anOffset = MakeMusicPos(pos, 0);
+            long anOffset = BitHelper.MakeLong((short)pos, 0);
             Bass.ChannelStop(handle);
-            Bass.ChannelSetPosition(handle, anOffset);
+            Bass.ChannelSetPosition(handle, anOffset, PositionFlags.MusicOrders);
             Bass.ChannelFlags(handle, flags, flags);
 
-            return Bass.ChannelPlay(handle, false /*reset*/);
+            Bass.ChannelPlay(handle, false /*reset*/);
+            return true;
         }
 
         public static bool Bass_StreamPlay(int handle, bool flush, BassFlags flags)
@@ -100,7 +96,7 @@ namespace SexyFramework
         
         public static bool Bass_MusicSetChannelVolumeInt(int theHandle, int theChannel, int theVolume)
         {
-            double aVolume = theVolume * 100.0;
+            double aVolume = theVolume / 100.0;
             return Bass_MusicSetChannelVolumeFloat(theHandle, theChannel, aVolume);
         }
 
@@ -128,7 +124,7 @@ namespace SexyFramework
             var ext = System.IO.Path.GetExtension(theFileName).ToLowerInvariant();
             if (ext == ".wav" || ext == ".ogg" || ext == ".mp3")
             {
-                stream = Bass.CreateStream(data, 0, 0, BassFlags.Default);
+                stream = Bass.CreateStream(data, 0, data.Length, BassFlags.Default);
             }
             else
             {
