@@ -4759,7 +4759,7 @@ namespace BejeweledLivePlus
 			CheckCountdownBar();
 			int ticksLeft = GetTicksLeft();
 			int num = GlobalMembers.M(35) + (int)((float)ticksLeft * GlobalMembers.M(0.1f));
-			if (mUpdateCnt - mLastWarningTick >= num && ticksLeft > 0 && WantWarningGlow(true))
+			if (mUpdateCnt - mLastWarningTick >= num && ticksLeft > 0 && WantWarningGlow())
 			{
 				int num2 = ((GetTimeLimit() > 60) ? 1500 : 1000);
 				GlobalMembers.gApp.PlaySample(GlobalMembersResourcesWP.SOUND_COUNTDOWN_WARNING, 0, Math.Min(1.0, GlobalMembers.M(1.0) - (double)((float)ticksLeft / (float)num2 / 3f)));
@@ -11711,13 +11711,13 @@ namespace BejeweledLivePlus
 				g.SetColor(mSpeedBonusDisp);
 				ImageFont imageFont = (ImageFont)GlobalMembersResources.FONT_SUBHEADER;
 				g.SetFont(imageFont);
-				string theString = GlobalMembers._ID("SPEED", 3234);
+				string theString = GlobalMembers._ID("SPEED", 3234) + " " + string.Format(GlobalMembers._ID("+{0}", 3235), (int)((float)Math.Min(200, ((mSpeedBonusCount == 0 ? mSpeedBonusLastCount : mSpeedBonusCount) + 1) * 20) * GetModePointMultiplier()));
 				int num = g.StringWidth(theString);
 				float num2 = (float)(double)mSpeedBonusPointsScale;
 				g.SetScale(num2, num2, ConstantsWP.SPEEDBOARD_SPEED_BONUS_SCALE_X + num / 2, ConstantsWP.SPEEDBOARD_SPEED_BONUS_SCALE_Y);
 				Utils.SetFontLayerColor(imageFont, 0, new Color(0, 0, 0, 0));
 				Utils.SetFontLayerColor(imageFont, 1, Color.White);
-				string theString2 = ((mSpeedBonusCount != 0) ? string.Format(GlobalMembers._ID("+{0}", 3235), (int)((float)Math.Min(200, (mSpeedBonusCount + 1) * 20) * GetModePointMultiplier())) : string.Format(GlobalMembers._ID("+{0}", 3235), (int)((float)Math.Min(200, (mSpeedBonusLastCount + 1) * 20) * GetModePointMultiplier())));
+				string theString2 = string.Format("{0} CHAIN", mSpeedBonusCount == 0 ? mSpeedBonusLastCount : mSpeedBonusCount);
 				g.DrawString(theString, ConstantsWP.SPEEDBOARD_SPEED_BONUS_X, ConstantsWP.SPEEDBOARD_SPEED_BONUS_Y);
 				g.DrawString(theString2, ConstantsWP.SPEEDBOARD_SPEED_BONUS_X_2, ConstantsWP.SPEEDBOARD_SPEED_BONUS_Y_2);
 				if (mSpeedBonusNum > 0.0)

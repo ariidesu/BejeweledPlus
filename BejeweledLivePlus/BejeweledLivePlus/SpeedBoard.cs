@@ -480,6 +480,7 @@ namespace BejeweledLivePlus
 					mPreHurrahPoints = mPoints;
 					GlobalMembers.gApp.mCurveValCache.GetCurvedVal(PreCalculatedCurvedValManager.CURVED_VAL_ID.eSPEED_BOARD_COLLECTED_TIME_ALPHA, mCollectedTimeAlpha);
 					// GlobalMembers.gApp.mMusic.PlaySongNoDelay(12, false);
+					(GlobalMembers.gApp.mMusicInterface as CustomBassMusicInterface).QueueEvent("FadeOut", (GlobalMembers.gApp.mMusicInterface as CustomBassMusicInterface).mSongName, false);
 					(GlobalMembers.gApp.mMusicInterface as CustomBassMusicInterface).QueueEvent("Play", "Speed_lose", true);
 					GlobalMembers.gApp.PlaySample(GlobalMembersResourcesWP.SOUND_BOMB_EXPLODE, 0, GlobalMembers.M(1), GlobalMembers.M(-2.0));
 					GlobalMembers.gApp.PlayVoice(new VoicePlayArgs(GlobalMembersResourcesWP.SOUND_VOICE_TIMEUP, 0, 1.0, -2, new SoundPlayConditionWaitUpdates(GlobalMembersResourcesWP.SOUND_BOMB_EXPLODE)));
@@ -619,24 +620,6 @@ namespace BejeweledLivePlus
 			return false;
 		}
 
-		public override bool WantWarningGlow()
-		{
-			return WantWarningGlow(false);
-		}
-
-		public new bool WantWarningGlow(bool forSound)
-		{
-			if (forSound)
-			{
-				if (mBonusTime <= 0)
-				{
-					return base.WantWarningGlow();
-				}
-				return false;
-			}
-			return base.WantWarningGlow();
-		}
-
 		public override float GetLevelPct()
 		{
 			int levelPoints = GetLevelPoints();
@@ -655,7 +638,7 @@ namespace BejeweledLivePlus
 				}
 				int num2 = (int)(num * (float)GlobalMembers.M(4000));
 				int num3 = GlobalMembers.M(35) + (int)((float)num2 * GlobalMembers.M(0.1f));
-				if (mUpdateCnt - mLastWarningTick >= num3 && num2 > 0 && num2 <= GlobalMembers.M(1000))
+				if (mUpdateCnt - mLastWarningTick >= num3 && num2 > 0 && num2 <= GlobalMembers.M(1000) && WantWarningGlow())
 				{
 					GlobalMembers.gApp.PlaySample(GlobalMembersResourcesWP.SOUND_COUNTDOWN_WARNING, 0, Math.Min(1.0, GlobalMembers.M(0.5) - (double)((float)num2 * GlobalMembers.M(0.0005f))));
 					mLastWarningTick = mUpdateCnt;
@@ -677,13 +660,13 @@ namespace BejeweledLivePlus
 				int num5 = GlobalMembers.M(35) + (int)((float)ticksLeft * GlobalMembers.M(0.1f));
 				if (mUseCheckpoints)
 				{
-					if (mUpdateCnt - mLastWarningTick >= num5 && ticksLeft > 0 && ticksLeft <= GlobalMembers.M(1000))
+					if (mUpdateCnt - mLastWarningTick >= num5 && ticksLeft > 0 && ticksLeft <= GlobalMembers.M(1000) && WantWarningGlow())
 					{
 						GlobalMembers.gApp.PlaySample(GlobalMembersResourcesWP.SOUND_COUNTDOWN_WARNING, 0, Math.Min(1.0, GlobalMembers.M(0.5) - (double)((float)ticksLeft * GlobalMembers.M(0.0005f))));
 						mLastWarningTick = mUpdateCnt;
 					}
 				}
-				else if (!mUserPaused && mUpdateCnt - mLastWarningTick >= num5 && ticksLeft > 0 && WantWarningGlow(true))
+				else if (!mUserPaused && mUpdateCnt - mLastWarningTick >= num5 && ticksLeft > 0 && WantWarningGlow())
 				{
 					int num6 = ((GetTimeLimit() > 60) ? 1500 : 1000);
 					GlobalMembers.gApp.PlaySample(GlobalMembersResourcesWP.SOUND_COUNTDOWN_WARNING, 0, Math.Min(1.0, GlobalMembers.M(0.5) - (double)((float)ticksLeft / (float)num6 / 2f)));
@@ -859,7 +842,7 @@ namespace BejeweledLivePlus
 				m5SecChance.Step(mTimeStep / 100f);
 				m10SecChance.Step(mTimeStep / 100f);
 				mTotalGameTicks++;
-				if (!WantWarningGlow(true))
+				if (!WantWarningGlow())
 				{
 					int ticksLeft = GetTicksLeft();
 					if (ticksLeft % 100 == 0 && ticksLeft > 0 && ticksLeft <= GlobalMembers.M(800) && ticksLeft != mMaxTicksLeft)
@@ -932,14 +915,31 @@ namespace BejeweledLivePlus
 			}
 			Math.Pow(mCollectorExtendPct, GlobalMembers.M(0.7));
 			mTimeFXManager.Update();
-			if (mBonusTime > 0)
+			if (GetTicksLeft() > 1250 || mBonusTime > 0)
 			{
 				mPanicScalePct = Math.Max(0f, mPanicScalePct - GlobalMembers.M(0.01f));
 			}
-			else
+			else if (mBonusTime == 0)
 			{
 				mPanicScalePct = Math.Min(1f, mPanicScalePct + GlobalMembers.M(0.01f));
 			}
+			CustomBassMusicInterface theMusicInterface = (CustomBassMusicInterface)GlobalMembers.gApp.mMusicInterface;
+			if (theMusicInterface.mSongName == "Speed")
+			{
+				theMusicInterface.SetTempo("Speed", 125 + (int)((mPointMultiplier - 1) * 3.5f));
+			}
+
+			SongInfo speedSongInfo = theMusicInterface.FindSong("Speed");
+			if (speedSongInfo != null)
+			{
+				for (int trackId = 16; trackId < speedSongInfo.mTracks.Count; trackId++)
+				{
+					speedSongInfo.mTracks[trackId].mVolume.SetInVal(mPanicScalePct);
+				}
+
+				theMusicInterface.mForceParamUpdate = true;
+			}
+			
 			if (mTimeUpCount > 0 && mTimeUpCount < GlobalMembers.M(100) && mUpdateCnt % GlobalMembers.M(3) == 0)
 			{
 				mX = (int)((double)(GlobalMembersUtils.GetRandFloat() * (float)(GlobalMembers.M(100) - mTimeUpCount) / (float)GlobalMembers.M(100)) * GlobalMembers.MS(12.0));
@@ -1031,11 +1031,13 @@ namespace BejeweledLivePlus
 			{
 				g.SetFont(GlobalMembersResources.FONT_SUBHEADER);
 				g.SetColor(Color.FAlpha((float)((double)mLastHurrahAlpha * (double)GetPieceAlpha())));
-				GlobalMembers.M(1.25f);
-				Math.Sin((float)mLastHurrahUpdates * GlobalMembers.M(0.06f));
-				GlobalMembers.M(0.15f);
+				float aScale = 1.25f + (float)Math.Sin((float)mLastHurrahUpdates * 0.06f) * 0.15f;
 				int num2 = 5;
-				g.WriteString(GlobalMembers._ID("Last Hurrah", 482), GlobalMembers.S(GetBoardCenterX()), ConstantsWP.SPEEDBOARD_LAST_HURRAH_Y - num2);
+				float origScaleX = g.mScaleX, origScaleY = g.mScaleY, origScaleOrigX = g.mScaleOrigX, origScaleOrigY = g.mScaleOrigY;
+				string text = GlobalMembers._ID("Last Hurrah", 482);
+				g.SetScale(aScale, aScale, GetBoardCenterX() - g.StringWidth(text) / 3, ConstantsWP.SPEEDBOARD_LAST_HURRAH_Y - num2);
+				g.WriteString(text, GetBoardCenterX() - g.StringWidth(text) / 3, (int)(ConstantsWP.SPEEDBOARD_LAST_HURRAH_Y - num2));
+				g.SetScale(origScaleX, origScaleY, origScaleOrigX, origScaleOrigY);
 			}
 			g.SetColor(Color.FAlpha(GetAlpha()));
 			DrawSpeedBonus(g);
@@ -1167,7 +1169,12 @@ namespace BejeweledLivePlus
 
 		public override void PlayMenuMusic()
 		{
-			(GlobalMembers.gApp.mMusicInterface as CustomBassMusicInterface).QueueEvent("Play", "MainMenu", true);
+			CustomBassMusicInterface theMusicInterface = (CustomBassMusicInterface)GlobalMembers.gApp.mMusicInterface;
+			if (theMusicInterface.mSongName != "Speed")
+			{
+				theMusicInterface.QueueEvent("FadeOut", theMusicInterface.mSongName, false);
+				theMusicInterface.QueueEvent("Play", "Speed", true);
+			}
 			// GlobalMembers.gApp.mMusic.PlaySongNoDelay(11, true);
 		}
 
@@ -1190,6 +1197,20 @@ namespace BejeweledLivePlus
 				return new Color(255, 255, 0, theAlpha);
 			}
 			return new Color(255, 0, 0, theAlpha);
+		}
+		
+		public override bool WantWarningGlow()
+		{
+			return WantWarningGlow(false);
+		}
+
+		public new bool WantWarningGlow(bool forSound)
+		{
+			if (mBonusTime <= 0)
+			{
+				return base.WantWarningGlow();
+			}
+			return false;
 		}
 
 		public override Image GetMultiplierImage()
