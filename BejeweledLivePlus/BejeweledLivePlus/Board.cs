@@ -5913,6 +5913,14 @@ namespace BejeweledLivePlus
 				mUReplayBuffer.WriteShort(EncodeX(theX));
 				mUReplayBuffer.WriteShort(EncodeY(theY));
 			}
+			
+			int aChainReactionCount = 0;
+			Piece aPiece = GetPieceAtScreenXY(theX, theY);
+			if (aPiece != null)
+			{
+				aChainReactionCount = GetMoveStat(aPiece.mMoveCreditId, 3);
+			}
+
 			if (WantsCalmEffects())
 			{
 				BumpColumns(theX, theY, GlobalMembers.M(0.6f));
@@ -5935,6 +5943,7 @@ namespace BejeweledLivePlus
 				}
 				popAnimEffect.Play();
 				mPostFXManager.AddEffect(popAnimEffect);
+				mPostFXManager.AddHeatwave(theX, theY, aChainReactionCount + 1);
 			}
 		}
 
@@ -10821,14 +10830,14 @@ namespace BejeweledLivePlus
 
 		public virtual void DrawHypercube(Graphics g, Piece thePiece)
 		{
-			int theCel = (int)GlobalMembers.gApp.mUpdateCount / GlobalMembers.M(10) % GlobalMembersResourcesWP.IMAGE_HYPERCUBE_FRAME.GetCelCount();
+			int theCel = (int)GlobalMembers.gApp.mUpdateCount / GlobalMembers.M(8) % GlobalMembersResourcesWP.IMAGE_HYPERCUBE_FRAME.GetCelCount();
 			int num = (int)GlobalMembers.S(thePiece.GetScreenX() - 16f);
 			int num2 = (int)GlobalMembers.S(thePiece.GetScreenY() - 16f);
 			g.SetColor(Color.White);
 			g.mColor.mAlpha = (int)(GetPieceAlpha() * 255f);
-			GlobalMembers.gGR.DrawImageCel(g, GlobalMembersResourcesWP.IMAGE_HYPERCUBE_FRAME, (int)GlobalMembers.S(GlobalMembersResourcesWP.ImgXOfs(GlobalMembersResourcesWP.GetIdByImage(GlobalMembersResourcesWP.IMAGE_HYPERCUBE_FRAME))) + num, (int)GlobalMembers.S(GlobalMembersResourcesWP.ImgYOfs(GlobalMembersResourcesWP.GetIdByImage(GlobalMembersResourcesWP.IMAGE_HYPERCUBE_FRAME))) + num2, theCel);
+			GlobalMembers.gGR.DrawImageCel(g, GlobalMembersResourcesWP.IMAGE_HYPERCUBE_FRAME, (int)GlobalMembers.S(GlobalMembersResourcesWP.ImgXOfs(ResourceId.IMAGE_HYPERCUBE_FRAME_ID)) + num, (int)GlobalMembers.S(GlobalMembersResourcesWP.ImgYOfs(ResourceId.IMAGE_HYPERCUBE_FRAME_ID)) + num2, theCel);
 			g.SetDrawMode(Graphics.DrawMode.Additive);
-			GlobalMembers.gGR.DrawImageCel(g, GlobalMembersResourcesWP.IMAGE_HYPERCUBE_COLORGLOW, (int)GlobalMembers.S(GlobalMembersResourcesWP.ImgXOfs(GlobalMembersResourcesWP.GetIdByImage(GlobalMembersResourcesWP.IMAGE_HYPERCUBE_COLORGLOW))) + num, (int)GlobalMembers.S(GlobalMembersResourcesWP.ImgYOfs(GlobalMembersResourcesWP.GetIdByImage(GlobalMembersResourcesWP.IMAGE_HYPERCUBE_COLORGLOW))) + num2, theCel);
+			GlobalMembers.gGR.DrawImageCel(g, GlobalMembersResourcesWP.IMAGE_HYPERCUBE_COLORGLOW, (int)GlobalMembers.S(GlobalMembersResourcesWP.ImgXOfs(ResourceId.IMAGE_HYPERCUBE_COLORGLOW_ID)) + num, (int)GlobalMembers.S(GlobalMembersResourcesWP.ImgYOfs(ResourceId.IMAGE_HYPERCUBE_COLORGLOW_ID)) + num2, theCel);
 			g.SetDrawMode(Graphics.DrawMode.Normal);
 			g.SetColor(Color.White);
 		}
@@ -11143,29 +11152,11 @@ namespace BejeweledLivePlus
 			}
 			if (num2 > 0)
 			{
-				g.SetColor(Color.White);
-				g.mColor.mAlpha = (int)(GetPieceAlpha() * 255f);
 				for (int i = 0; i < num2; i++)
 				{
 					Piece piece2 = DSP_pHyperCubes[i].piece;
-					int theCel = (piece2.mId + num5) % GlobalMembersResourcesWP.IMAGE_HYPERCUBE_FRAME.GetCelCount();
-					GlobalMembers.gGR.DrawImageCel(g, GlobalMembersResourcesWP.IMAGE_HYPERCUBE_FRAME, (int)(GlobalMembers.S(GlobalMembersResourcesWP.ImgXOfs(ResourceId.IMAGE_HYPERCUBE_FRAME_ID)) + GlobalMembers.S(piece2.GetScreenX() - 16f)), (int)(GlobalMembers.S(GlobalMembersResourcesWP.ImgYOfs(ResourceId.IMAGE_HYPERCUBE_FRAME_ID)) + GlobalMembers.S(piece2.GetScreenY() - 16f)), theCel);
+					DrawHypercube(g, piece2);
 				}
-				g.SetColor(Color.White);
-			}
-			if (num2 > 0)
-			{
-				g.SetDrawMode(Graphics.DrawMode.Additive);
-				g.SetColor(Color.White);
-				g.mColor.mAlpha = (int)(GetPieceAlpha() * 255f);
-				for (int i = 0; i < num2; i++)
-				{
-					Piece piece2 = DSP_pHyperCubes[i].piece;
-					int theCel2 = (piece2.mId + num5) % GlobalMembersResourcesWP.IMAGE_HYPERCUBE_FRAME.GetCelCount();
-					GlobalMembers.gGR.DrawImageCel(g, GlobalMembersResourcesWP.IMAGE_HYPERCUBE_COLORGLOW, (int)(GlobalMembers.S(GlobalMembersResourcesWP.ImgXOfs(ResourceId.IMAGE_HYPERCUBE_COLORGLOW_ID)) + GlobalMembers.S(piece2.GetScreenX() - 16f)), (int)(GlobalMembers.S(GlobalMembersResourcesWP.ImgYOfs(ResourceId.IMAGE_HYPERCUBE_COLORGLOW_ID)) + GlobalMembers.S(piece2.GetScreenY() - 16f)), theCel2);
-				}
-				g.SetDrawMode(Graphics.DrawMode.Normal);
-				g.SetColor(Color.White);
 			}
 			if (num3 > 0)
 			{

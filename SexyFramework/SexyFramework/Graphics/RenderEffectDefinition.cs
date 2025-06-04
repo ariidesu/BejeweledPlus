@@ -1,10 +1,15 @@
 using System;
+using Microsoft.Xna.Framework.Graphics;
+using SexyFramework.Drivers.App;
+using SexyFramework.Drivers.Graphics;
 using SexyFramework.Resource;
 
 namespace SexyFramework.Graphics
 {
     public class RenderEffectDefinition : IDisposable
     {
+        public Effect mEffect;
+        
         public byte[] mData;
 
         public string mSrcFileName;
@@ -21,34 +26,25 @@ namespace SexyFramework.Graphics
 
         public bool LoadFromFile(string inFileName, string inSrcFileName)
         {
-            bool result = false;
             string text = Common.GetFileDir(inFileName, true) + Common.GetFileName(inFileName, true);
-            PFILE pFILE = new PFILE(text, "rb");
-            if (pFILE.Open())
-            {
-                byte[] data = pFILE.GetData();
-                if (data != null)
-                {
-                    string text2 = string.Empty;
-                    int num = text.LastIndexOf('.');
-                    if (num >= 0)
-                    {
-                        text2 = text.Substring(num);
-                    }
-                    if (text2.Length > 1)
-                    {
-                        text2 = text2.Substring(1);
-                    }
-                    result = LoadFromMem(data.Length, data, inSrcFileName, text2);
-                }
-                pFILE.Close();
-            }
-            return result;
+            Console.WriteLine("RenderEffectDefinition " + inFileName + " " + text);
+            mEffect = WP7AppDriver.sWP7AppDriverInstance.mContentManager.Load<Effect>(text);
+            return true;
+        }
+
+        public void Initialize(GraphicsDevice theGraphicsDevice)
+        {
+            
         }
 
         public virtual void Dispose()
         {
             mData = null;
+            if (mEffect != null)
+            {
+                mEffect.Dispose();
+                mEffect = null;
+            }
         }
     }
 }

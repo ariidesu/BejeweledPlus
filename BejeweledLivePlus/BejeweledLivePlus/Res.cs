@@ -160,11 +160,11 @@ namespace BejeweledLivePlus
 			return mGlobalRes[(int)id].mResObject as PopAnim;
 		}
 
-		public static RenderEffect GetRenderEffectByID(ResourceId id)
+		public static RenderEffectDefinition GetRenderEffectByID(ResourceId id)
 		{
 			if (mGlobalRes[(int)id] != null)
 			{
-				return mGlobalRes[(int)id].mResObject as RenderEffect;
+				return mGlobalRes[(int)id].mResObject as RenderEffectDefinition;
 			}
 			string text = id.ToString();
 			int num = text.IndexOf("_ID");
@@ -177,11 +177,11 @@ namespace BejeweledLivePlus
 			{
 				if (mGlobalRes[(int)id].mResObject != null)
 				{
-					return mGlobalRes[(int)id].mResObject as RenderEffect;
+					return mGlobalRes[(int)id].mResObject as RenderEffectDefinition;
 				}
 				mResMgr.LoadRenderEffect(text);
 			}
-			return mGlobalRes[(int)id].mResObject as RenderEffect;
+			return mGlobalRes[(int)id].mResObject as RenderEffectDefinition;
 		}
 
 		public static int GetOffsetXByID(ResourceId id)

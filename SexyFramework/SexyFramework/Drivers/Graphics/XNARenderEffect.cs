@@ -1,151 +1,143 @@
-using System;
-using System.Collections.Generic;
-using System.Numerics;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using SexyFramework.Graphics;
-using SexyFramework.SexyFramework.Drivers.Graphics;
 
 namespace SexyFramework.Drivers.Graphics
 {
-    public class XNARenderEffect : RenderEffect
-    {
-        public RenderDevice3D mRenderDevice;
-        public RenderEffectDefinition mDefinition;
-        public XNARenderEffectParamCollection mParams;
-        public List<XNARenderEffectTechnique> mTechniques = new List<XNARenderEffectTechnique>();
-        public Dictionary<string, XNARenderEffectTechnique> mTechniqueNameMap = new Dictionary<string, XNARenderEffectTechnique>();
-        public XNARenderEffectTechnique mCurrentTechnique = null;
-        public int mBeginPassRefCount;
-        
-        public override RenderDevice3D GetDevice()
-        {
-            return mRenderDevice;
-        }
+	public class XNARenderEffect : RenderEffect
+	{
+		public RenderEffectDefinition mDefinition;
+		
+		public Dictionary<string, EffectParameter> mParams = new Dictionary<string, EffectParameter>();
+		public Dictionary<string, EffectTechnique> mTechniques = new Dictionary<string, EffectTechnique>();
 
-        public override RenderEffectDefinition GetDefinition()
-        {
-            return mDefinition;
-        }
-        
-        public override void SetParameter(string inParamName, float[] inFloatData, uint inFloatCount)
-        {
-            var paramNamed = mParams.GetParamNamed(inParamName, createIfMissing: true);
-            if (paramNamed != null)
-            {
-                paramNamed.SetValue(inFloatData, inFloatCount);
-            }
-            if (mBeginPassRefCount > 0 && mCurrentTechnique != null)
-            {
-                mCurrentTechnique.ParametersChanged();
-            }
-        }
+		public XNARenderEffect(RenderEffectDefinition theDefinition, GraphicsDevice theGraphicsDevice)
+		{
+			mDefinition = theDefinition;
+			mDefinition.Initialize(theGraphicsDevice);
+			
+			foreach (var param in mDefinition.mEffect.Parameters)
+				mParams[param.Name] = param;
 
-        public override void SetParameter(string inParamName, float inFloatData)
-        {
-            throw new NotImplementedException();
-        }
+			foreach (var tech in mDefinition.mEffect.Techniques)
+				mTechniques[tech.Name] = tech;
+			
+			if (mTechniques.TryGetValue("Default", out var defaultTech))
+			{
+				mDefinition.mEffect.CurrentTechnique = defaultTech;
+			}
+			else if (mTechniques.Count > 0)
+			{
+				mDefinition.mEffect.CurrentTechnique = mDefinition.mEffect.Techniques[0];
+			}
+		}
 
-        public override void GetParameterBySemantic(uint inSemantic, float[] outFloatData, uint inMaxFloatCount)
-        {
-            XNARenderEffectParamData tempParam = XNARenderEffectPass.MakeTempParamForSemantic((int)(inMaxFloatCount / 4), mRenderDevice, inSemantic);
+		public override RenderDevice3D GetDevice()
+		{
+			return null;
+		}
 
-            if (tempParam.mFloatData != null && tempParam.mFloatData.Count > 0)
-            {
-                int countToCopy = Math.Min(tempParam.mFloatData.Count, (int)inMaxFloatCount);
-                for (int i = 0; i < countToCopy; i++)
-                {
-                    outFloatData[i] = tempParam.mFloatData[i];
-                }
-            }
-        }
+		public override RenderEffectDefinition GetDefinition()
+		{
+			return mDefinition;
+		}
 
-        public override void SetCurrentTechnique(string inName, bool inCheckValid)
-        {
-            if (mTechniqueNameMap.TryGetValue(inName, out var foundTechnique))
-            {
-                mCurrentTechnique = foundTechnique;
+		public override void SetParameter(string inParamName, float[] inFloatData, uint inFloatCount)
+		{
+			if (!mParams.TryGetValue(inParamName, out var param))
+			{
+				param = mDefinition.mEffect.Parameters[inParamName];
+				if (param != null)
+				{
+					mParams[inParamName] = param;
+				}
+				else
+				{
+					return;
+				}
+			}
+			Console.WriteLine(param.ParameterClass + " " + param.ParameterType);
 
-                if (mCurrentTechnique != null && mCurrentTechnique.mCompatFallback != null)
-                {
-                    SetCurrentTechnique(mCurrentTechnique.mCompatFallback, inCheckValid);
-                }
+			switch (inFloatCount)
+			{
+				case 4:
+					param.SetValue(new Vector4(
+						inFloatData[0],
+						inFloatData[1],
+						inFloatData[2],
+						inFloatData[3]
+					));
+					break;
 
-                if (inCheckValid && mCurrentTechnique != null)
-                {
-                    mCurrentTechnique = mCurrentTechnique.GetValidTechnique();
-                }
-            }
-        }
+				case 16:
+					param.SetValue(new Matrix(
+						inFloatData[0], inFloatData[1], inFloatData[2], inFloatData[3],
+						inFloatData[4], inFloatData[5], inFloatData[6], inFloatData[7],
+						inFloatData[8], inFloatData[9], inFloatData[10], inFloatData[11],
+						inFloatData[12], inFloatData[13], inFloatData[14], inFloatData[15]
+					));
+					break;
 
-        public override string GetCurrentTechniqueName()
-        {
-            if (mCurrentTechnique != null)
-            {
-                return mCurrentTechnique.GetName();
-            }
+				default:
+					param.SetValue(inFloatData);
+					break;
+			}
+		}
 
-            return "";
-        }
+		public override void SetParameter(string inParamName, float inFloatData)
+		{
+			if (mParams.TryGetValue(inParamName, out var param))
+				param.SetValue(inFloatData);
+		}
 
-        public override int Begin(out object outRunHandle, HRenderContext inRenderContext)
-        {
-            if (!inRenderContext.IsValid())
-            {
-                inRenderContext = mRenderDevice.GetCurrentContext();
-            }
-            else
-            {
-                mRenderDevice.SetCurrentContext(inRenderContext);
-            }
+		public override void GetParameterBySemantic(uint inSemantic, float[] outFloatData, uint inMaxFloatCount)
+		{
+			for (int i = 0; i < inMaxFloatCount; i++)
+				outFloatData[i] = 0f;
+		}
 
-            outRunHandle = inRenderContext.mHandlePtr;
+		public override void SetCurrentTechnique(string inName, bool inCheckValid)
+		{
+			if (mTechniques.TryGetValue(inName, out var tech))
+			{
+				mDefinition.mEffect.CurrentTechnique = tech;
+			}
+		}
 
-            if (mCurrentTechnique == null)
-                return 1;
+		public override string GetCurrentTechniqueName()
+		{
+			return mDefinition.mEffect.CurrentTechnique?.Name ?? "";
+		}
 
-            return mCurrentTechnique.mPasses?.Count ?? 0;
-        }
+		public override int Begin(out object outRunHandle, HRenderContext inRenderContext)
+		{
+			outRunHandle = 0;
+			return mDefinition.mEffect.CurrentTechnique?.Passes.Count ?? 0;
+		}
 
-        public override void BeginPass(object inRunHandle, int inPass)
-        {
-            mRenderDevice.SetCurrentContext(new HRenderContext(inRunHandle));
+		public override void BeginPass(object inRunHandle, int inPass)
+		{
+			Console.WriteLine(mDefinition.mEffect.CurrentTechnique);
+			mDefinition.mEffect.CurrentTechnique?.Passes[inPass].Apply();
+			Console.WriteLine("Called BeginPass " + inPass + mDefinition.mEffect.GraphicsDevice.Adapter);
+		}
 
-            mBeginPassRefCount++;
-            mRenderDevice.PushState();
+		public override void EndPass(object inRunHandle, int inPass)
+		{
+		}
 
-            mCurrentTechnique?.BeginPass(inPass);
-        }
+		public override void End(object inRunHandle)
+		{
+		}
 
-        public override void End(object inRunHandle)
-        {
-            mRenderDevice.SetCurrentContext(new HRenderContext(inRunHandle));
-        }
+		public override bool PassUsesVertexShader(int inPass)
+		{
+			return true;
+		}
 
-        public override void EndPass(object inRunHandle, int inPass)
-        {
-            End(inRunHandle);
-
-            if (mCurrentTechnique != null)
-            {
-                var passes = mCurrentTechnique.mPasses;
-                if (inPass < passes.Count)
-                {
-                    passes[inPass].mInProgress = false;
-                }
-            }
-
-            mRenderDevice.PopState();
-            mBeginPassRefCount--;
-        }
-        
-        public override bool PassUsesPixelShader(int inPass)
-        {
-            return mCurrentTechnique != null && mCurrentTechnique.PassUsesPixelShader(inPass, mCurrentTechnique);
-        }
-
-
-        public override bool PassUsesVertexShader(int inPass)
-        {
-            return mCurrentTechnique != null && mCurrentTechnique.PassUsesVertexShader(inPass, mCurrentTechnique);
-        }
-    }
+		public override bool PassUsesPixelShader(int inPass)
+		{
+			return true;
+		}
+	}
 }
