@@ -1815,6 +1815,44 @@ namespace SexyFramework.Drivers.Graphics
 		public override Image SwapScreenImage(ref DeviceImage ioSrcImage, ref RenderSurface ioSrcSurface, uint flags)
 		{
 			throw new NotImplementedException();
+			// if (ioSrcSurface?.mRenderTarget != null)
+			// {
+			// 	mGraphicsDevice.SetRenderTarget(ioSrcSurface.mRenderTarget);
+			// }
+			// else
+			// {
+			// 	// Otherwise, use the destination image as the render target
+			// 	mGraphicsDevice.SetRenderTarget(ioDstImage.mRenderTarget);
+			//
+			// 	// Store current backbuffer target so we can restore it later
+			// 	ioSrcSurface = new RenderSurface
+			// 	{
+			// 		mRenderTarget = (RenderTarget2D)mGraphicsDevice.GetRenderTargets()[0].RenderTarget
+			// 	};
+			//
+			// 	// Clear the new target
+			// 	Color clearColor = new Color(0, 0, 0, 255); // or derive from flags or passed-in value
+			// 	mGraphicsDevice.Clear(clearColor);
+			// }
+			//
+			// // Simulate swapping render surfaces between a screen render target and ioDstImage
+			// var tempTarget = mScreenImage.mRenderTarget;
+			// mScreenImage.mRenderTarget = ioDstImage.mRenderTarget;
+			// ioDstImage.mRenderTarget = tempTarget;
+			//
+			// // Swap backing textures if needed
+			// var tempTex = mScreenImage.mTexture;
+			// mScreenImage.mTexture = ioDstImage.mTexture;
+			// ioDstImage.mTexture = tempTex;
+			//
+			// // Simulate swap of 'draw surface'
+			// var tempDraw = mDrawSurface;
+			// mDrawSurface = ioSrcSurface.mRenderTarget;
+			// ioSrcSurface.mRenderTarget = tempDraw;
+			//
+			// mCurRenderTargetImage = mScreenImage;
+			//
+			// return ioDstImage;
 		}
 
 		public override void CopyScreenImage(DeviceImage ioDstImage, uint flags)
@@ -1824,7 +1862,7 @@ namespace SexyFramework.Drivers.Graphics
 
 		public override RenderEffect GetEffect(RenderEffectDefinition inDefinition)
 		{
-			return null;
+			return new XNARenderEffect(inDefinition, mDevice.GraphicsDevice);
 		}
 	}
 }

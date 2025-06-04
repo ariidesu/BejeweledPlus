@@ -92,6 +92,14 @@ namespace SexyFramework.Graphics
 			}
 		}
 
+		public void MG_StartPass()
+		{
+			if (mEffect != null && mCurrentPass < mPassCount)
+			{
+				mEffect.BeginPass(mRunHandle, mCurrentPass);
+			}
+		}
+
 		public void NextPass()
 		{
 			if (mEffect != null && mCurrentPass < mPassCount)

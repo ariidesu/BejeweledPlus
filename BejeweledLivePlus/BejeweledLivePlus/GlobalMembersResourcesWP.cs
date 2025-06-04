@@ -17977,7 +17977,7 @@ namespace BejeweledLivePlus
 
 		internal static RenderEffectDefinition GetRenderEffectThrow(ResourceManager theManager, int theId, string theStringId, int artRes, int localeId)
 		{
-			return null;
+			return Res.GetRenderEffectByID((ResourceId)theId);
 		}
 
 		internal static GenericResFile GetGenericResFileThrow(ResourceManager theManager, int theId, string theStringId, int artRes)

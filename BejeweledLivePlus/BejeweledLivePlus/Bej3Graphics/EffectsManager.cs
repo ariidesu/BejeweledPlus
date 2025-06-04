@@ -1,7 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using BejeweledLivePlus.Misc;
+using Microsoft.Xna.Framework.Graphics;
 using SexyFramework;
+using SexyFramework.Drivers.Graphics;
 using SexyFramework.Graphics;
 using SexyFramework.Misc;
 using SexyFramework.Widget;
@@ -72,7 +75,7 @@ namespace BejeweledLivePlus.Bej3Graphics
 			base.Dispose();
 		}
 
-		public void CreateDistortionMap()
+		public void CreateDistortionMap(Graphics g)
 		{
 			DeviceImage deviceImage = mHeightImageSharedRT.GetCurrentLockImage();
 			if (deviceImage != null && (deviceImage.mWidth != GlobalMembers.gApp.mScreenBounds.mWidth / 4 || deviceImage.mHeight != GlobalMembers.gApp.mScreenBounds.mHeight / 4))
@@ -83,17 +86,22 @@ namespace BejeweledLivePlus.Bej3Graphics
 			if (deviceImage == null && SexyFramework.GlobalMembers.gIs3D)
 			{
 				mHeightImageSharedRT.Lock(GlobalMembers.gApp.mScreenBounds.mWidth / 4, GlobalMembers.gApp.mScreenBounds.mHeight / 4, 8u, "HeightImage");
-				ClearDistortionMap(null);
+				ClearDistortionMap(g);
 			}
 		}
 
 		public void ClearDistortionMap(Graphics g)
 		{
+			DeviceImage aHeightImage = GetHeightImage(g);
+			if (aHeightImage != null)
+			{
+				Graphics3D g2 = new Graphics3D(new Graphics(aHeightImage), g.Get3D().GetRenderDevice(), g.GetRenderContext());
+				g2.ClearColorBuffer(new Color(128, 128, 128, 255));
+			}
 		}
 
-		public DeviceImage GetHeightImage()
+		public DeviceImage GetHeightImage(Graphics g)
 		{
-			CreateDistortionMap();
 			return mHeightImageSharedRT.GetCurrentLockImage();
 		}
 
@@ -555,7 +563,7 @@ namespace BejeweledLivePlus.Bej3Graphics
 			{
 				DeferOverlay(1);
 			}
-			else if (mDeferOverlay)
+			if (mDeferOverlay)
 			{
 				DrawOverlay(g);
 			}
@@ -1127,7 +1135,8 @@ namespace BejeweledLivePlus.Bej3Graphics
 
 		public void RenderDistortEffects(Graphics g)
 		{
-			DeviceImage heightImage = GetHeightImage();
+			CreateDistortionMap(g);
+			DeviceImage heightImage = GetHeightImage(g);
 			if (heightImage == null)
 			{
 				return;
@@ -1137,7 +1146,8 @@ namespace BejeweledLivePlus.Bej3Graphics
 			{
 				return;
 			}
-			Graphics graphics = new Graphics(heightImage);
+
+			Graphics graphics = g; //new Graphics(heightImage);
 			Graphics3D graphics3D2 = graphics.Get3D();
 			graphics.PushState();
 			graphics.mTransX = 0f;
@@ -1146,10 +1156,10 @@ namespace BejeweledLivePlus.Bej3Graphics
 			graphics3D2.SetTextureLinearFilter(1, true);
 			graphics3D2.SetTextureWrap(0, true);
 			graphics3D2.SetTextureWrap(1, true);
-			graphics.SetColor(new Color(128, 128, 128, 255));
-			graphics.FillRect(0, 0, heightImage.mWidth, heightImage.mHeight);
-			graphics.SetColorizeImages(true);
-			graphics.SetColor(Color.White);
+			// graphics.SetColor(new Color(128, 128, 128, 255));
+			// graphics.FillRect(0, 0, heightImage.mWidth, heightImage.mHeight);
+			// graphics.SetColorizeImages(true);
+			// graphics.SetColor(Color.White);
 			RenderEffect effect = graphics3D2.GetEffect(GlobalMembersResourcesWP.EFFECT_WAVE);
 			using (RenderEffectAutoState renderEffectAutoState = new RenderEffectAutoState(graphics, effect))
 			{
@@ -1207,6 +1217,7 @@ namespace BejeweledLivePlus.Bej3Graphics
 							float num4 = (float)(double)current2.mRadius;
 							Rect theTRect = new Rect((int)GlobalMembers.S((double)current2.mCenter.mX + (double)current2.mMoveDelta.mX * (double)current2.mMovePct - (double)num4), (int)GlobalMembers.S((double)current2.mCenter.mY + (double)current2.mMoveDelta.mY * (double)current2.mMovePct - (double)num4), (int)(GlobalMembers.S(num4) * 2f), (int)(GlobalMembers.S(num4) * 2f));
 							theTRect = rect.Intersection(theTRect);
+							renderEffectAutoState2.MG_StartPass();
 							g.DrawImage(image, theTRect, theTRect);
 						}
 						renderEffectAutoState2.NextPass();
@@ -1235,6 +1246,7 @@ namespace BejeweledLivePlus.Bej3Graphics
 					{
 						Board.DistortionQuad distortionQuad = mBoard.mDistortionQuads[i];
 						FRect fRect = new FRect(distortionQuad.x1, distortionQuad.y1, distortionQuad.x2 - distortionQuad.x1, distortionQuad.y2 - distortionQuad.y1);
+						Console.WriteLine(distortionQuad.x1 + " " + distortionQuad.y1 + " " + distortionQuad.x2 + " " + distortionQuad.y2);
 						BltDoubleFromSrcRect(g, theImage, fRect, fRect, new Color(255, 255, 255, 64));
 					}
 					renderEffectAutoState3.NextPass();

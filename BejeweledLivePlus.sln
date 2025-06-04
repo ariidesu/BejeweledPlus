@@ -6,6 +6,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SexyFramework", "SexyFramew
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BinaryPipeline", "BinaryPipeline\BinaryPipeline.csproj", "{3C1AA6DF-FBA0-4914-AC00-C4C0AFFF3041}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BejeweledLivePlus.Desktop", "BejeweledLivePlus.Desktop\BejeweledLivePlus.Desktop.csproj", "{960999BF-14BA-443B-8E2B-33042C83547B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BejeweledLivePlus.Android", "BejeweledLivePlus.Android\BejeweledLivePlus.Android.csproj", "{FA6A1419-7874-4460-958F-DEF525DA0747}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,5 +28,13 @@ Global
 		{3C1AA6DF-FBA0-4914-AC00-C4C0AFFF3041}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3C1AA6DF-FBA0-4914-AC00-C4C0AFFF3041}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3C1AA6DF-FBA0-4914-AC00-C4C0AFFF3041}.Release|Any CPU.Build.0 = Release|Any CPU
+		{960999BF-14BA-443B-8E2B-33042C83547B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{960999BF-14BA-443B-8E2B-33042C83547B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{960999BF-14BA-443B-8E2B-33042C83547B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{960999BF-14BA-443B-8E2B-33042C83547B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FA6A1419-7874-4460-958F-DEF525DA0747}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FA6A1419-7874-4460-958F-DEF525DA0747}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FA6A1419-7874-4460-958F-DEF525DA0747}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FA6A1419-7874-4460-958F-DEF525DA0747}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

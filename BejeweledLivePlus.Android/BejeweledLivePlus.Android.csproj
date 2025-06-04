@@ -1,0 +1,35 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0-android</TargetFramework>
+        <SupportedOSPlatformVersion>21</SupportedOSPlatformVersion>
+        <OutputType>Exe</OutputType>
+        <ApplicationId>com.ariidesu.BejeweledPlus</ApplicationId>
+        <ApplicationVersion>1</ApplicationVersion>
+        <ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
+    </PropertyGroup>
+
+    <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+      <AndroidSupportedAbis>armeabi-v7a;arm64-v8a</AndroidSupportedAbis>
+      <AndroidPackageFormat>apk</AndroidPackageFormat>
+    </PropertyGroup>
+
+    <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+      <AndroidSupportedAbis>armeabi-v7a;arm64-v8a</AndroidSupportedAbis>
+      <AndroidPackageFormat>apk</AndroidPackageFormat>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <MonoGameContentReference Include="..\BejeweledLivePlus\Content\Content.mgcb" Link="Content\Content.mgcb" />
+    </ItemGroup>
+    
+    <ItemGroup>
+        <PackageReference Include="MonoGame.Framework.Android" Version="3.8.1.303" />
+        <PackageReference Include="MonoGame.Content.Builder.Task" Version="3.8.1.303" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\BejeweledLivePlus\BejeweledLivePlus.csproj" />
+    </ItemGroup>
+
+</Project>

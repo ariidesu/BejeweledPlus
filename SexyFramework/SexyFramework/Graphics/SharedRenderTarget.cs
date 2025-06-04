@@ -242,8 +242,13 @@ namespace SexyFramework.Graphics
 
 		public DeviceImage LockScreenImage(string debugTag, uint flags)
 		{
+			if (true)
+			{
+				return Lock(GlobalMembers.gSexyApp.mScreenBounds.mWidth, GlobalMembers.gSexyApp.mScreenBounds.mHeight, flags, debugTag);
+			}
 			IGraphicsDriver mGraphicsDriver = GlobalMembers.gSexyAppBase.mGraphicsDriver;
-			if (((mGraphicsDriver.GetRenderDevice3D().GetCapsFlags() & 0x100) == 0 || (flags & 1) == 0) && Lock(mGraphicsDriver.GetScreenImage().mWidth, mGraphicsDriver.GetScreenImage().mHeight, 0u, debugTag) == null)
+			Console.WriteLine(mGraphicsDriver + " " + mGraphicsDriver.GetScreenImage());
+			if (((mGraphicsDriver.GetRenderDevice3D().GetCapsFlags() & 0x100) == 0 || (flags & 1) == 0) && Lock(mGraphicsDriver.GetDisplayWidth(), mGraphicsDriver.GetDisplayHeight(), 0u, debugTag) == null)
 			{
 				return null;
 			}
@@ -251,12 +256,12 @@ namespace SexyFramework.Graphics
 			{
 				if ((mGraphicsDriver.GetRenderDevice3D().GetCapsFlags() & 0x80) != 0)
 				{
-					mGraphicsDriver.GetRenderDevice3D().CopyScreenImage(mImage, flags);
+					// mGraphicsDriver.GetRenderDevice3D().CopyScreenImage(mImage, flags);
 				}
 				else
 				{
-					Image image = mGraphicsDriver.GetRenderDevice3D().SwapScreenImage(ref mImage, ref mScreenSurface, flags);
-					DeviceImage mImage2 = mImage;
+					// Image image = mGraphicsDriver.GetRenderDevice3D().SwapScreenImage(ref mImage, ref mScreenSurface, flags);
+					// DeviceImage mImage2 = mImage;
 				}
 			}
 			GlobalMembers.gSexyAppBase.GetSharedRenderTargetPool().UpdateEntry(this);
