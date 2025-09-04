@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Reflection.Metadata;
 using Microsoft.Xna.Framework.Content;
 using ManagedBass;
+using SexyFramework.Resource;
 
 namespace SexyFramework
 {
@@ -119,7 +120,14 @@ namespace SexyFramework
 
         public override bool LoadMusic(int theSongId, string theFileName, ContentManager content)
         {
-            var data = content.Load<byte[]>(theFileName);
+            var pFile = new PFILE(theFileName, "");
+            if (!pFile.Open())
+            {
+                Console.WriteLine("LoadMusic Error: Failed to open file");
+                return false;
+            }
+            
+            var data = pFile.GetData();
             int music = 0, stream = 0;
             var ext = System.IO.Path.GetExtension(theFileName).ToLowerInvariant();
             if (ext == ".wav" || ext == ".ogg" || ext == ".mp3")

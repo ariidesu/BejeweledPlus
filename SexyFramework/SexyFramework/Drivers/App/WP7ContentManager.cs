@@ -15,7 +15,21 @@ namespace SexyFramework.Drivers.App
 
 		public T LoadResDirectly<T>(string name)
 		{
-			return ReadAsset<T>(name, mCustom);
+			try
+			{
+				return ReadAsset<T>(name, mCustom);
+			}
+			catch (ContentLoadException)
+			{
+				using (var stream = OpenStream(name))
+				{
+					using (var ms = new MemoryStream())
+					{
+						stream.CopyTo(ms);
+						return (T)(object)ms.ToArray();
+					}
+				}
+			}
 		}
 
 		public void CustomDispose<IDisposable>(IDisposable obj)
