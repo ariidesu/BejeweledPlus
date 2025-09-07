@@ -146,7 +146,6 @@ namespace SexyFramework.Resource
 		{
 			mHadAlreadyDefinedError = false;
 			theRes.mParent = this;
-			theRes.mGlobalPtr = null;
 			string attribute = theElement.GetAttribute("path");
 			if (attribute.Length <= 0)
 			{
