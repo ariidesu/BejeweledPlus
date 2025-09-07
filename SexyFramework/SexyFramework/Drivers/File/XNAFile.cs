@@ -59,7 +59,6 @@ namespace SexyFramework.Drivers.File
 			{
 				try
 				{
-					Console.WriteLine("Read " + mFileName);
 					using (var stream = mFileDriver.GetContentManager().OpenStream(mFileName))
 					{
 						using (var ms = new MemoryStream())
