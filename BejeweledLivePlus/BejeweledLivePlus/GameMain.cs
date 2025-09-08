@@ -177,7 +177,7 @@ namespace BejeweledLivePlus
 			{
 				mSpriteBatch.Begin();
 				mSpriteBatch.Draw(mSplash, new Rectangle(0, 0, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height), Color.White);
-				mSpriteBatch.Draw(mSplashCopyRight, new Rectangle(0, (int)((736 / 1066) * GraphicsDevice.Viewport.Height), 480, 64), Color.White);
+				mSpriteBatch.Draw(mSplashCopyRight, new Rectangle((GraphicsDevice.Viewport.Width - 480) / 2, (int)(GraphicsDevice.Viewport.Height - (800 - 736)), 480, 64), Color.White);
 				mSpriteBatch.End();
 			}
 			else
