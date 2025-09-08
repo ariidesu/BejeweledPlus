@@ -1,0 +1,4 @@
+<linker>
+	<assembly fullname="System.Private.CoreLib" preserve="all" />
+	<assembly fullname="mscorlib" preserve="all" />
+</linker>

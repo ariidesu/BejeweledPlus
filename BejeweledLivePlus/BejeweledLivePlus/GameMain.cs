@@ -84,7 +84,6 @@ namespace BejeweledLivePlus
 		protected override void Initialize()
 		{
 			base.Initialize();
-			mGameScaleRatio = GraphicsDevice.Viewport.Width / 480;
 			Strings.Culture = CultureInfo.CurrentCulture;
 			mSpriteBatch = new SpriteBatch(base.GraphicsDevice);
 			mSplash = base.Content.Load<Texture2D>("Default-Landscape");
