@@ -477,7 +477,7 @@ namespace SexyFramework
                 theSongInfo.mMainVolume = 1f;
             }
 
-            string aFilename = theXMLElement.GetAttribute("File").ToUpper();
+            string aFilename = theXMLElement.GetAttribute("File");
             if (string.IsNullOrEmpty(aFilename))
             {
                 mHasFailed = true;

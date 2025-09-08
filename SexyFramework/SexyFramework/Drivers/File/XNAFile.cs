@@ -1,5 +1,5 @@
 using System;
-using MonoGame.Extended.Content;
+using Microsoft.Xna.Framework;
 using SexyFramework.Drivers.App;
 
 namespace SexyFramework.Drivers.File
@@ -59,7 +59,7 @@ namespace SexyFramework.Drivers.File
 			{
 				try
 				{
-					using (var stream = mFileDriver.GetContentManager().OpenStream(mFileName))
+					using (var stream = TitleContainer.OpenStream("Content/" + mFileName.Replace("\\", "/")))
 					{
 						using (var ms = new MemoryStream())
 						{
@@ -85,17 +85,17 @@ namespace SexyFramework.Drivers.File
 
 		public override bool ForceLoadObject<T>()
 		{
-			// try
+			try
 			{
 				mDataObject = ((WP7ContentManager)mFileDriver.GetContentManager()).LoadResDirectly<T>(mFileName);
 				mStatus = Status.READ_COMPLETE;
 				return true;
 			}
-			// catch (Exception)
-			// {
-			// 	mStatus = Status.READ_ERROR;
-			// 	return false;
-			// }
+			catch (Exception)
+			{
+				mStatus = Status.READ_ERROR;
+				return false;
+			}
 		}
 
 		public override object GetObject()

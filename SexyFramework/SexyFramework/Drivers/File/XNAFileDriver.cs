@@ -70,13 +70,25 @@ namespace SexyFramework.Drivers.File
 		public override bool FileExists(string thePath, ref bool isFolder)
 		{
 			bool flag = false;
-			IsolatedStorageFile userStoreForApplication = IsolatedStorageFile.GetUserStoreForApplication();
-			if (userStoreForApplication != null && userStoreForApplication.FileExists(thePath))
+			// IsolatedStorageFile userStoreForApplication = IsolatedStorageFile.GetUserStoreForApplication();
+			// if (userStoreForApplication != null && userStoreForApplication.FileExists(thePath))
+			// {
+			// 	isFolder = false;
+			// 	flag = true;
+			// }
+			// if (!flag && userStoreForApplication != null && userStoreForApplication.DirectoryExists(thePath))
+			// {
+			// 	isFolder = true;
+			// 	flag = true;
+			// }
+			string basePath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+			string fullPath = Path.Combine(basePath, thePath);
+			if (System.IO.File.Exists(fullPath))
 			{
 				isFolder = false;
 				flag = true;
 			}
-			if (!flag && userStoreForApplication != null && userStoreForApplication.DirectoryExists(thePath))
+			if (Directory.Exists(fullPath))
 			{
 				isFolder = true;
 				flag = true;
@@ -86,57 +98,77 @@ namespace SexyFramework.Drivers.File
 
 		public override bool MakeFolders(string theFolder)
 		{
-			IsolatedStorageFile userStoreForApplication = IsolatedStorageFile.GetUserStoreForApplication();
-			string[] array = theFolder.Split('\\');
-			string text = theFolder;
-			if (array.Length > 0)
-			{
-				text = array[0];
-			}
-			for (int i = 1; i != array.Length; i++)
-			{
-				try
-				{
-					userStoreForApplication.CreateDirectory(text);
-				}
-				catch
-				{
-				}
-				text += "\\";
-				text += array[i];
-			}
+			// IsolatedStorageFile userStoreForApplication = IsolatedStorageFile.GetUserStoreForApplication();
+			// string[] array = theFolder.Split('\\');
+			// string text = theFolder;
+			// if (array.Length > 0)
+			// {
+			// 	text = array[0];
+			// }
+			// for (int i = 1; i != array.Length; i++)
+			// {
+			// 	try
+			// 	{
+			// 		userStoreForApplication.CreateDirectory(text);
+			// 	}
+			// 	catch
+			// 	{
+			// 	}
+			// 	text += "\\";
+			// 	text += array[i];
+			// }
+			// try
+			// {
+			// 	userStoreForApplication.CreateDirectory(text);
+			// }
+			// catch
+			// {
+			// }
+			// return userStoreForApplication.DirectoryExists(theFolder);
+			
+			string basePath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+			string safeFolder = theFolder.Replace('\\', Path.DirectorySeparatorChar)
+				.Replace('/', Path.DirectorySeparatorChar);
+			string fullPath = Path.Combine(basePath, safeFolder);
 			try
 			{
-				userStoreForApplication.CreateDirectory(text);
+				Directory.CreateDirectory(fullPath);
 			}
 			catch
 			{
+				
 			}
-			return userStoreForApplication.DirectoryExists(theFolder);
+			return Directory.Exists(fullPath);
 		}
 
 		public override bool DeleteTree(string thePath)
 		{
 			bool result = false;
-			IsolatedStorageFile userStoreForApplication = IsolatedStorageFile.GetUserStoreForApplication();
+			// IsolatedStorageFile userStoreForApplication = IsolatedStorageFile.GetUserStoreForApplication();
 			try
 			{
-				string[] directoryNames = userStoreForApplication.GetDirectoryNames(thePath + "\\*");
-				string[] array = directoryNames;
-				foreach (string text in array)
+				// string[] directoryNames = userStoreForApplication.GetDirectoryNames(thePath + "\\*");
+				// string[] array = directoryNames;
+				// foreach (string text in array)
+				// {
+				// 	if (!DeleteTree(thePath + "\\" + text))
+				// 	{
+				// 		throw new Exception(string.Format("Can't delete sub directory '{0}'", thePath + "\\" + text));
+				// 	}
+				// }
+				// string[] fileNames = userStoreForApplication.GetFileNames();
+				// string[] array2 = fileNames;
+				// foreach (string text2 in array2)
+				// {
+				// 	userStoreForApplication.DeleteFile(thePath + "\\" + text2);
+				// }
+				// userStoreForApplication.DeleteDirectory(thePath);
+				string basePath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+				string fullPath = Path.Combine(basePath, thePath);
+				if (Directory.Exists(fullPath))
 				{
-					if (!DeleteTree(thePath + "\\" + text))
-					{
-						throw new Exception(string.Format("Can't delete sub directory '{0}'", thePath + "\\" + text));
-					}
+					Directory.Delete(fullPath, recursive: true);
 				}
-				string[] fileNames = userStoreForApplication.GetFileNames();
-				string[] array2 = fileNames;
-				foreach (string text2 in array2)
-				{
-					userStoreForApplication.DeleteFile(thePath + "\\" + text2);
-				}
-				userStoreForApplication.DeleteDirectory(thePath);
 				result = true;
 			}
 			catch (Exception)
@@ -150,8 +182,14 @@ namespace SexyFramework.Drivers.File
 			bool result = false;
 			try
 			{
-				IsolatedStorageFile userStoreForApplication = IsolatedStorageFile.GetUserStoreForApplication();
-				userStoreForApplication.DeleteFile(thePath);
+				// IsolatedStorageFile userStoreForApplication = IsolatedStorageFile.GetUserStoreForApplication();
+				// userStoreForApplication.DeleteFile(thePath);
+				string basePath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+				string fullPath = Path.Combine(basePath, thePath);
+				if (System.IO.File.Exists(fullPath))
+				{
+					System.IO.File.Delete(fullPath);
+				}
 				result = true;
 			}
 			catch
@@ -165,8 +203,16 @@ namespace SexyFramework.Drivers.File
 			bool result = false;
 			try
 			{
-				IsolatedStorageFile userStoreForApplication = IsolatedStorageFile.GetUserStoreForApplication();
-				userStoreForApplication.MoveFile(thePathSrc, thePathDest);
+				// IsolatedStorageFile userStoreForApplication = IsolatedStorageFile.GetUserStoreForApplication();
+				// userStoreForApplication.MoveFile(thePathSrc, thePathDest);
+				string basePath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+				string fullSrc = Path.Combine(basePath, thePathSrc);
+				string fullDest = Path.Combine(basePath, thePathDest);
+				if (System.IO.File.Exists(fullSrc))
+				{
+					Directory.CreateDirectory(Path.GetDirectoryName(fullDest)!);
+					System.IO.File.Move(fullSrc, fullDest, overwrite: true);
+				}
 				result = true;
 			}
 			catch

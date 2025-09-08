@@ -2345,19 +2345,19 @@ namespace SexyFramework.Resource
 			switch (num)
 			{
 			case 1145390149u:
-				empty = "de-DE";
+				empty = "de-de";
 				break;
 			case 1163085139u:
-				empty = "es-ES";
+				empty = "es-es";
 				break;
 			case 1179797074u:
-				empty = "fr-FR";
+				empty = "fr-fr";
 				break;
 			case 1230260564u:
-				empty = "it-IT";
+				empty = "it-it";
 				break;
 			default:
-				empty = "en-US";
+				empty = "en-us";
 				break;
 			}
 			string text = "locales\\" + empty;

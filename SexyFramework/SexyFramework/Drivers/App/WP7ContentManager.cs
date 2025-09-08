@@ -1,4 +1,5 @@
 using System;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 
 namespace SexyFramework.Drivers.App
@@ -21,7 +22,7 @@ namespace SexyFramework.Drivers.App
 			}
 			catch (ContentLoadException)
 			{
-				using (var stream = OpenStream(name))
+				using (var stream = TitleContainer.OpenStream("Content/" + name.Replace("\\", "/")))
 				{
 					using (var ms = new MemoryStream())
 					{

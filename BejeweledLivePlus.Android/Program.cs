@@ -7,14 +7,14 @@ using Microsoft.Xna.Framework;
 namespace BejeweledLivePlus.Android
 {
     [Activity(
-        Label = "Platformer2D",
+        Label = "BejeweledPlus",
         MainLauncher = true,
         Icon = "@drawable/icon",
         Theme = "@style/Theme.Splash",
         AlwaysRetainTaskState = true,
         LaunchMode = LaunchMode.SingleInstance,
-        ScreenOrientation = ScreenOrientation.SensorLandscape,
-        ConfigurationChanges = ConfigChanges.Orientation | ConfigChanges.Keyboard | ConfigChanges.KeyboardHidden
+        ScreenOrientation = ScreenOrientation.Portrait,
+        ConfigurationChanges = ConfigChanges.Keyboard | ConfigChanges.KeyboardHidden
     )]
     public class Activity1 : AndroidGameActivity
     {

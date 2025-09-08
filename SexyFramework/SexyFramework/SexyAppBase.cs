@@ -870,11 +870,13 @@ namespace SexyFramework
 			theBuffer.Clear();
 			try
 			{
-				Stream stream = TitleContainer.OpenStream("Content\\" + theFileName);
-				byte[] array = new byte[stream.Length];
-				stream.Read(array, 0, (int)stream.Length);
-				stream.Close();
-				theBuffer.SetData(array, array.Length);
+				Stream stream = TitleContainer.OpenStream("Content/" + theFileName.Replace("\\", "/"));
+				using (var ms = new MemoryStream())
+				{
+					stream.CopyTo(ms);
+					theBuffer.SetData(ms.ToArray(), (int)ms.Length);
+					stream.Close();
+				}
 			}
 			catch (Exception)
 			{

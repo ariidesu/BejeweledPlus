@@ -7,6 +7,7 @@
         <ApplicationId>com.ariidesu.BejeweledPlus</ApplicationId>
         <ApplicationVersion>1</ApplicationVersion>
         <ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
+        <EmbedAssembliesIntoApk>True</EmbedAssembliesIntoApk>
     </PropertyGroup>
 
     <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
@@ -21,6 +22,10 @@
 
     <ItemGroup>
         <MonoGameContentReference Include="..\BejeweledLivePlus\Content\Content.mgcb" Link="Content\Content.mgcb" />
+    </ItemGroup>
+    
+    <ItemGroup>
+	    <TrimmerRootDescriptor Include="TrimmerRoots.xml" />
     </ItemGroup>
     
     <ItemGroup>

@@ -619,14 +619,25 @@ namespace SexyFramework.Drivers.App
 			bool result = false;
 			try
 			{
-				IsolatedStorageFile userStoreForApplication = IsolatedStorageFile.GetUserStoreForApplication();
-				using (IsolatedStorageFileStream isolatedStorageFileStream = userStoreForApplication.OpenFile(theFileName, FileMode.Open, FileAccess.Read))
+				// IsolatedStorageFile userStoreForApplication = IsolatedStorageFile.GetUserStoreForApplication();
+				// using (IsolatedStorageFileStream isolatedStorageFileStream = userStoreForApplication.OpenFile(theFileName, FileMode.Open, FileAccess.Read))
+				// {
+				// 	using (BinaryReader binaryReader = new BinaryReader(isolatedStorageFileStream))
+				// 	{
+				// 		byte[] array = binaryReader.ReadBytes((int)isolatedStorageFileStream.Length);
+				// 		theBuffer.SetData(array, array.Length);
+				// 	}
+				// }
+				string storagePath = Path.Combine(
+					Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+					theFileName
+				);
+
+				using (var fs = System.IO.File.Open(storagePath, FileMode.Open, FileAccess.Read))
+				using (var br = new BinaryReader(fs))
 				{
-					using (BinaryReader binaryReader = new BinaryReader(isolatedStorageFileStream))
-					{
-						byte[] array = binaryReader.ReadBytes((int)isolatedStorageFileStream.Length);
-						theBuffer.SetData(array, array.Length);
-					}
+					byte[] array = br.ReadBytes((int)fs.Length);
+					theBuffer.SetData(array, array.Length);
 				}
 				result = true;
 			}
@@ -643,13 +654,23 @@ namespace SexyFramework.Drivers.App
 			GlobalMembers.gFileDriver.MakeFolders(fileDir);
 			try
 			{
-				IsolatedStorageFile userStoreForApplication = IsolatedStorageFile.GetUserStoreForApplication();
-				using (IsolatedStorageFileStream output = userStoreForApplication.OpenFile(theFileName, FileMode.Create, FileAccess.Write))
+				// IsolatedStorageFile userStoreForApplication = IsolatedStorageFile.GetUserStoreForApplication();
+				// using (IsolatedStorageFileStream output = userStoreForApplication.OpenFile(theFileName, FileMode.Create, FileAccess.Write))
+				// {
+				// 	using (BinaryWriter binaryWriter = new BinaryWriter(output))
+				// 	{
+				// 		binaryWriter.Write(theData);
+				// 	}
+				// }
+				string storagePath = Path.Combine(
+					Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+					theFileName
+				);
+
+				using (var fs = System.IO.File.Open(storagePath, FileMode.Create, FileAccess.Write))
+				using (var br = new BinaryWriter(fs))
 				{
-					using (BinaryWriter binaryWriter = new BinaryWriter(output))
-					{
-						binaryWriter.Write(theData);
-					}
+					br.Write(theData);
 				}
 				result = true;
 			}

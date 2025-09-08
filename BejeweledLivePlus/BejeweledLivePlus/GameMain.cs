@@ -84,6 +84,7 @@ namespace BejeweledLivePlus
 		protected override void Initialize()
 		{
 			base.Initialize();
+			mGameScaleRatio = GraphicsDevice.Viewport.Width / 480;
 			Strings.Culture = CultureInfo.CurrentCulture;
 			mSpriteBatch = new SpriteBatch(base.GraphicsDevice);
 			mSplash = base.Content.Load<Texture2D>("Default-Landscape");
@@ -254,39 +255,44 @@ namespace BejeweledLivePlus
 			TouchCollection state = TouchPanel.GetState();
 			
 			// TODO: Add mouse hovering
-			MouseState mouseState = Mouse.GetState();
-			TouchLocation location = new TouchLocation(1, 
-				mouseState.LeftButton == ButtonState.Pressed ? TouchLocationState.Pressed : TouchLocationState.Released,
-				mouseState.Position.ToVector2());
+			if (!TouchPanel.GetCapabilities().IsConnected)
+			{
+				MouseState mouseState = Mouse.GetState();
+				TouchLocation location = new TouchLocation(1, 
+					mouseState.LeftButton == ButtonState.Pressed ? TouchLocationState.Pressed : TouchLocationState.Released,
+					mouseState.Position.ToVector2());
+				state = new TouchCollection(new [] { location });
+			}
+			
 			if (!mIsTracking)
 			{
-				// foreach (TouchLocation item in state)
-				// {
-					if (location.State == TouchLocationState.Pressed)
+				foreach (TouchLocation item in state)
+				{
+					if (item.State == TouchLocationState.Pressed)
 					{
 						mIsTracking = true;
-						mTouchID = location.Id;
-						mTouchX = location.Position.X;
-						mTouchY = location.Position.Y;
+						mTouchID = item.Id;
+						mTouchX = item.Position.X;
+						mTouchY = item.Position.Y;
 						float num = (mTouchX - (float)mGameOffsetX) * mGameScaleRatio;
 						float num2 = (mTouchY - (float)mGameOffsetY) * mGameScaleRatio;
 						mTouch.SetTouchInfo(new SexyFramework.Misc.Point((int)num, (int)num2), _TouchPhase.TOUCH_BEGAN, DateTime.Now.TimeOfDay.TotalMilliseconds);
 						theApp.TouchBegan(mTouch);
-						// break;
+						break;
 					}
-				// }
+				}
 				return;
 			}
 			TouchLocation touchLocation = default(TouchLocation);
 			bool flag2 = false;
-			// foreach (TouchLocation item2 in state)
-			// {
-				if (location.Id == mTouchID)
+			foreach (TouchLocation item2 in state)
+			{
+				if (item2.Id == mTouchID)
 				{
 					flag2 = true;
-					touchLocation = location;
+					touchLocation = item2;
 				}
-			// }
+			}
 			bool flag3 = true;
 			if (flag2)
 			{

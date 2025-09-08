@@ -53,12 +53,15 @@ namespace BejeweledLivePlus.Misc
 			Stream stream = null;
 			try
 			{
-				stream = TitleContainer.OpenStream("Content\\" + atlasPlist);
-				byte[] array = new byte[stream.Length];
-				stream.Read(array, 0, (int)stream.Length);
-				stream.Close();
-				xMLParser.checkEncodingType(array);
-				xMLParser.SetBytes(array);
+				stream = TitleContainer.OpenStream("Content/" + atlasPlist.Replace("\\", "/"));
+				using (var ms = new MemoryStream())
+				{
+					stream.CopyTo(ms);
+					stream.Close();
+					byte[] array = ms.ToArray();
+					xMLParser.checkEncodingType(array);
+					xMLParser.SetBytes(array);
+				}
 			}
 			catch (Exception)
 			{
