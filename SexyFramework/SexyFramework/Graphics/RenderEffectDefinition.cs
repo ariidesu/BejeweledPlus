@@ -26,10 +26,18 @@ namespace SexyFramework.Graphics
 
         public bool LoadFromFile(string inFileName, string inSrcFileName)
         {
-            string text = Common.GetFileDir(inFileName, true) + Common.GetFileName(inFileName, true);
-            Console.WriteLine("RenderEffectDefinition " + inFileName + " " + text);
-            mEffect = WP7AppDriver.sWP7AppDriverInstance.mContentManager.Load<Effect>(text);
-            return true;
+        	string text = Common.GetFileDir(inFileName, true) + Common.GetFileName(inFileName, true);
+        	mSrcFileName = inSrcFileName;
+        	try
+        	{
+        		mEffect = WP7AppDriver.sWP7AppDriverInstance.mContentManager.Load<Effect>(text);
+        		return mEffect != null;
+        	}
+        	catch
+        	{
+        		mEffect = null;
+        		return false;
+        	}
         }
 
         public void Initialize(GraphicsDevice theGraphicsDevice)

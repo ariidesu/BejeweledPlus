@@ -92,7 +92,7 @@ namespace BejeweledLivePlus.Bej3Graphics
 
 		public void ClearDistortionMap(Graphics g)
 		{
-			DeviceImage aHeightImage = GetHeightImage(g);
+			DeviceImage aHeightImage = GetHeightImage();
 			if (aHeightImage != null)
 			{
 				Graphics3D g2 = new Graphics3D(new Graphics(aHeightImage), g.Get3D().GetRenderDevice(), g.GetRenderContext());
@@ -100,9 +100,21 @@ namespace BejeweledLivePlus.Bej3Graphics
 			}
 		}
 
-		public DeviceImage GetHeightImage(Graphics g)
+		public DeviceImage GetHeightImage()
 		{
-			return mHeightImageSharedRT.GetCurrentLockImage();
+			// v3 = (Sexy::SharedRenderTarget *)Sexy::gApp;
+			// v5 = Sexy::SharedRenderTarget::Lock(
+			// 	v3,
+			// 	8,
+			// 	(Sexy::SharedRenderTarget::Pool *)&a3->mHeightImageSharedRT,
+			// 	(struct Sexy::SharedRenderTarget *)((int)v3[143].mScreenSurface / 2),
+			// (Sexy::SexyAppBase *)((signed int)v3[143].mLockHandle / 2),
+			// "HeightImage",
+			// v7);
+			// a3->mHeightImage = v5;
+			return mHeightImageSharedRT.Lock(GlobalMembers.gApp.mScreenBounds.mWidth / 2, GlobalMembers.gApp.mScreenBounds.mHeight / 2, 8, "HeightImage");
+
+			//return mHeightImageSharedRT.GetCurrentLockImage();
 		}
 
 		public virtual void UpdateTypeEmber(int type)
@@ -576,7 +588,8 @@ namespace BejeweledLivePlus.Bej3Graphics
 				Graphics3D graphics3D = g.Get3D();
 				if (graphics3D != null && graphics3D.SupportsPixelShaders())
 				{
-					RenderDistortEffects(g);
+					// Disabled for now as it's very broken
+					// RenderDistortEffects(g);
 				}
 				mHeightImageDirty = false;
 			}
@@ -1136,7 +1149,7 @@ namespace BejeweledLivePlus.Bej3Graphics
 		public void RenderDistortEffects(Graphics g)
 		{
 			CreateDistortionMap(g);
-			DeviceImage heightImage = GetHeightImage(g);
+			DeviceImage heightImage = GetHeightImage();
 			if (heightImage == null)
 			{
 				return;
@@ -1147,7 +1160,7 @@ namespace BejeweledLivePlus.Bej3Graphics
 				return;
 			}
 
-			Graphics graphics = g; //new Graphics(heightImage);
+			Graphics graphics = new Graphics(heightImage);
 			Graphics3D graphics3D2 = graphics.Get3D();
 			graphics.PushState();
 			graphics.mTransX = 0f;
@@ -1156,10 +1169,10 @@ namespace BejeweledLivePlus.Bej3Graphics
 			graphics3D2.SetTextureLinearFilter(1, true);
 			graphics3D2.SetTextureWrap(0, true);
 			graphics3D2.SetTextureWrap(1, true);
-			// graphics.SetColor(new Color(128, 128, 128, 255));
-			// graphics.FillRect(0, 0, heightImage.mWidth, heightImage.mHeight);
-			// graphics.SetColorizeImages(true);
-			// graphics.SetColor(Color.White);
+			graphics.SetColor(new Color(128, 128, 128, 255));
+			graphics.FillRect(0, 0, heightImage.mWidth, heightImage.mHeight);
+			graphics.SetColorizeImages(true);
+			graphics.SetColor(Color.White);
 			RenderEffect effect = graphics3D2.GetEffect(GlobalMembersResourcesWP.EFFECT_WAVE);
 			using (RenderEffectAutoState renderEffectAutoState = new RenderEffectAutoState(graphics, effect))
 			{
@@ -1178,10 +1191,12 @@ namespace BejeweledLivePlus.Bej3Graphics
 							Math.Max(1f - Math.Abs(num2 - 0.667f) * 3f, 0f) * num,
 							Math.Max(1f - Math.Abs(num2 - 1f) * 3f, 0f) * num
 						};
+						effect.SetVector4("Params", array);
 						float num3 = (float)(double)current.mRadius;
-						new Rect((int)(GlobalMembers.S((double)current.mCenter.mX + (double)current.mMoveDelta.mX * (double)current.mMovePct - (double)num3) / (double)GlobalMembers.M(4f)), (int)(GlobalMembers.S((double)current.mCenter.mY + (double)current.mMoveDelta.mY * (double)current.mMovePct - (double)num3) / (double)GlobalMembers.M(4f)), (int)(GlobalMembers.S(num3) / 2f), (int)(GlobalMembers.S(num3) / 2f));
+						FRect theTRect = new FRect((float)(GlobalMembers.S((double)current.mCenter.mX + (double)current.mMoveDelta.mX * (double)current.mMovePct - (double)num3) / (double)GlobalMembers.M(4f)), (float)(GlobalMembers.S((double)current.mCenter.mY + (double)current.mMoveDelta.mY * (double)current.mMovePct - (double)num3) / (double)GlobalMembers.M(4f)), (float)(GlobalMembers.S(num3) / 2f), (float)(GlobalMembers.S(num3) / 2f));
 						Color color = new Color((int)(array[0] * 255f), (int)(array[1] * 255f), (int)(array[2] * 255f), (int)(array[3] * 255f));
 						graphics.SetColor(color);
+						BltDouble(g, GlobalMembersResourcesWP.IMAGE_HYPERFLARELINE, theTRect, color, 1);
 					}
 					renderEffectAutoState.NextPass();
 				}

@@ -321,9 +321,9 @@ namespace SexyFramework.Drivers.Graphics
 			}
 			for (int i = 0; i < xNATextureData.mTextures.Length; i++)
 			{
-				if (xNATextureData.mTextures[i] != null && xNATextureData.mTextures[i].mTexture != null && mStateMgr.mLastXNATextureSlots == xNATextureData.mTextures[i].mTexture)
+				if (xNATextureData.mTextures[i] != null && xNATextureData.mTextures[i].mTexture != null && mStateMgr.mLastXNATextureSlots[i] == xNATextureData.mTextures[i].mTexture)
 				{
-					mStateMgr.mLastXNATextureSlots = null;
+					mStateMgr.mLastXNATextureSlots[i] = null;
 				}
 			}
 			xNATextureData.Dispose();
@@ -597,7 +597,7 @@ namespace SexyFramework.Drivers.Graphics
 			mBasicEffect.VertexColorEnabled = true;
 			if (mStateMgr.mXNATextureSlots != null)
 			{
-				mBasicEffect.Texture = mStateMgr.mXNATextureSlots;
+				mBasicEffect.Texture = mStateMgr.mXNATextureSlots[0];
 				mBasicEffect.TextureEnabled = true;
 			}
 			else
@@ -608,6 +608,18 @@ namespace SexyFramework.Drivers.Graphics
 			mBasicEffect.GraphicsDevice.BlendState = mStateMgr.mXNABlendState;
 			mBasicEffect.GraphicsDevice.DepthStencilState = mStateMgr.mXNADepthStencilState;
 			mBasicEffect.GraphicsDevice.SamplerStates[0] = mStateMgr.mXNASamplerStateSlots;
+			
+			foreach (XNARenderEffect aEffect in mStateMgr.mActiveEffects)
+			{
+				for (int i = 0; i < 3; i++)
+				{
+					aEffect.GetDefinition().mEffect.GraphicsDevice.Textures[i] = mStateMgr.mXNATextureSlots[i];
+				}
+				aEffect.GetDefinition().mEffect.GraphicsDevice.RasterizerState = mStateMgr.mXNARasterizerState;
+				aEffect.GetDefinition().mEffect.GraphicsDevice.BlendState = mStateMgr.mXNABlendState;
+				aEffect.GetDefinition().mEffect.GraphicsDevice.DepthStencilState = mStateMgr.mXNADepthStencilState;
+				aEffect.GetDefinition().mEffect.GraphicsDevice.SamplerStates[0] = mStateMgr.mXNASamplerStateSlots;
+			}
 		}
 
 		public void DoCommitLastAllRenderState()
@@ -625,7 +637,7 @@ namespace SexyFramework.Drivers.Graphics
 			mBasicEffect.VertexColorEnabled = true;
 			if (mStateMgr.mLastXNATextureSlots != null)
 			{
-				mBasicEffect.Texture = mStateMgr.mLastXNATextureSlots;
+				mBasicEffect.Texture = mStateMgr.mLastXNATextureSlots[0];
 				mBasicEffect.TextureEnabled = true;
 			}
 			else
@@ -636,6 +648,18 @@ namespace SexyFramework.Drivers.Graphics
 			mBasicEffect.GraphicsDevice.BlendState = mStateMgr.mXNALastBlendState;
 			mBasicEffect.GraphicsDevice.DepthStencilState = mStateMgr.mXNADepthStencilState;
 			mBasicEffect.GraphicsDevice.SamplerStates[0] = mStateMgr.mXNALastSamplerStateSlots;
+			
+			foreach (XNARenderEffect aEffect in mStateMgr.mActiveEffects)
+			{
+				for (int i = 0; i < 3; i++)
+				{
+					aEffect.GetDefinition().mEffect.GraphicsDevice.Textures[i] = mStateMgr.mLastXNATextureSlots[i];
+				}
+				aEffect.GetDefinition().mEffect.GraphicsDevice.RasterizerState = mStateMgr.mXNARasterizerState;
+				aEffect.GetDefinition().mEffect.GraphicsDevice.BlendState = mStateMgr.mXNALastBlendState;
+				aEffect.GetDefinition().mEffect.GraphicsDevice.DepthStencilState = mStateMgr.mXNADepthStencilState;
+				aEffect.GetDefinition().mEffect.GraphicsDevice.SamplerStates[0] = mStateMgr.mXNALastSamplerStateSlots;
+			}
 		}
 
 		public override void ClearRect(Rect theRect)
@@ -1092,12 +1116,12 @@ namespace SexyFramework.Drivers.Graphics
 
 		public void Init(int width, int height)
 		{
-			int num2 = (mDevice.PreferredBackBufferWidth = 640);
+			int num2 = (mDevice.PreferredBackBufferWidth = /*640*/ width);
 			mScreenWidth = num2;
-			int num4 = (mDevice.PreferredBackBufferHeight = 1066);
+			int num4 = (mDevice.PreferredBackBufferHeight = /*1066*/ height);
 			mScreenHeight = num4;
-			mDevice.PreferredBackBufferWidth = 480;
-			mDevice.PreferredBackBufferHeight = 800;
+			// mDevice.PreferredBackBufferWidth = 480;
+			// mDevice.PreferredBackBufferHeight = 800;
 			mWidth = width;
 			mHeight = height;
 			mDevice.PreferMultiSampling = false;
@@ -1141,13 +1165,14 @@ namespace SexyFramework.Drivers.Graphics
 
 		public override void SetViewport(int theX, int theY, int theWidth, int theHeight, float theMinZ, float theMaxZ)
 		{
-			mStateMgr.SetViewport(theX, theY, theWidth, theHeight, theMinZ, theMaxZ);
-			mDevice.GraphicsDevice.Viewport = mStateMgr.mXNAViewPort;
+			// mStateMgr.SetViewport(theX, theY, theWidth, theHeight, theMinZ, theMaxZ);
+			// mDevice.GraphicsDevice.Viewport = mStateMgr.mXNAViewPort;
 		}
 
 		public void SetTextureDirect(int theStage, Texture2D theTexture)
 		{
-			mStateMgr.SetTexture(theTexture);
+			mDevice.GraphicsDevice.Textures[theStage] = theTexture;
+			mStateMgr.SetTexture(theStage, theTexture);
 		}
 
 		public void SetRenderState(SEXY3DRSS theRenderState, uint theValue)
@@ -1195,10 +1220,7 @@ namespace SexyFramework.Drivers.Graphics
 				return false;
 			}
 			XNATextureData xNATextureData = (XNATextureData)inImage2.GetRenderData();
-			if ((xNATextureData.mImageFlags & 0x20) == 0 && (xNATextureData.mImageFlags & 0x40) == 0)
-			{
-				SetTextureDirect(inTextureIndex, xNATextureData.mTextures[0].mTexture);
-			}
+			SetTextureDirect(inTextureIndex, xNATextureData.mTextures[0].mTexture);
 			return true;
 		}
 
@@ -1754,6 +1776,7 @@ namespace SexyFramework.Drivers.Graphics
 				primitiveType = PrimitiveType.LineStrip;
 				break;
 			}
+
 			foreach (EffectPass pass in mBasicEffect.CurrentTechnique.Passes)
 			{
 				pass.Apply();
@@ -1761,8 +1784,24 @@ namespace SexyFramework.Drivers.Graphics
 				{
 					mBasicEffect.GraphicsDevice.DrawUserPrimitives(primitiveType, inVertData, 0, inPrimCount);
 				}
-				catch (Exception)
+				catch (Exception ex)
 				{
+					System.Diagnostics.Debug.WriteLine("DrawUserPrimitives failed for basic effect: " + ex.Message);
+				}
+			}
+
+			foreach (XNARenderEffect aEffect in mStateMgr.mActiveEffects)
+			{
+				if (aEffect.MG_ApplyPass())
+				{
+					try
+					{
+						aEffect.GetDefinition().mEffect.GraphicsDevice.DrawUserPrimitives(primitiveType, inVertData, 0, inPrimCount);
+					}
+					catch (Exception ex)
+					{
+						System.Diagnostics.Debug.WriteLine("DrawUserPrimitives failed for effect " + aEffect.GetDefinition().mSrcFileName + ": " + ex.Message);
+					}
 				}
 			}
 		}
@@ -1796,8 +1835,9 @@ namespace SexyFramework.Drivers.Graphics
 				{
 					mBasicEffect.GraphicsDevice.DrawUserIndexedPrimitives(primitiveType, inVertData, 0, mBatchedTriangleIndex, mBatchedIndexBuffer, 0, inPrimCount);
 				}
-				catch (Exception)
+				catch (Exception ex)
 				{
+					System.Diagnostics.Debug.WriteLine("DrawUserIndexedPrimitives failed for basic effect: " + ex.Message);
 				}
 			}
 		}
@@ -1814,45 +1854,16 @@ namespace SexyFramework.Drivers.Graphics
 
 		public override Image SwapScreenImage(ref DeviceImage ioSrcImage, ref RenderSurface ioSrcSurface, uint flags)
 		{
-			throw new NotImplementedException();
-			// if (ioSrcSurface?.mRenderTarget != null)
-			// {
-			// 	mGraphicsDevice.SetRenderTarget(ioSrcSurface.mRenderTarget);
-			// }
-			// else
-			// {
-			// 	// Otherwise, use the destination image as the render target
-			// 	mGraphicsDevice.SetRenderTarget(ioDstImage.mRenderTarget);
-			//
-			// 	// Store current backbuffer target so we can restore it later
-			// 	ioSrcSurface = new RenderSurface
-			// 	{
-			// 		mRenderTarget = (RenderTarget2D)mGraphicsDevice.GetRenderTargets()[0].RenderTarget
-			// 	};
-			//
-			// 	// Clear the new target
-			// 	Color clearColor = new Color(0, 0, 0, 255); // or derive from flags or passed-in value
-			// 	mGraphicsDevice.Clear(clearColor);
-			// }
-			//
-			// // Simulate swapping render surfaces between a screen render target and ioDstImage
-			// var tempTarget = mScreenImage.mRenderTarget;
-			// mScreenImage.mRenderTarget = ioDstImage.mRenderTarget;
-			// ioDstImage.mRenderTarget = tempTarget;
-			//
-			// // Swap backing textures if needed
-			// var tempTex = mScreenImage.mTexture;
-			// mScreenImage.mTexture = ioDstImage.mTexture;
-			// ioDstImage.mTexture = tempTex;
-			//
-			// // Simulate swap of 'draw surface'
-			// var tempDraw = mDrawSurface;
-			// mDrawSurface = ioSrcSurface.mRenderTarget;
-			// ioSrcSurface.mRenderTarget = tempDraw;
-			//
-			// mCurRenderTargetImage = mScreenImage;
-			//
-			// return ioDstImage;
+			PresentationParameters pp = mDevice.GraphicsDevice.PresentationParameters;
+			Microsoft.Xna.Framework.Color[] backBufferData = new Microsoft.Xna.Framework.Color[pp.BackBufferWidth * pp.BackBufferHeight];
+			mDevice.GraphicsDevice.GetBackBufferData(backBufferData);
+
+			RenderTarget2D backBufferTexture = new RenderTarget2D(mDevice.GraphicsDevice, pp.BackBufferWidth,
+				pp.BackBufferHeight, false, pp.BackBufferFormat, DepthFormat.Depth24Stencil8);
+			backBufferTexture.SetData(backBufferData);
+			
+			ioSrcImage = GetOptimizedImage(backBufferTexture, true, false);
+			return ioSrcImage;
 		}
 
 		public override void CopyScreenImage(DeviceImage ioDstImage, uint flags)
@@ -1862,7 +1873,11 @@ namespace SexyFramework.Drivers.Graphics
 
 		public override RenderEffect GetEffect(RenderEffectDefinition inDefinition)
 		{
-			return new XNARenderEffect(inDefinition, mDevice.GraphicsDevice);
+			if (inDefinition == null || inDefinition.mEffect == null)
+			{
+				return null;
+			}
+			return new XNARenderEffect(inDefinition, this);
 		}
 	}
 }

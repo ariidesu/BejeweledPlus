@@ -152,9 +152,9 @@ namespace SexyFramework.Drivers.Graphics
 
 		public BlendState mXNALastBlendState;
 
-		public Texture2D mXNATextureSlots;
+		public Texture2D[] mXNATextureSlots;
 
-		public Texture2D mLastXNATextureSlots;
+		public Texture2D[] mLastXNATextureSlots;
 
 		public SamplerState mXNASamplerStateSlots;
 
@@ -232,13 +232,16 @@ namespace SexyFramework.Drivers.Graphics
 
 		public Graphics3D.EBlendMode mDestBlendMode = Graphics3D.EBlendMode.BLEND_DEFAULT;
 
+		public List<XNARenderEffect> mActiveEffects;
+
 		public BaseXNAStateManager(ref GraphicsDeviceManager theDevice)
 		{
 			mDevice = theDevice;
 			mXNABlendState = BlendState.AlphaBlend;
 			mXNARasterizerState = RasterizerState.CullNone;
 			mXNADepthStencilState = DepthStencilState.Default;
-			mXNATextureSlots = null;
+			mXNATextureSlots = new Texture2D[3];
+			mLastXNATextureSlots = new Texture2D[3];
 			mXNASamplerStateSlots = SamplerState.LinearClamp;
 			mXNAProjectionMatrix = Matrix.CreateOrthographicOffCenter(0f, GlobalMembers.gSexyAppBase.mWidth, GlobalMembers.gSexyAppBase.mHeight, 0f, -1000f, 1000f);
 			mXNAViewMatrix = Matrix.CreateLookAt(new Vector3(0f, 0f, 300f), Vector3.Zero, Vector3.Up);
@@ -253,6 +256,7 @@ namespace SexyFramework.Drivers.Graphics
 			mStatckViewMatrix = new Stack<Matrix>();
 			mStatckWorldMatrix = new Stack<Matrix>();
 			mStatckViewPort = new Stack<Viewport>();
+			mActiveEffects = new List<XNARenderEffect>();
 		}
 
 		public override void Init()
@@ -588,11 +592,11 @@ namespace SexyFramework.Drivers.Graphics
 			mXNAWorldMatrix = mat;
 		}
 
-		public void SetTexture(Texture2D texture)
+		public void SetTexture(int theStage, Texture2D texture)
 		{
 			mTextureStateDirty = true;
-			mLastXNATextureSlots = mXNATextureSlots;
-			mXNATextureSlots = texture;
+			mLastXNATextureSlots[theStage] = mXNATextureSlots[theStage];
+			mXNATextureSlots[theStage] = texture;
 		}
 
 		private void SetLightEnabled(ulong inLightIndex, bool inEnabled)
@@ -708,6 +712,15 @@ namespace SexyFramework.Drivers.Graphics
 			outU = mAtalasU;
 			outV = mAtalasV;
 			return true;
+		}
+
+		public void PushActiveEffect(XNARenderEffect theEffect)
+		{
+			mActiveEffects.Add(theEffect);
+		}
+		public void RemoveActiveEffect(XNARenderEffect theEffect)
+		{
+			mActiveEffects.Remove(theEffect);
 		}
 	}
 }

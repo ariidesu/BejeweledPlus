@@ -1,40 +1,48 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using SexyFramework.Graphics;
+using SexyFramework.Drivers.Graphics;
+using System;
+using System.Collections.Generic;
 
 namespace SexyFramework.Drivers.Graphics
 {
 	public class XNARenderEffect : RenderEffect
 	{
 		public RenderEffectDefinition mDefinition;
+		public BaseXNARenderDevice mRenderDevice;
 		
+		public int mCurrentPass = -1;
 		public Dictionary<string, EffectParameter> mParams = new Dictionary<string, EffectParameter>();
 		public Dictionary<string, EffectTechnique> mTechniques = new Dictionary<string, EffectTechnique>();
 
-		public XNARenderEffect(RenderEffectDefinition theDefinition, GraphicsDevice theGraphicsDevice)
+		public XNARenderEffect(RenderEffectDefinition theDefinition, BaseXNARenderDevice theRenderDevice)
 		{
 			mDefinition = theDefinition;
-			mDefinition.Initialize(theGraphicsDevice);
-			
-			foreach (var param in mDefinition.mEffect.Parameters)
-				mParams[param.Name] = param;
+			mRenderDevice = theRenderDevice;
 
-			foreach (var tech in mDefinition.mEffect.Techniques)
-				mTechniques[tech.Name] = tech;
-			
-			if (mTechniques.TryGetValue("Default", out var defaultTech))
+			if (mDefinition.mEffect != null)
 			{
-				mDefinition.mEffect.CurrentTechnique = defaultTech;
-			}
-			else if (mTechniques.Count > 0)
-			{
-				mDefinition.mEffect.CurrentTechnique = mDefinition.mEffect.Techniques[0];
+				foreach (var param in mDefinition.mEffect.Parameters)
+					mParams[param.Name] = param;
+
+				foreach (var tech in mDefinition.mEffect.Techniques)
+					mTechniques[tech.Name] = tech;
+
+				if (mTechniques.TryGetValue("Default", out var defaultTech))
+				{
+					mDefinition.mEffect.CurrentTechnique = defaultTech;
+				}
+				else if (mTechniques.Count > 0)
+				{
+					mDefinition.mEffect.CurrentTechnique = mDefinition.mEffect.Techniques[0];
+				}
 			}
 		}
 
 		public override RenderDevice3D GetDevice()
 		{
-			return null;
+			return mRenderDevice;
 		}
 
 		public override RenderEffectDefinition GetDefinition()
@@ -44,6 +52,12 @@ namespace SexyFramework.Drivers.Graphics
 
 		public override void SetParameter(string inParamName, float[] inFloatData, uint inFloatCount)
 		{
+			if (mDefinition.mEffect == null)
+			{
+				System.Diagnostics.Debug.WriteLine("Attempting to set parameter on null effect");
+				return;
+			}
+
 			if (!mParams.TryGetValue(inParamName, out var param))
 			{
 				param = mDefinition.mEffect.Parameters[inParamName];
@@ -53,10 +67,10 @@ namespace SexyFramework.Drivers.Graphics
 				}
 				else
 				{
+					System.Diagnostics.Debug.WriteLine("Parameter '" + inParamName + "' not found in effect");
 					return;
 				}
 			}
-			Console.WriteLine(param.ParameterClass + " " + param.ParameterType);
 
 			switch (inFloatCount)
 			{
@@ -86,8 +100,20 @@ namespace SexyFramework.Drivers.Graphics
 
 		public override void SetParameter(string inParamName, float inFloatData)
 		{
+			if (mDefinition.mEffect == null)
+			{
+				System.Diagnostics.Debug.WriteLine("Attempting to set parameter on null effect");
+				return;
+			}
+
 			if (mParams.TryGetValue(inParamName, out var param))
+			{
 				param.SetValue(inFloatData);
+			}
+			else
+			{
+				System.Diagnostics.Debug.WriteLine("Parameter '" + inParamName + "' not found in effect");
+			}
 		}
 
 		public override void GetParameterBySemantic(uint inSemantic, float[] outFloatData, uint inMaxFloatCount)
@@ -112,22 +138,30 @@ namespace SexyFramework.Drivers.Graphics
 		public override int Begin(out object outRunHandle, HRenderContext inRenderContext)
 		{
 			outRunHandle = 0;
+			mRenderDevice.mStateMgr.PushActiveEffect(this);
 			return mDefinition.mEffect.CurrentTechnique?.Passes.Count ?? 0;
 		}
 
 		public override void BeginPass(object inRunHandle, int inPass)
 		{
-			Console.WriteLine(mDefinition.mEffect.CurrentTechnique);
-			mDefinition.mEffect.CurrentTechnique?.Passes[inPass].Apply();
-			Console.WriteLine("Called BeginPass " + inPass + mDefinition.mEffect.GraphicsDevice.Adapter);
+			mCurrentPass = inPass;
+		}
+
+		public bool MG_ApplyPass()
+		{
+			if (mCurrentPass == -1) return false;
+			mDefinition.mEffect.CurrentTechnique?.Passes[mCurrentPass].Apply();
+			return true;
 		}
 
 		public override void EndPass(object inRunHandle, int inPass)
 		{
+			mCurrentPass = -1;
 		}
 
 		public override void End(object inRunHandle)
 		{
+			mRenderDevice.mStateMgr.RemoveActiveEffect(this);
 		}
 
 		public override bool PassUsesVertexShader(int inPass)
