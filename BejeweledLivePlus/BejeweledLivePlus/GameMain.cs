@@ -107,7 +107,6 @@ namespace BejeweledLivePlus
 				Exit();
 			}
 
-			mGameScaleRatio = 640f / base.GraphicsDevice.Viewport.Width;
 			base.Update(gameTime);
 			// try
 			// {
@@ -176,8 +175,8 @@ namespace BejeweledLivePlus
 			if (mIsLoading)
 			{
 				mSpriteBatch.Begin();
-				mSpriteBatch.Draw(mSplash, new Rectangle(0, 0, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height), Color.White);
-				mSpriteBatch.Draw(mSplashCopyRight, new Rectangle((GraphicsDevice.Viewport.Width - 480) / 2, (int)(GraphicsDevice.Viewport.Height - (800 - 736)), 480, 64), Color.White);
+				mSpriteBatch.Draw(mSplash, new Rectangle(0, 0, 480, 800), Color.White);
+				mSpriteBatch.Draw(mSplashCopyRight, new Rectangle(0, 736, 480, 64), Color.White);
 				mSpriteBatch.End();
 			}
 			else

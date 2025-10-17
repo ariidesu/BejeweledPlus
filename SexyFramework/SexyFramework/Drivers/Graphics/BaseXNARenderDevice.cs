@@ -321,9 +321,9 @@ namespace SexyFramework.Drivers.Graphics
 			}
 			for (int i = 0; i < xNATextureData.mTextures.Length; i++)
 			{
-				if (xNATextureData.mTextures[i] != null && xNATextureData.mTextures[i].mTexture != null && mStateMgr.mLastXNATextureSlots[i] == xNATextureData.mTextures[i].mTexture)
+				if (xNATextureData.mTextures[i] != null && xNATextureData.mTextures[i].mTexture != null && mStateMgr.mLastXNATextureSlots[0] == xNATextureData.mTextures[i].mTexture)
 				{
-					mStateMgr.mLastXNATextureSlots[i] = null;
+					mStateMgr.mLastXNATextureSlots[0] = null;
 				}
 			}
 			xNATextureData.Dispose();
@@ -595,7 +595,7 @@ namespace SexyFramework.Drivers.Graphics
 			mBasicEffect.View = mStateMgr.mXNAViewMatrix;
 			mBasicEffect.World = mStateMgr.mXNAWorldMatrix;
 			mBasicEffect.VertexColorEnabled = true;
-			if (mStateMgr.mXNATextureSlots != null)
+			if (mStateMgr.mXNATextureSlots[0] != null)
 			{
 				mBasicEffect.Texture = mStateMgr.mXNATextureSlots[0];
 				mBasicEffect.TextureEnabled = true;
@@ -635,7 +635,7 @@ namespace SexyFramework.Drivers.Graphics
 			mBasicEffect.View = mStateMgr.mXNAViewMatrix;
 			mBasicEffect.World = mStateMgr.mXNALastWorldMatrix;
 			mBasicEffect.VertexColorEnabled = true;
-			if (mStateMgr.mLastXNATextureSlots != null)
+			if (mStateMgr.mLastXNATextureSlots[0] != null)
 			{
 				mBasicEffect.Texture = mStateMgr.mLastXNATextureSlots[0];
 				mBasicEffect.TextureEnabled = true;
@@ -1116,12 +1116,12 @@ namespace SexyFramework.Drivers.Graphics
 
 		public void Init(int width, int height)
 		{
-			int num2 = (mDevice.PreferredBackBufferWidth = /*640*/ width);
+			int num2 = (mDevice.PreferredBackBufferWidth = 640);
 			mScreenWidth = num2;
-			int num4 = (mDevice.PreferredBackBufferHeight = /*1066*/ height);
+			int num4 = (mDevice.PreferredBackBufferHeight = 1066);
 			mScreenHeight = num4;
-			// mDevice.PreferredBackBufferWidth = 480;
-			// mDevice.PreferredBackBufferHeight = 800;
+			mDevice.PreferredBackBufferWidth = 480;
+			mDevice.PreferredBackBufferHeight = 800;
 			mWidth = width;
 			mHeight = height;
 			mDevice.PreferMultiSampling = false;
@@ -1165,8 +1165,8 @@ namespace SexyFramework.Drivers.Graphics
 
 		public override void SetViewport(int theX, int theY, int theWidth, int theHeight, float theMinZ, float theMaxZ)
 		{
-			// mStateMgr.SetViewport(theX, theY, theWidth, theHeight, theMinZ, theMaxZ);
-			// mDevice.GraphicsDevice.Viewport = mStateMgr.mXNAViewPort;
+			mStateMgr.SetViewport(theX, theY, theWidth, theHeight, theMinZ, theMaxZ);
+			mDevice.GraphicsDevice.Viewport = mStateMgr.mXNAViewPort;
 		}
 
 		public void SetTextureDirect(int theStage, Texture2D theTexture)
