@@ -29,7 +29,7 @@ namespace SexyFramework.Drivers.File
 
 		public override string GetSaveDataPath()
 		{
-			return string.Empty;
+			return "ariidesu\\BejeweledPlus\\";
 		}
 
 		public override string GetCurPath()
