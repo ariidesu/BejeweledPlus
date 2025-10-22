@@ -688,6 +688,10 @@ namespace SexyFramework.Widget
 
 		public int KeyChar(sbyte theChar)
 		{
+			if (mFocusWidget != null)
+			{
+				mFocusWidget.KeyChar((char)theChar);
+			}
 			return 0;
 		}
 
@@ -697,6 +701,7 @@ namespace SexyFramework.Widget
 			if (key >= KeyCode.KEYCODE_UNKNOWN && key < (KeyCode)255)
 			{
 				mKeyDown[(int)key] = true;
+				KeyChar((sbyte)key);
 			}
 			if (mFocusWidget != null)
 			{
@@ -776,8 +781,11 @@ namespace SexyFramework.Widget
 		{
 			mLastInputUpdateCnt = mUpdateCnt;
 			mMouseIn = true;
-			mLastMouseX = touch.location.mX;
-			mLastMouseY = touch.location.mY;
+			if (touch.location.mX != -1 && touch.location.mY != -1)
+			{
+				mLastMouseX = touch.location.mX;
+				mLastMouseY = touch.location.mY;
+			}
 			if (mLastDownWidget == null)
 			{
 				return;

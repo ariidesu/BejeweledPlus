@@ -50,6 +50,8 @@ namespace BejeweledLivePlus
 
 		private SexyAppBase.Touch mTouch = new SexyAppBase.Touch();
 
+		private SexyAppBase.MGKeyboard mKeyboard = new SexyAppBase.MGKeyboard();
+
 		private bool mIsTracking;
 
 		private int mTouchID = -1;
@@ -251,10 +253,17 @@ namespace BejeweledLivePlus
 					flag = false;
 				}
 			}
+			
+			mKeyboard.Update();
+			
+			foreach (Keys key in mKeyboard.GetDownKeys())
+			{
+				theApp.KeyDown((int)key);
+			}
+			
 			theApp.GetTouchInputOffset(ref mGameOffsetX, ref mGameOffsetY);
 			TouchCollection state = TouchPanel.GetState();
 			
-			// TODO: Add mouse hovering
 			if (!TouchPanel.GetCapabilities().IsConnected)
 			{
 				MouseState mouseState = Mouse.GetState();
@@ -262,6 +271,15 @@ namespace BejeweledLivePlus
 					mouseState.LeftButton == ButtonState.Pressed ? TouchLocationState.Pressed : TouchLocationState.Released,
 					mouseState.Position.ToVector2());
 				state = new TouchCollection(new [] { location });
+				
+				int actualMouseX = (int)((location.Position.X - mGameOffsetX) * mGameScaleRatio);
+				int actualMouseY = (int)((location.Position.Y - mGameOffsetY) * mGameScaleRatio);
+				// If we are in a game and the mouse is hovering inside the board region, we call MouseMove so Board.KeyDown can get the mouse position
+				// This check is in because the interface is not designed for mouse hover
+				if (theApp.mInterfaceState == InterfaceState.INTERFACE_STATE_INGAME && actualMouseY >= theApp.mBoard.GetBoardY() && actualMouseY <= theApp.mBoard.GetBoardY() + theApp.mWidth)
+				{
+					theApp.mWidgetManager.MouseMove(actualMouseX, actualMouseY);
+				}
 			}
 			
 			if (!mIsTracking)

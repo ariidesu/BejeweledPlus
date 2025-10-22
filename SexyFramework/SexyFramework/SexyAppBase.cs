@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Input;
 using SexyFramework.Drivers;
 using SexyFramework.Drivers.App;
 using SexyFramework.Drivers.Audio;
@@ -41,6 +42,86 @@ namespace SexyFramework
 				phase = _phase;
 				timestamp = _timestamp / 1000.0;
 			}
+		}
+
+		// Custom handling for keyboard as MonoGame don't have the concept of key-repeating behavior
+		// Which SexyFramework respects because of EVENT_KEY_DOWN window event
+		public class MGKeyboard
+		{
+		    private KeyboardState prevKeyState;
+		    private KeyboardState currentState;
+
+		    private Keys? repKey;
+		    private DateTime downSince;
+		    private DateTime lastRepeat;
+
+		    private readonly float timeUntilRepeatMs;
+		    private readonly int repeatsPerSecond;
+
+		    private readonly List<Keys> pressedKeys = new();
+		    private readonly List<Keys> releasedKeys = new();
+
+		    public MGKeyboard(float timeUntilRepeatMs = 500f, int repeatsPerSecond = 35)
+		    {
+		        this.timeUntilRepeatMs = timeUntilRepeatMs;
+		        this.repeatsPerSecond = repeatsPerSecond;
+		        prevKeyState = Keyboard.GetState();
+		        currentState = prevKeyState;
+		    }
+
+		    public void Update()
+		    {
+		        pressedKeys.Clear();
+		        releasedKeys.Clear();
+
+		        currentState = Keyboard.GetState();
+		        DateTime now = DateTime.Now;
+
+		        foreach (Keys key in currentState.GetPressedKeys())
+		        {
+		            if (prevKeyState.IsKeyUp(key))
+		            {
+		                pressedKeys.Add(key);
+		                repKey = key;
+		                downSince = now;
+		                lastRepeat = now;
+		            }
+		        }
+
+		        if (repKey.HasValue && currentState.IsKeyDown(repKey.Value))
+		        {
+		            TimeSpan heldFor = now - downSince;
+		            if (heldFor.TotalMilliseconds > timeUntilRepeatMs)
+		            {
+		                TimeSpan sinceLastRepeat = now - lastRepeat;
+		                double repeatInterval = 1000.0 / repeatsPerSecond;
+
+		                if (sinceLastRepeat.TotalMilliseconds >= repeatInterval)
+		                {
+		                    lastRepeat = now;
+		                    pressedKeys.Add(repKey.Value);
+		                }
+		            }
+		        }
+
+		        foreach (Keys key in prevKeyState.GetPressedKeys())
+		        {
+		            if (currentState.IsKeyUp(key))
+		            {
+		                releasedKeys.Add(key);
+		                if (repKey == key)
+		                    repKey = null;
+		            }
+		        }
+
+		        prevKeyState = currentState;
+		    }
+
+		    public Keys[] GetDownKeys() => pressedKeys.ToArray();
+		    public Keys[] GetReleasedKeys() => releasedKeys.ToArray();
+
+		    public bool IsKeyDown(Keys key) => Array.IndexOf(GetDownKeys(), key) != -1;
+		    public bool IsKeyUp(Keys key) => Array.IndexOf(GetReleasedKeys(), key) != -1;
 		}
 
 		public class WidgetSafeDeleteInfo
@@ -1035,6 +1116,7 @@ namespace SexyFramework
 
 		public virtual bool KeyDown(int theKey)
 		{
+			mWidgetManager.KeyDown((KeyCode)theKey);
 			return mAppDriver.KeyDown(theKey);
 		}
 
