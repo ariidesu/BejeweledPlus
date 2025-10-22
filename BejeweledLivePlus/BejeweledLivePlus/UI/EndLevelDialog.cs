@@ -97,7 +97,7 @@ namespace BejeweledLivePlus.UI
 				{
 					Kill();
 					board.Init();
-					board.NewGame();
+					board.NewGame(true);
 					mWidgetManager.SetFocus(board);
 				}
 				break;

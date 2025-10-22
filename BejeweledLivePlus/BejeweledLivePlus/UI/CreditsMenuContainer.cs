@@ -302,7 +302,7 @@ namespace BejeweledLivePlus.UI
 		{
 		}
 
-		public override void PlayMenuMusic()
+		public override void PlayMenuMusic(bool isRestart = false)
 		{
 		}
 

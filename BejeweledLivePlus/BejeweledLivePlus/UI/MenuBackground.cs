@@ -156,7 +156,7 @@ namespace BejeweledLivePlus.UI
 			return base.GetShowCurve();
 		}
 
-		public override void PlayMenuMusic()
+		public override void PlayMenuMusic(bool isRestart = false)
 		{
 		}
 

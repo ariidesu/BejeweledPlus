@@ -50,7 +50,7 @@ namespace BejeweledLivePlus.UI
 			base.Hide();
 		}
 
-		public override void PlayMenuMusic()
+		public override void PlayMenuMusic(bool isRestart = false)
 		{
 		}
 	}

@@ -667,7 +667,7 @@ namespace BejeweledLivePlus.UI
 			GrayOutOptions();
 		}
 
-		public override void PlayMenuMusic()
+		public override void PlayMenuMusic(bool isRestart = false)
 		{
 		}
 	}

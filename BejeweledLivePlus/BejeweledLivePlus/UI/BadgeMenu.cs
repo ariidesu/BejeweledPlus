@@ -204,7 +204,7 @@ namespace BejeweledLivePlus.UI
 			}
 		}
 
-		public override void PlayMenuMusic()
+		public override void PlayMenuMusic(bool isRestart = false)
 		{
 		}
 
@@ -376,7 +376,7 @@ namespace BejeweledLivePlus.UI
 			case 10001:
 				if (mBadgemenuState == BADGEMENU_STATE.BADGEMENU_STATE_AWARDING)
 				{
-					GlobalMembers.gApp.GoBackToGame();
+					GlobalMembers.gApp.GoBackToGame(true);
 				}
 				else
 				{
@@ -389,7 +389,7 @@ namespace BejeweledLivePlus.UI
 				{
 					if (GlobalMembers.gApp.mCurrentGameMode == GameMode.MODE_ZEN)
 					{
-						GlobalMembers.gApp.GoBackToGame();
+						GlobalMembers.gApp.GoBackToGame(false);
 						Transition_SlideOut();
 						break;
 					}

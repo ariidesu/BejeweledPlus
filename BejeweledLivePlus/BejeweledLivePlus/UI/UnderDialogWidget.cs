@@ -75,7 +75,7 @@ namespace BejeweledLivePlus.UI
 			base.DrawAll(theFlags, g);
 		}
 
-		public override void PlayMenuMusic()
+		public override void PlayMenuMusic(bool isRestart = false)
 		{
 		}
 

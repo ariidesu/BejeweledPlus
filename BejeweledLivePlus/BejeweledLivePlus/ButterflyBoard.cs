@@ -289,14 +289,14 @@ namespace BejeweledLivePlus
 		{
 		}
 
-		public override void PlayMenuMusic()
+		public override void PlayMenuMusic(bool isRestart = false)
 		{
 			CustomBassMusicInterface theMusicInterface =
 				(CustomBassMusicInterface)(GlobalMembers.gApp.mMusicInterface);
-			if (theMusicInterface.mSongName != "Butterflies")
+			if (isRestart || theMusicInterface.mSongName != GetMusicName())
 			{
 				theMusicInterface.QueueEvent("FadeOut", theMusicInterface.mSongName, false);
-				theMusicInterface.QueueEvent("Play", "Butterflies", false);
+				theMusicInterface.QueueEvent("Play", GetMusicName(), true);
 			}
 			// GlobalMembers.gApp.mMusic.PlaySongNoDelay(5, true);
 		}
@@ -423,7 +423,8 @@ namespace BejeweledLivePlus
 		{
 			if (!mCountingForGameOver)
 			{
-				(GlobalMembers.gApp.mMusicInterface as CustomBassMusicInterface).QueueEvent("Play", "Butterflies_lose", true);
+				(GlobalMembers.gApp.mMusicInterface as CustomBassMusicInterface).QueueEvent("FadeOut", GetMusicName(), false);
+				(GlobalMembers.gApp.mMusicInterface as CustomBassMusicInterface).QueueEvent("Play", $"{GetMusicName()}_lose", true);
 				// GlobalMembers.gApp.mMusic.PlaySongNoDelay(6, false);
 				mSpotOnSpider = true;
 				mCountingForGameOver = true;

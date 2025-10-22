@@ -480,8 +480,8 @@ namespace BejeweledLivePlus
 					mPreHurrahPoints = mPoints;
 					GlobalMembers.gApp.mCurveValCache.GetCurvedVal(PreCalculatedCurvedValManager.CURVED_VAL_ID.eSPEED_BOARD_COLLECTED_TIME_ALPHA, mCollectedTimeAlpha);
 					// GlobalMembers.gApp.mMusic.PlaySongNoDelay(12, false);
-					(GlobalMembers.gApp.mMusicInterface as CustomBassMusicInterface).QueueEvent("FadeOut", (GlobalMembers.gApp.mMusicInterface as CustomBassMusicInterface).mSongName, false);
-					(GlobalMembers.gApp.mMusicInterface as CustomBassMusicInterface).QueueEvent("Play", "Speed_lose", true);
+					(GlobalMembers.gApp.mMusicInterface as CustomBassMusicInterface).QueueEvent("FadeOut", $"{GetMusicName()}", false);
+					(GlobalMembers.gApp.mMusicInterface as CustomBassMusicInterface).QueueEvent("Play", $"{GetMusicName()}_lose", true);
 					GlobalMembers.gApp.PlaySample(GlobalMembersResourcesWP.SOUND_BOMB_EXPLODE, 0, GlobalMembers.M(1), GlobalMembers.M(-2.0));
 					GlobalMembers.gApp.PlayVoice(new VoicePlayArgs(GlobalMembersResourcesWP.SOUND_VOICE_TIMEUP, 0, 1.0, -2, new SoundPlayConditionWaitUpdates(GlobalMembersResourcesWP.SOUND_BOMB_EXPLODE)));
 					mDidTimeUp = true;
@@ -917,11 +917,11 @@ namespace BejeweledLivePlus
 			mTimeFXManager.Update();
 			if (GetTicksLeft() > 1250 || mBonusTime > 0)
 			{
-				mPanicScalePct = Math.Max(0f, mPanicScalePct - GlobalMembers.M(0.01f));
+				mPanicScalePct = Math.Max(0f, mPanicScalePct - GlobalMembers.M(0.005f));
 			}
 			else if (mBonusTime == 0)
 			{
-				mPanicScalePct = Math.Min(1f, mPanicScalePct + GlobalMembers.M(0.01f));
+				mPanicScalePct = Math.Min(1f, mPanicScalePct + GlobalMembers.M(0.005f));
 			}
 			CustomBassMusicInterface theMusicInterface = (CustomBassMusicInterface)GlobalMembers.gApp.mMusicInterface;
 			if (theMusicInterface.mSongName == "Speed")
@@ -1167,13 +1167,14 @@ namespace BejeweledLivePlus
 			return ConstantsWP.SPEEDBOARD_TIMEDRAW_Y_OFFSET;
 		}
 
-		public override void PlayMenuMusic()
+		public override void PlayMenuMusic(bool isRestart = false)
 		{
 			CustomBassMusicInterface theMusicInterface = (CustomBassMusicInterface)GlobalMembers.gApp.mMusicInterface;
-			if (theMusicInterface.mSongName != "Speed")
+			if (isRestart || (theMusicInterface.mSongName != GetMusicName() &&
+			                  theMusicInterface.mSongName != $"{GetMusicName()}_lose"))
 			{
 				theMusicInterface.QueueEvent("FadeOut", theMusicInterface.mSongName, false);
-				theMusicInterface.QueueEvent("Play", "Speed", true);
+				theMusicInterface.QueueEvent("Play", GetMusicName(), true);
 			}
 			// GlobalMembers.gApp.mMusic.PlaySongNoDelay(11, true);
 		}

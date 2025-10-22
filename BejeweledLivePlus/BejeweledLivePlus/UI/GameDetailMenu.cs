@@ -267,7 +267,7 @@ namespace BejeweledLivePlus.UI
 			case 0:
 				if (mGameMenuState == GAMEDETAILMENU_STATE.STATE_PRE_GAME)
 				{
-					GlobalMembers.gApp.StartSetupGame(true);
+					GlobalMembers.gApp.StartSetupGame(true, true);
 				}
 				else if (mGameMenuState == GAMEDETAILMENU_STATE.STATE_POST_GAME)
 				{

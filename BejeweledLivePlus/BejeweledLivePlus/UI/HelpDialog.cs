@@ -506,7 +506,7 @@ namespace BejeweledLivePlus.UI
 			mContainer.mWindowCount = 0;
 		}
 
-		public override void PlayMenuMusic()
+		public override void PlayMenuMusic(bool isRestart = false)
 		{
 		}
 
@@ -558,7 +558,7 @@ namespace BejeweledLivePlus.UI
 			case 10001:
 				if (mHelpDialogState == HELPDIALOG_STATE.HELPDIALOG_STATE_INGAME)
 				{
-					GlobalMembers.gApp.GoBackToGame();
+					GlobalMembers.gApp.GoBackToGame(false);
 					Transition_SlideOut();
 				}
 				else if (mHelpDialogState == HELPDIALOG_STATE.HELPDIALOG_STATE_PREGAME)

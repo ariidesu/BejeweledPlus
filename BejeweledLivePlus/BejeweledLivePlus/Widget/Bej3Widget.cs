@@ -730,7 +730,7 @@ namespace BejeweledLivePlus.Widget
 		{
 		}
 
-		public virtual void PlayMenuMusic()
+		public virtual void PlayMenuMusic(bool isRestart = false)
 		{
 			//(GlobalMembers.gApp.mMusicInterface as CustomBassMusicInterface).QueueEvent("Play", "MainMenu", true);
 			// GlobalMembers.gApp.mMusic.PlaySongNoDelay(1, true);

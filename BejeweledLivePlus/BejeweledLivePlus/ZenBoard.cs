@@ -490,6 +490,11 @@ namespace BejeweledLivePlus
 			return "zen.sav";
 		}
 
+		public override string GetMusicName()
+		{
+			return "Zen";
+		}
+
 		public override bool AllowSpeedBonus()
 		{
 			return false;
@@ -726,14 +731,14 @@ namespace BejeweledLivePlus
 			base.KeyChar(theChar);
 		}
 
-		public override void PlayMenuMusic()
+		public override void PlayMenuMusic(bool isRestart = false)
 		{
 			CustomBassMusicInterface theMusicInterface =
 				(CustomBassMusicInterface)(GlobalMembers.gApp.mMusicInterface);
-			if (theMusicInterface.mSongName != "Zen")
+			if (isRestart || theMusicInterface.mSongName != GetMusicName())
 			{
 				theMusicInterface.QueueEvent("FadeOut", theMusicInterface.mSongName, false);
-				theMusicInterface.QueueEvent("Play", "Zen", false);
+				theMusicInterface.QueueEvent("Play", GetMusicName(), true);
 			}
 			// GlobalMembers.gApp.mMusic.PlaySongNoDelay(4, true);
 		}

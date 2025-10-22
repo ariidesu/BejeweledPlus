@@ -352,7 +352,7 @@ namespace BejeweledLivePlus.UI
 			mOptionsContainer.LinkUpAssets();
 		}
 
-		public override void PlayMenuMusic()
+		public override void PlayMenuMusic(bool isRestart = false)
 		{
 		}
 
@@ -370,7 +370,7 @@ namespace BejeweledLivePlus.UI
 		{
 			if (mInterfaceState != InterfaceState.INTERFACE_STATE_INGAME)
 			{
-				GlobalMembers.gApp.GoBackToGame();
+				GlobalMembers.gApp.GoBackToGame(fromRestart);
 			}
 			mTargetPos = ConstantsWP.MENU_Y_POS_HIDDEN;
 			ResetFadedBack(false);

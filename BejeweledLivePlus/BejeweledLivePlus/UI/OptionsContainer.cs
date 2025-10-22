@@ -103,7 +103,7 @@ namespace BejeweledLivePlus.UI
 			mY = num;
 		}
 
-		public override void PlayMenuMusic()
+		public override void PlayMenuMusic(bool isRestart = false)
 		{
 		}
 

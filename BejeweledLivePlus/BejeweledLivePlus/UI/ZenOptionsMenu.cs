@@ -260,7 +260,7 @@ namespace BejeweledLivePlus.UI
 					}
 				}
 			}
-			GlobalMembers.gApp.GoBackToGame();
+			GlobalMembers.gApp.GoBackToGame(false);
 			mTargetPos = ConstantsWP.MENU_Y_POS_HIDDEN;
 			GlobalMembers.gApp.DisableAllExceptThis(this, false);
 			if (mState == Bej3WidgetState.STATE_FADING_IN)
@@ -312,7 +312,7 @@ namespace BejeweledLivePlus.UI
 			}
 		}
 
-		public override void PlayMenuMusic()
+		public override void PlayMenuMusic(bool isRestart = false)
 		{
 		}
 	}
