@@ -496,13 +496,13 @@ namespace BejeweledLivePlus
 		private void InitStepLoadProfile()
 		{
 			mProfile = new Profile();
-			string theLastPlayer = "Test";
+			string theLastPlayer = "";
 			mProfile.ReadProfileList(ref theLastPlayer);
 			RegistryReadString("LastUser", ref theLastPlayer);
 			if (!mProfile.LoadProfile(theLastPlayer, false) && !mProfile.GetAnyProfile())
 			{
-				mProfile.CreateProfile("Player", true);
-				mProfile.LoadProfile("Player", true);
+				// mProfile.CreateProfile("Player", true);
+				// mProfile.LoadProfile("Player", true);
 			}
 		}
 
@@ -986,7 +986,7 @@ namespace BejeweledLivePlus
 		{
 		}
 
-		private void DoNewClassicGame()
+		private void DoNewClassicGame(bool isRestart = false)
 		{
 			GlobalMembers.KILL_WIDGET_NOW(mBoard);
 			mBoard = new ClassicBoard();
@@ -1002,7 +1002,7 @@ namespace BejeweledLivePlus
 			}
 		}
 
-		private void DoNewSpeedGame(int theId)
+		private void DoNewSpeedGame(int theId, bool isRestart = false)
 		{
 			mLastDataParserId = theId;
 			mLastDataParser = mSpeedModeDataParser;
@@ -1036,12 +1036,12 @@ namespace BejeweledLivePlus
 			StartSetupGame(true);
 		}
 
-		private void DoNewEndlessGame(EEndlessMode theId)
+		private void DoNewEndlessGame(EEndlessMode theId, bool isRestart = false)
 		{
-			DoNewConfigGame((int)theId, mSecretModeDataParser, true);
+			DoNewConfigGame((int)theId, mSecretModeDataParser, true, isRestart);
 		}
 
-		private void DoNewConfigGame(int theId, QuestDataParser theParams, bool isPerprtual)
+		private void DoNewConfigGame(int theId, QuestDataParser theParams, bool isPerprtual, bool isRestart = false)
 		{
 			mLastDataParserId = theId;
 			mLastDataParser = theParams;
@@ -1087,7 +1087,7 @@ namespace BejeweledLivePlus
 			return true;
 		}
 
-		public void StartSetupGame(bool deleteSavedGame)
+		public void StartSetupGame(bool deleteSavedGame, bool isRestart = false)
 		{
 			if (mCurrentGameMode == GameMode.MODE_ZEN)
 			{
@@ -1114,7 +1114,8 @@ namespace BejeweledLivePlus
 				mWidgetManager.AddWidget(mBoard);
 				mWidgetManager.SetFocus(mBoard);
 				GoToInterfaceState(InterfaceState.INTERFACE_STATE_INGAME);
-				mBoard.NewGame();
+				mBoard.NewGame(isRestart);
+				mBoard.PlayMenuMusic(isRestart);
 				if (mCurrentGameMode == GameMode.MODE_ZEN)
 				{
 					ZenBoard zenBoard = (ZenBoard)mBoard;
@@ -1154,7 +1155,7 @@ namespace BejeweledLivePlus
 		{
 			if (state == GameDetailMenu.GAMEDETAILMENU_STATE.STATE_PRE_GAME)
 			{
-				StartSetupGame(true);
+				StartSetupGame(true, true);
 				return;
 			}
 			GameDetailMenu gameDetailMenu = (GameDetailMenu)mMenus[6];
@@ -1401,9 +1402,13 @@ namespace BejeweledLivePlus
 			GoToInterfaceState(InterfaceState.INTERFACE_STATE_LEGALMENU);
 		}
 
-		public void GoBackToGame()
+		public void GoBackToGame(bool isRestart)
 		{
-			mBoard.Unpause();
+			// if isRestart is true, we want it so it only set Unpause once.
+			if (!isRestart || mPreviousInterfaceState != InterfaceState.INTERFACE_STATE_INGAME)
+			{
+				mBoard.Unpause(isRestart);
+			}
 			GoToInterfaceState(InterfaceState.INTERFACE_STATE_INGAME);
 		}
 
@@ -1858,10 +1863,13 @@ namespace BejeweledLivePlus
 
 		public void DoWelcomeDialog()
 		{
+			DoNewUserDialog();
 		}
 
 		public void DoNewUserDialog()
 		{
+			NewUserDialog newUserDialog = new NewUserDialog(false, false);
+			AddDialog(newUserDialog);
 		}
 
 		public void DoChangePictureDialog(bool allowCancel)
@@ -1929,6 +1937,11 @@ namespace BejeweledLivePlus
 			if (!onlyOrder && num >= 0 && mMenus[num] != null)
 			{
 				mWidgetManager.SetFocus(mMenus[num]);
+			}
+
+			if (newState == InterfaceState.INTERFACE_STATE_INGAME)
+			{
+				mWidgetManager.SetFocus(mBoard);
 			}
 			ClearUpdateBacklog(false);
 		}
@@ -2273,6 +2286,15 @@ namespace BejeweledLivePlus
 		public override void DialogButtonDepress(int theDialogId, int theButtonId)
 		{
 			Bej3Dialog bej3Dialog = (Bej3Dialog)GetDialog(theDialogId);
+			if (theDialogId == 1)
+			{
+				string aProfileName = ((NewUserDialog)bej3Dialog).mNameWidget.mString;
+				if (aProfileName != "")
+				{
+					mProfile.CreateProfile(aProfileName, true);
+					mProfile.LoadProfile(aProfileName, true);
+				}
+			}
 			if (theDialogId == 33)
 			{
 				switch (theButtonId)

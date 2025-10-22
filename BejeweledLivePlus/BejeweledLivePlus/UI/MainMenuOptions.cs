@@ -143,6 +143,9 @@ namespace BejeweledLivePlus.UI
 		{
 			SetTopButtonType((mTargetPos < 800) ? Bej3ButtonType.TOP_BUTTON_TYPE_DISMISS : Bej3ButtonType.TOP_BUTTON_TYPE_MENU);
 			base.Update();
+			Graphics graphics = new Graphics();
+			graphics.SetFont(mPlayerNameLabel.GetFont());
+			mPlayerNameLabel.SetText(Utils.GetEllipsisString(graphics, GlobalMembers.gApp.mProfile.mProfileName, ConstantsWP.PROFILEMENU_NAME_LABEL_WIDTH));
 			if (!didFadeIn && mState == Bej3WidgetState.STATE_FADING_IN && mCanSlideIn)
 			{
 				didFadeIn = true;
@@ -210,10 +213,7 @@ namespace BejeweledLivePlus.UI
 			{
 				mPlayerImage.SetImage(712 + GlobalMembers.gApp.mProfile.GetProfilePictureId());
 			}
-			Graphics graphics = new Graphics();
-			graphics.SetFont(mPlayerNameLabel.GetFont());
-			string theString = GlobalMembers._ID("Player", 446);
-			mPlayerNameLabel.SetText(Utils.GetEllipsisString(graphics, theString, ConstantsWP.PROFILEMENU_NAME_LABEL_WIDTH));
+
 			int num = mY;
 			base.Show();
 			mY = num;
