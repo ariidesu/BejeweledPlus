@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using MonoGame.Framework.Utilities;
 using SexyFramework.Graphics;
 using SexyFramework.Misc;
 
@@ -1148,12 +1149,19 @@ namespace SexyFramework.Drivers.Graphics
 
 		public void Init(int width, int height)
 		{
-			// int num2 = (mDevice.PreferredBackBufferWidth = 640);
-			mScreenWidth = 640;
-			// int num4 = (mDevice.PreferredBackBufferHeight = 1066);
-			mScreenHeight = 1066;
-			mDevice.PreferredBackBufferWidth = 480;
-			mDevice.PreferredBackBufferHeight = 800;
+			if (PlatformInfo.MonoGamePlatform == MonoGamePlatform.iOS ||
+			    PlatformInfo.MonoGamePlatform == MonoGamePlatform.Android)
+			{
+				mScreenWidth = width;
+				mScreenHeight = height;
+			}
+			else
+			{
+				mScreenWidth = 640;
+				mScreenHeight = 1066;
+				mDevice.PreferredBackBufferWidth = 480;
+				mDevice.PreferredBackBufferHeight = 800;
+			}
 			mWidth = width;
 			mHeight = height;
 			mDevice.PreferMultiSampling = false;
@@ -1191,6 +1199,7 @@ namespace SexyFramework.Drivers.Graphics
 				num = theImage.mWidth;
 				num2 = theImage.mHeight;
 			}
+
 			SetViewport(0, 0, 480, 800, 0f, 1f);
 			mStateMgr.SetProjectionTransform(Matrix.CreateOrthographicOffCenter(0f, num, num2, 0f, -1000f, 1000f));
 			mStateMgr.SetViewTransform(Matrix.CreateLookAt(new Vector3(0f, 0f, 300f), Vector3.Zero, Vector3.Up));
@@ -1199,8 +1208,12 @@ namespace SexyFramework.Drivers.Graphics
 
 		public override void SetViewport(int theX, int theY, int theWidth, int theHeight, float theMinZ, float theMaxZ)
 		{
-			mStateMgr.SetViewport(theX, theY, theWidth, theHeight, theMinZ, theMaxZ);
-			mDevice.GraphicsDevice.Viewport = mStateMgr.mXNAViewPort;
+			if (PlatformInfo.MonoGamePlatform != MonoGamePlatform.iOS &&
+			    PlatformInfo.MonoGamePlatform != MonoGamePlatform.Android)
+			{
+				mStateMgr.SetViewport(theX, theY, theWidth, theHeight, theMinZ, theMaxZ);
+				mDevice.GraphicsDevice.Viewport = mStateMgr.mXNAViewPort;
+			}
 		}
 
 		public void SetTextureDirect(int theStage, Texture2D theTexture)
@@ -1944,8 +1957,37 @@ namespace SexyFramework.Drivers.Graphics
 				aBasicEffect.Texture = mStateMgr.mXNATextureSlots[0];
 				aBasicEffect.TextureEnabled = true;
 				
-				mSpriteBatch.Begin(0, null, null, null, null, null);
-				mSpriteBatch.Draw(mScreenTarget, new Rectangle(0, 0, mDevice.GraphicsDevice.Viewport.Width, mDevice.GraphicsDevice.Viewport.Height), Microsoft.Xna.Framework.Color.White);
+				Rectangle aRenderRect = new Rectangle(0, 0, mDevice.GraphicsDevice.Viewport.Width, mDevice.GraphicsDevice.Viewport.Height);
+				// We render with the predetermined ratio and center it for mobile
+				if (PlatformInfo.MonoGamePlatform == MonoGamePlatform.iOS ||
+				    PlatformInfo.MonoGamePlatform == MonoGamePlatform.Android)
+				{
+					float targetAspect = (float)mDevice.GraphicsDevice.Viewport.Width / mDevice.GraphicsDevice.Viewport.Height;
+					float baseAspect = 480f / 800f;
+
+					int newWidth, newHeight;
+					int offsetX = 0, offsetY = 0;
+
+					if (targetAspect > baseAspect)
+					{
+						newHeight = mDevice.GraphicsDevice.Viewport.Height;
+						newWidth = (int)(newHeight * baseAspect);
+						offsetX = (mDevice.GraphicsDevice.Viewport.Width - newWidth) / 2;
+						offsetY = 0;
+					}
+					else
+					{
+						newWidth = mDevice.GraphicsDevice.Viewport.Width;
+						newHeight = (int)(newWidth / baseAspect);
+						offsetX = 0;
+						offsetY = (mDevice.GraphicsDevice.Viewport.Height - newHeight) / 2;
+					}
+
+					aRenderRect = new Rectangle(offsetX, offsetY, newWidth, newHeight);
+				}
+				
+				mSpriteBatch.Begin();
+				mSpriteBatch.Draw(mScreenTarget, aRenderRect, Microsoft.Xna.Framework.Color.White);
 				mSpriteBatch.End();
 			}
 		}

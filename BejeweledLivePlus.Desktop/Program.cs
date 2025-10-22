@@ -1,7 +1,4 @@
-﻿using BejeweledLivePlus;
-using System;
- 
-namespace BejeweledLivePlus.Desktop
+﻿namespace BejeweledLivePlus.Desktop
 {
     public static class Program
     {

@@ -11,6 +11,7 @@ using BejeweledLivePlus.UI;
 using BejeweledLivePlus.Widget;
 // using Microsoft.Phone.Tasks;
 using Microsoft.Xna.Framework;
+using MonoGame.Framework.Utilities;
 // using Microsoft.Xna.Framework.GamerServices;
 using SexyFramework;
 using SexyFramework.Drivers.App;
@@ -502,8 +503,13 @@ namespace BejeweledLivePlus
 			RegistryReadString("LastUser", ref theLastPlayer);
 			if (!mProfile.LoadProfile(theLastPlayer, false) && !mProfile.GetAnyProfile())
 			{
-				// mProfile.CreateProfile("Player", true);
-				// mProfile.LoadProfile("Player", true);
+				// We can't handle soft keyboard, so create default profile for now
+				if (PlatformInfo.MonoGamePlatform == MonoGamePlatform.iOS ||
+				    PlatformInfo.MonoGamePlatform == MonoGamePlatform.Android)
+				{
+					mProfile.CreateProfile("Player", true);
+					mProfile.LoadProfile("Player", true);
+				}
 			}
 		}
 

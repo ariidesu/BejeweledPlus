@@ -7,6 +7,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Input.Touch;
+using MonoGame.Framework.Utilities;
 using SexyFramework;
 using SexyFramework.Drivers.App;
 using SexyFramework.Misc;
@@ -46,7 +47,9 @@ namespace BejeweledLivePlus
 
 		private int mGameOffsetY;
 
-		private float mGameScaleRatio = 1.333f;
+		private float mGameScaleRatioX = 1.333f;
+		
+		private float mGameScaleRatioY = 1.333f;
 
 		private SexyAppBase.Touch mTouch = new SexyAppBase.Touch();
 
@@ -109,6 +112,35 @@ namespace BejeweledLivePlus
 				Exit();
 			}
 
+			// We need to apply our "custom" scaling here
+			if (PlatformInfo.MonoGamePlatform == MonoGamePlatform.iOS ||
+			    PlatformInfo.MonoGamePlatform == MonoGamePlatform.Android)
+			{
+				float targetAspect = (float)GraphicsDevice.Viewport.Width / GraphicsDevice.Viewport.Height;
+				float baseAspect = 480f / 800f;
+
+				int newWidth, newHeight;
+				int offsetX = 0, offsetY = 0;
+
+				if (targetAspect > baseAspect)
+				{
+					newHeight = GraphicsDevice.Viewport.Height;
+					newWidth = (int)(newHeight * baseAspect);
+					offsetX = (GraphicsDevice.Viewport.Width - newWidth) / 2;
+					offsetY = 0;
+				}
+				else
+				{
+					newWidth = GraphicsDevice.Viewport.Width;
+					newHeight = (int)(newWidth / baseAspect);
+					offsetX = 0;
+					offsetY = (GraphicsDevice.Viewport.Height - newHeight) / 2;
+				}
+
+				theApp.SetTouchInputOffset(offsetX, offsetY);
+				mGameScaleRatioX = 640f / newWidth;
+				mGameScaleRatioY = 1066f / newHeight;
+			}
 			base.Update(gameTime);
 			// try
 			// {
@@ -177,8 +209,24 @@ namespace BejeweledLivePlus
 			if (mIsLoading)
 			{
 				mSpriteBatch.Begin();
-				mSpriteBatch.Draw(mSplash, new Rectangle(0, 0, 480, 800), Color.White);
-				mSpriteBatch.Draw(mSplashCopyRight, new Rectangle(0, 736, 480, 64), Color.White);
+				float scaleX = (float)GraphicsDevice.Viewport.Width / 480f;
+				float scaleY = (float)GraphicsDevice.Viewport.Height / 800f;
+
+				mSpriteBatch.Draw(
+					mSplash,
+					new Rectangle(0, 0, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height),
+					Color.White
+				);
+
+				int copyY = (int)(736f * scaleY);
+				int copyW = (int)(480f * scaleX);
+				int copyH = (int)(64f * scaleY);
+
+				mSpriteBatch.Draw(
+					mSplashCopyRight,
+					new Rectangle(0, copyY, copyW, copyH),
+					Color.White
+				);
 				mSpriteBatch.End();
 			}
 			else
@@ -272,8 +320,8 @@ namespace BejeweledLivePlus
 					mouseState.Position.ToVector2());
 				state = new TouchCollection(new [] { location });
 				
-				int actualMouseX = (int)((location.Position.X - mGameOffsetX) * mGameScaleRatio);
-				int actualMouseY = (int)((location.Position.Y - mGameOffsetY) * mGameScaleRatio);
+				int actualMouseX = (int)((location.Position.X - mGameOffsetX) * mGameScaleRatioX);
+				int actualMouseY = (int)((location.Position.Y - mGameOffsetY) * mGameScaleRatioY);
 				// If we are in a game and the mouse is hovering inside the board region, we call MouseMove so Board.KeyDown can get the mouse position
 				// This check is in because the interface is not designed for mouse hover
 				if (theApp.mInterfaceState == InterfaceState.INTERFACE_STATE_INGAME && actualMouseY >= theApp.mBoard.GetBoardY() && actualMouseY <= theApp.mBoard.GetBoardY() + theApp.mWidth)
@@ -292,8 +340,8 @@ namespace BejeweledLivePlus
 						mTouchID = item.Id;
 						mTouchX = item.Position.X;
 						mTouchY = item.Position.Y;
-						float num = (mTouchX - (float)mGameOffsetX) * mGameScaleRatio;
-						float num2 = (mTouchY - (float)mGameOffsetY) * mGameScaleRatio;
+						float num = (mTouchX - (float)mGameOffsetX) * mGameScaleRatioX;
+						float num2 = (mTouchY - (float)mGameOffsetY) * mGameScaleRatioY;
 						mTouch.SetTouchInfo(new SexyFramework.Misc.Point((int)num, (int)num2), _TouchPhase.TOUCH_BEGAN, DateTime.Now.TimeOfDay.TotalMilliseconds);
 						theApp.TouchBegan(mTouch);
 						break;
@@ -332,8 +380,8 @@ namespace BejeweledLivePlus
 			{
 				mIsTracking = false;
 			}
-			float num3 = (mTouchX - (float)mGameOffsetX) * mGameScaleRatio;
-			float num4 = (mTouchY - (float)mGameOffsetY) * mGameScaleRatio;
+			float num3 = (mTouchX - (float)mGameOffsetX) * mGameScaleRatioX;
+			float num4 = (mTouchY - (float)mGameOffsetY) * mGameScaleRatioY;
 			mTouch.SetTouchInfo(new SexyFramework.Misc.Point((int)num3, (int)num4), (!flag3) ? _TouchPhase.TOUCH_MOVED : _TouchPhase.TOUCH_ENDED, DateTime.Now.TimeOfDay.TotalMilliseconds);
 			if (flag3)
 			{

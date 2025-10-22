@@ -14,7 +14,9 @@ namespace BejeweledLivePlus.Android
         AlwaysRetainTaskState = true,
         LaunchMode = LaunchMode.SingleInstance,
         ScreenOrientation = ScreenOrientation.Portrait,
-        ConfigurationChanges = ConfigChanges.Keyboard | ConfigChanges.KeyboardHidden
+        ConfigurationChanges = ConfigChanges.Keyboard | ConfigChanges.KeyboardHidden,
+        Immersive = true,
+        HardwareAccelerated = true
     )]
     public class Activity1 : AndroidGameActivity
     {
@@ -27,6 +29,8 @@ namespace BejeweledLivePlus.Android
 
             _game = new GameMain();
             _view = _game.Services.GetService(typeof(View)) as View;
+            
+            
 
             SetContentView(_view);
             _game.Run();
