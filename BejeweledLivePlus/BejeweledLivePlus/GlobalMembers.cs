@@ -4241,8 +4241,6 @@ namespace BejeweledLivePlus
 
 		public static bool gInAssert = false;
 
-		public static string Version => "0.0.0.19";
-
 		public static void OutputDebugStrF(string fmt)
 		{
 		}

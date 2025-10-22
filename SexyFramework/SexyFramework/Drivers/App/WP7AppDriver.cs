@@ -40,7 +40,6 @@ namespace SexyFramework.Drivers.App
 		{
 			mApp = appBase;
 			mConfigRoot = new ConfigItemKey();
-			LoadConfig();
 		}
 
 		public override void Dispose()
@@ -217,6 +216,7 @@ namespace SexyFramework.Drivers.App
 			if (!mApp.mShutdown)
 			{
 				mApp.mFileDriver.InitFileDriver(mApp);
+				LoadConfig();
 				mApp.mFileDriver.InitSaveDataFolder();
 				mApp.mRandSeed = (uint)GetTickCount();
 				mXNAGraphicsDriver.Init();

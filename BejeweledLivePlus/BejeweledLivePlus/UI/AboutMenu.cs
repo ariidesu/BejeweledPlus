@@ -69,7 +69,7 @@ namespace BejeweledLivePlus.UI
 			aBOUTMENU_MESSAGE_2_LABEL_Y += ConstantsWP.ABOUTMENU_MESSAGE_2_LABEL_HEIGHT_2;
 			label = new Label(fONT_DIALOG);
 			label.Resize(ConstantsWP.ABOUTMENU_LINK_X, aBOUTMENU_MESSAGE_2_LABEL_Y, ConstantsWP.ABOUTMENU_MESSAGE_2_LABEL_WIDTH, 0);
-			label.SetText(GlobalMembers.gApp.mVersion);
+			label.SetText(GlobalMembers.gApp.mProductVersion);
 			AddWidget(label);
 			mMessageLabels.Add(label);
 			mBackButton = new Bej3Button(1, this, Bej3ButtonType.BUTTON_TYPE_LONG_PURPLE, true);

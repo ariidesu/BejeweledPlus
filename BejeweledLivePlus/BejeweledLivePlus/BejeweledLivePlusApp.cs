@@ -72,8 +72,6 @@ namespace BejeweledLivePlus
 
 		public EAutoPlayState mAutoPlay;
 
-		public string mVersion = GlobalMembers.Version;
-
 		public bool mGameInProgress;
 
 		public InterfaceState mInterfaceState;
@@ -292,6 +290,9 @@ namespace BejeweledLivePlus
 
 		public BejeweledLivePlusApp(Game xnaGame)
 		{
+			mProdName = "BejeweledPlus";
+			mProductVersion = "0.0.0.19";
+			
 			GlobalMembers.gApp = this;
 			GlobalMembers.gGameMain = xnaGame;
 			((WP7AppDriver)mAppDriver).InitXNADriver(xnaGame);
