@@ -31,6 +31,8 @@ namespace BejeweledLivePlus.Bej3Graphics
 
 		public SharedRenderTarget mHeightImageSharedRT = new SharedRenderTarget();
 
+		public Image mHeightImage;
+
 		public bool mHeightImageDirty;
 
 		public bool mRewindEffect;
@@ -77,44 +79,28 @@ namespace BejeweledLivePlus.Bej3Graphics
 
 		public void CreateDistortionMap(Graphics g)
 		{
-			DeviceImage deviceImage = mHeightImageSharedRT.GetCurrentLockImage();
-			if (deviceImage != null && (deviceImage.mWidth != GlobalMembers.gApp.mScreenBounds.mWidth / 4 || deviceImage.mHeight != GlobalMembers.gApp.mScreenBounds.mHeight / 4))
+			if (mHeightImage != null /*&& (mHeightImage.mWidth != GlobalMembers.gApp.mScreenBounds.mWidth / 2 || mHeightImage.mHeight != GlobalMembers.gApp.mScreenBounds.mHeight / 2)*/)
 			{
 				mHeightImageSharedRT.Unlock();
-				deviceImage = null;
+				mHeightImage = null;
 			}
-			if (deviceImage == null && SexyFramework.GlobalMembers.gIs3D)
+			if (mHeightImage == null && SexyFramework.GlobalMembers.gIs3D)
 			{
-				mHeightImageSharedRT.Lock(GlobalMembers.gApp.mScreenBounds.mWidth / 4, GlobalMembers.gApp.mScreenBounds.mHeight / 4, 8u, "HeightImage");
-				ClearDistortionMap(g);
+				mHeightImage = mHeightImageSharedRT.Lock(GlobalMembers.gApp.mScreenBounds.mWidth / 2,
+					GlobalMembers.gApp.mScreenBounds.mHeight / 2, 8u, "HeightImage");
+				if (mHeightImage != null) {
+					ClearDistortionMap(g);
+				}
 			}
 		}
 
 		public void ClearDistortionMap(Graphics g)
 		{
-			DeviceImage aHeightImage = GetHeightImage();
-			if (aHeightImage != null)
+			if (mHeightImage != null)
 			{
-				Graphics3D g2 = new Graphics3D(new Graphics(aHeightImage), g.Get3D().GetRenderDevice(), g.GetRenderContext());
+				Graphics3D g2 = new Graphics(mHeightImage).Get3D();
 				g2.ClearColorBuffer(new Color(128, 128, 128, 255));
 			}
-		}
-
-		public DeviceImage GetHeightImage()
-		{
-			// v3 = (Sexy::SharedRenderTarget *)Sexy::gApp;
-			// v5 = Sexy::SharedRenderTarget::Lock(
-			// 	v3,
-			// 	8,
-			// 	(Sexy::SharedRenderTarget::Pool *)&a3->mHeightImageSharedRT,
-			// 	(struct Sexy::SharedRenderTarget *)((int)v3[143].mScreenSurface / 2),
-			// (Sexy::SexyAppBase *)((signed int)v3[143].mLockHandle / 2),
-			// "HeightImage",
-			// v7);
-			// a3->mHeightImage = v5;
-			return mHeightImageSharedRT.Lock(GlobalMembers.gApp.mScreenBounds.mWidth / 2, GlobalMembers.gApp.mScreenBounds.mHeight / 2, 8, "HeightImage");
-
-			//return mHeightImageSharedRT.GetCurrentLockImage();
 		}
 
 		public virtual void UpdateTypeEmber(int type)
@@ -589,7 +575,7 @@ namespace BejeweledLivePlus.Bej3Graphics
 				if (graphics3D != null && graphics3D.SupportsPixelShaders())
 				{
 					// Disabled for now as it's very broken
-					// RenderDistortEffects(g);
+					RenderDistortEffects(g);
 				}
 				mHeightImageDirty = false;
 			}
@@ -1149,8 +1135,7 @@ namespace BejeweledLivePlus.Bej3Graphics
 		public void RenderDistortEffects(Graphics g)
 		{
 			CreateDistortionMap(g);
-			DeviceImage heightImage = GetHeightImage();
-			if (heightImage == null)
+			if (mHeightImage == null)
 			{
 				return;
 			}
@@ -1160,7 +1145,7 @@ namespace BejeweledLivePlus.Bej3Graphics
 				return;
 			}
 
-			Graphics graphics = new Graphics(heightImage);
+			Graphics graphics = new Graphics(mHeightImage);
 			Graphics3D graphics3D2 = graphics.Get3D();
 			graphics.PushState();
 			graphics.mTransX = 0f;
@@ -1169,11 +1154,11 @@ namespace BejeweledLivePlus.Bej3Graphics
 			graphics3D2.SetTextureLinearFilter(1, true);
 			graphics3D2.SetTextureWrap(0, true);
 			graphics3D2.SetTextureWrap(1, true);
-			graphics.SetColor(new Color(128, 128, 128, 255));
-			graphics.FillRect(0, 0, heightImage.mWidth, heightImage.mHeight);
+			// graphics3D2.ClearColorBuffer(new Color(128, 128, 128, 255));
+			graphics.FillRect(0, 0, mHeightImage.mWidth, mHeightImage.mHeight);
 			graphics.SetColorizeImages(true);
 			graphics.SetColor(Color.White);
-			RenderEffect effect = graphics3D2.GetEffect(GlobalMembersResourcesWP.EFFECT_WAVE);
+			RenderEffect effect = graphics3D.GetEffect(GlobalMembersResourcesWP.EFFECT_WAVE);
 			using (RenderEffectAutoState renderEffectAutoState = new RenderEffectAutoState(graphics, effect))
 			{
 				while (!renderEffectAutoState.IsDone())
@@ -1191,18 +1176,48 @@ namespace BejeweledLivePlus.Bej3Graphics
 							Math.Max(1f - Math.Abs(num2 - 0.667f) * 3f, 0f) * num,
 							Math.Max(1f - Math.Abs(num2 - 1f) * 3f, 0f) * num
 						};
-						effect.SetVector4("Params", array);
 						float num3 = (float)(double)current.mRadius;
-						FRect theTRect = new FRect((float)(GlobalMembers.S((double)current.mCenter.mX + (double)current.mMoveDelta.mX * (double)current.mMovePct - (double)num3) / (double)GlobalMembers.M(4f)), (float)(GlobalMembers.S((double)current.mCenter.mY + (double)current.mMoveDelta.mY * (double)current.mMovePct - (double)num3) / (double)GlobalMembers.M(4f)), (float)(GlobalMembers.S(num3) / 2f), (float)(GlobalMembers.S(num3) / 2f));
+						int screenWidth = GlobalMembers.gApp.mWidth;
+						int screenHeight = GlobalMembers.gApp.mHeight;
+
+						float minX = current.mCenter.mX - num3;
+						float minY = current.mCenter.mY - num3;
+						float maxX = current.mCenter.mX + num3;
+						float maxY = current.mCenter.mY + num3;
+            
+						// Convert to screen space
+						float screenMinX = (minX * (float)screenWidth) / 660.0f;
+						float screenMinY = (minY * (float)screenWidth) / 660.0f;
+						float screenMaxX = (maxX * (float)screenWidth) / 660.0f;
+						float screenMaxY = (maxY * (float)screenWidth) / 660.0f;
+            
+						float normalizedCenterX = (current.mCenter.mX * (float)screenWidth) / 660.0f;
+						float normalizedCenterY = (current.mCenter.mY * (float)screenWidth) / 660.0f;
+						
+						float adjustedX = screenMinX * 0.5f + (float)GlobalMembers.gApp.mScreenBounds.mX;
+						float adjustedY = screenMinY * 0.5f + (float)GlobalMembers.gApp.mScreenBounds.mY;
+            
+						float[] aParams = {
+							normalizedCenterX,  // [0] Wave center X in normalized coords
+							normalizedCenterY,  // [1] Wave center Y in normalized coords
+							adjustedX,          // [2] Adjusted X for rendering
+							adjustedY           // [3] Adjusted Y for rendering
+						};
+						effect.SetVector4("Params", array);
+						FRect theTRect = new FRect(
+							(int)GlobalMembers.S((double)current.mCenter.mX + (double)current.mMoveDelta.mX * (double)current.mMovePct - (double)num3) / 2f, 
+							(int)GlobalMembers.S((double)current.mCenter.mY + (double)current.mMoveDelta.mY * (double)current.mMovePct - (double)num3) / 2f, 
+							(int)(GlobalMembers.S(num3) * 2f), 
+							(int)(GlobalMembers.S(num3) * 2f));
 						Color color = new Color((int)(array[0] * 255f), (int)(array[1] * 255f), (int)(array[2] * 255f), (int)(array[3] * 255f));
 						graphics.SetColor(color);
-						BltDouble(g, GlobalMembersResourcesWP.IMAGE_HYPERFLARELINE, theTRect, color, 1);
+						BltDouble(graphics, GlobalMembersResourcesWP.IMAGE_HEATWAVE, theTRect, color, 2);
 					}
 					renderEffectAutoState.NextPass();
 				}
 			}
 			graphics.PopState();
-			if (mDistortEffectList.Count > 0 || GlobalMembers.M(0) != 0)
+			if (mDistortEffectList.Count > 0)
 			{
 				SharedRenderTarget sharedRenderTarget = new SharedRenderTarget();
 				Image image = sharedRenderTarget.LockScreenImage("DistortFull");
@@ -1211,8 +1226,7 @@ namespace BejeweledLivePlus.Bej3Graphics
 				g.mTransY = 0f;
 				g.SetColor(Color.White);
 				graphics3D.SetBlend(Graphics3D.EBlendMode.BLEND_ONE, Graphics3D.EBlendMode.BLEND_ZERO);
-				g.DrawImage(image, 0, 0);
-				graphics3D.SetTexture(1, heightImage);
+				graphics3D.SetTexture(1, mHeightImage);
 				graphics3D.SetTextureLinearFilter(0, true);
 				graphics3D.SetTextureLinearFilter(1, true);
 				effect = graphics3D.GetEffect(GlobalMembersResourcesWP.EFFECT_SCREEN_DISTORT);
@@ -1224,17 +1238,8 @@ namespace BejeweledLivePlus.Bej3Graphics
 				{
 					while (!renderEffectAutoState2.IsDone())
 					{
-						List<DistortEffect>.Enumerator enumerator2 = mDistortEffectList.GetEnumerator();
-						while (enumerator2.MoveNext())
-						{
-							DistortEffect current2 = enumerator2.Current;
-							double num6 = (double)current2.mTexturePos;
-							float num4 = (float)(double)current2.mRadius;
-							Rect theTRect = new Rect((int)GlobalMembers.S((double)current2.mCenter.mX + (double)current2.mMoveDelta.mX * (double)current2.mMovePct - (double)num4), (int)GlobalMembers.S((double)current2.mCenter.mY + (double)current2.mMoveDelta.mY * (double)current2.mMovePct - (double)num4), (int)(GlobalMembers.S(num4) * 2f), (int)(GlobalMembers.S(num4) * 2f));
-							theTRect = rect.Intersection(theTRect);
-							renderEffectAutoState2.MG_StartPass();
-							g.DrawImage(image, theTRect, theTRect);
-						}
+						renderEffectAutoState2.MG_StartPass();
+						g.DrawImage(image, 0, 0);
 						renderEffectAutoState2.NextPass();
 					}
 				}
@@ -1251,7 +1256,7 @@ namespace BejeweledLivePlus.Bej3Graphics
 			float[] array3 = new float[4];
 			array3[0] = (array3[1] = GlobalMembers.M(0.02f));
 			effect.SetVector4("Params", array3);
-			graphics3D.SetTexture(1, heightImage);
+			graphics3D.SetTexture(1, mHeightImage);
 			int num5 = ((mBoard != null) ? mBoard.mDistortionQuads.Count : 0);
 			using (RenderEffectAutoState renderEffectAutoState3 = new RenderEffectAutoState(g, effect))
 			{
@@ -1261,7 +1266,6 @@ namespace BejeweledLivePlus.Bej3Graphics
 					{
 						Board.DistortionQuad distortionQuad = mBoard.mDistortionQuads[i];
 						FRect fRect = new FRect(distortionQuad.x1, distortionQuad.y1, distortionQuad.x2 - distortionQuad.x1, distortionQuad.y2 - distortionQuad.y1);
-						Console.WriteLine(distortionQuad.x1 + " " + distortionQuad.y1 + " " + distortionQuad.x2 + " " + distortionQuad.y2);
 						BltDoubleFromSrcRect(g, theImage, fRect, fRect, new Color(255, 255, 255, 64));
 					}
 					renderEffectAutoState3.NextPass();

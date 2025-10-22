@@ -242,10 +242,6 @@ namespace SexyFramework.Graphics
 
 		public DeviceImage LockScreenImage(string debugTag, uint flags)
 		{
-			if (false)
-			{
-				return Lock(GlobalMembers.gSexyApp.mScreenBounds.mWidth, GlobalMembers.gSexyApp.mScreenBounds.mHeight, flags, debugTag);
-			}
 			IGraphicsDriver mGraphicsDriver = GlobalMembers.gSexyAppBase.mGraphicsDriver;
 			if (Lock(mGraphicsDriver.GetDisplayWidth(), mGraphicsDriver.GetDisplayHeight(), flags, debugTag) == null)
 			{

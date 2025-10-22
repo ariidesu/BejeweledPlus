@@ -975,10 +975,10 @@ namespace BejeweledLivePlus
 			mUserPaused = true;
 		}
 
-		public virtual void Unpause()
+		public virtual void Unpause(bool isRestart = false)
 		{
 			mUserPaused = false;
-			PlayMenuMusic();
+			PlayMenuMusic(isRestart);
 			mSuspendingGame = false;
 		}
 
@@ -6120,6 +6120,7 @@ namespace BejeweledLivePlus
 					effectsManager.AddEffect(effect5);
 				}
 			}
+			mPostFXManager.AddHeatwave(theCenterX, theCenterY, 0.8f);
 			if (!mInUReplay)
 			{
 				thePiece.mIsExploding = true;
@@ -10768,16 +10769,25 @@ namespace BejeweledLivePlus
 					GlobalMembers.gFrameLightCount++;
 					int theCel = (int)Math.Min(thePiece.mRotPct * (float)GlobalMembersResourcesWP.IMAGE_GEMS_RED.GetCelCount(), GlobalMembersResourcesWP.IMAGE_GEMS_RED.GetCelCount() - 1);
 					DeviceImage deviceImage = (DeviceImage)GlobalMembersResourcesWP.GetImageById(862 + thePiece.mColor);
-					deviceImage.GetCelRect(theCel);
+					Rect aCelRect = deviceImage.GetCelRect(theCel);
 					float num3 = (float)Math.Atan2(GlobalMembers.M(20f), num2);
-					float[] array = new float[4]
+					float[] aParams = new float[4]
+					{
+						(aCelRect.mX - num2 + 64) / (GlobalMembersResourcesWP.IMAGE_GEMS_RED.mWidth),
+						(aCelRect.mY - num2 + 64) / (GlobalMembersResourcesWP.IMAGE_GEMS_RED.mHeight),
+						0.011f,
+						0.01f
+					};
+					float[] aSunVector = new float[4]
 					{
 						(0f - (float)Math.Cos(num3)) * 0.707f,
 						(0f - (float)Math.Cos(num3)) * 0.707f,
 						(float)Math.Sin(num3),
 						0f
 					};
-					Color color = new Color((int)((array[0] + 1f) * 0.5f * 255f), (int)((array[1] + 1f) * 0.5f * 255f), (int)((array[2] + 1f) * 0.5f * 255f), (int)((array[3] + 1f) * 0.5f * 255f));
+					aEffect.SetVector4("Params", aParams);
+					aEffect.SetVector4("SunVector", aSunVector);
+					Color color = new Color((int)((aParams[0] + 1f) * 0.5f * 255f), (int)((aParams[1] + 1f) * 0.5f * 255f), (int)((aParams[2] + 1f) * 0.5f * 255f), (int)((aParams[3] + 1f) * 0.5f * 255f));
 					g.SetColorizeImages(true);
 					g.SetColor(color);
 					g.DrawImageCel(deviceImage, (int)GlobalMembers.S(thePiece.GetScreenX()), (int)GlobalMembers.S(thePiece.GetScreenY()), theCel);
@@ -11894,7 +11904,7 @@ namespace BejeweledLivePlus
 				}
 				g.SetDrawMode(Graphics.DrawMode.Normal);
 			}
-			if (mSunPosition.IsInitialized() && !mSunPosition.HasBeenTriggered())
+			if ((mSunPosition.IsInitialized() && !mSunPosition.HasBeenTriggered()))
 			{
 				g.SetDrawMode(Graphics.DrawMode.Additive);
 				RenderEffect effect2 = graphics3D.GetEffect(GlobalMembersResourcesWP.EFFECT_GEM_SUN);
@@ -12820,7 +12830,7 @@ namespace BejeweledLivePlus
 						}
 					}
 					HideReplayWidget();
-					GlobalMembers.gApp.GoBackToGame();
+					GlobalMembers.gApp.GoBackToGame(true);
 					return;
 				}
 				bej3Dialog.Kill();

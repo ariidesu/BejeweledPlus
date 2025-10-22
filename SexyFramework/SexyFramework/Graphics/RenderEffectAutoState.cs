@@ -1,4 +1,4 @@
-using System;
+using SexyFramework.Drivers.Graphics;
 
 namespace SexyFramework.Graphics
 {
@@ -97,6 +97,7 @@ namespace SexyFramework.Graphics
 			if (mEffect != null && mCurrentPass < mPassCount)
 			{
 				mEffect.BeginPass(mRunHandle, mCurrentPass);
+				(mEffect as XNARenderEffect).MG_ApplyPass();
 			}
 		}
 

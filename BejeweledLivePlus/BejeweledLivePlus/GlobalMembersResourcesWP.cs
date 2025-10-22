@@ -15,7 +15,7 @@ namespace BejeweledLivePlus
 
 		internal static Dictionary<object, int> gVarToIdMap = new Dictionary<object, int>();
 
-		internal static Point[] gImgOffsets = new Point[1810];
+		internal static Point[] gImgOffsets = new Point[1811];
 
 		public static object gVarToIdMapCrit = new object();
 
@@ -1144,6 +1144,8 @@ namespace BejeweledLivePlus
 		public static Image IMAGE_SHADER_TEST;
 
 		public static Image IMAGE_LIGHTNING;
+		
+		public static Image IMAGE_LIGHTNING_CLONE;
 
 		public static Image IMAGE_GRITTYBLURRY;
 
@@ -3639,7 +3641,9 @@ namespace BejeweledLivePlus
 
 		public static Image ATLASIMAGE_EX_HELP_LIGHTNING_03;
 
-		internal static ResGlobalPtr[] gResources = new ResGlobalPtr[1810];
+		public static Image IMAGE_HEATWAVE;
+
+		internal static ResGlobalPtr[] gResources = new ResGlobalPtr[1811];
 
 		internal static uint[] gResourceLocales = new uint[6] { 1145390149u, 1162761555u, 1163085139u, 1179797074u, 1230260564u, 0u };
 
@@ -3653,7 +3657,7 @@ namespace BejeweledLivePlus
 			if (!InitResourceManager_sAlreadyRun || forceRun)
 			{
 				InitResourceManager_sAlreadyRun = true;
-				for (int i = 0; i < 1810; i++)
+				for (int i = 0; i < 1811; i++)
 				{
 					ResGlobalPtr resGlobalPtr = theManager.RegisterGlobalPtr(GetStringIdById(i));
 					gResources[i] = resGlobalPtr;
@@ -7143,6 +7147,7 @@ namespace BejeweledLivePlus
 			try
 			{
 				RESFILE_PROPERTIES_MUSIC = GetGenericResFileThrow(theManager, 14, "RESFILE_PROPERTIES_MUSIC", 0, 0);
+				IMAGE_HEATWAVE = GetImageThrow(theManager, 1810, "IMAGE_HEATWAVE", 0, 0);
 				PIEFFECT_ANIMS_CARD_GEM_SPARKLE2 = GetPIEffectThrow(theManager, 1477, "PIEFFECT_ANIMS_CARD_GEM_SPARKLE2", 0, 0);
 				PIEFFECT_HELP_BUTTERFLY_HELP = GetPIEffectThrow(theManager, 1478, "PIEFFECT_HELP_BUTTERFLY_HELP", 0, 0);
 				PIEFFECT_HELP_CARD_GEM_SPARKLE2 = GetPIEffectThrow(theManager, 1479, "PIEFFECT_HELP_CARD_GEM_SPARKLE2", 0, 0);
@@ -17863,6 +17868,8 @@ namespace BejeweledLivePlus
 				return "IMAGE_ARROW_10";
 			case 1779:
 				return "IMAGE_ARROW_GLOW";
+			case 1810:
+				return "IMAGE_HEATWAVE";
 			default:
 				return "";
 			}
@@ -17872,7 +17879,7 @@ namespace BejeweledLivePlus
 		{
 			if (GetIdByStringId_aMap.Count == 0)
 			{
-				for (int i = 0; i < 1810; i++)
+				for (int i = 0; i < 1811; i++)
 				{
 					GetIdByStringId_aMap[GetStringIdById(i)] = i;
 				}

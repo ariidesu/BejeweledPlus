@@ -914,6 +914,7 @@ namespace SexyFramework.Drivers.App
 		{
 			int num = timeGetTime();
 			mApp.mIsDrawing = true;
+			mXNAGraphicsDriver.mXNARenderDevice.SwitchToScreenImage();
 			bool flag = mApp.mWidgetManager.DrawScreen();
 			mApp.mIsDrawing = false;
 			if ((flag || num - mApp.mLastDrawTick >= 1000 || mApp.mCustomCursorDirty) && num - mApp.mNextDrawTick >= 0)
@@ -948,6 +949,8 @@ namespace SexyFramework.Drivers.App
 			}
 			mApp.mHasPendingDraw = false;
 			mApp.mLastDrawWasEmpty = true;
+			
+			mXNAGraphicsDriver.mXNARenderDevice.PresentScreenImage();
 			return false;
 		}
 

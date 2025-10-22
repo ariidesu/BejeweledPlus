@@ -156,9 +156,9 @@ namespace SexyFramework.Drivers.Graphics
 
 		public Texture2D[] mLastXNATextureSlots;
 
-		public SamplerState mXNASamplerStateSlots;
+		public SamplerState[] mXNASamplerStateSlots;
 
-		public SamplerState mXNALastSamplerStateSlots;
+		public SamplerState[] mXNALastSamplerStateSlots;
 
 		public Matrix mXNAProjectionMatrix = Matrix.Identity;
 
@@ -200,7 +200,7 @@ namespace SexyFramework.Drivers.Graphics
 
 		public Stack<DepthStencilState> mStatckDepthStencilState;
 
-		public Stack<SamplerState> mStatckSamplerState;
+		public Stack<SamplerState[]> mStatckSamplerState;
 
 		public Stack<Matrix> mStatckProjectionMatrix;
 
@@ -242,7 +242,8 @@ namespace SexyFramework.Drivers.Graphics
 			mXNADepthStencilState = DepthStencilState.Default;
 			mXNATextureSlots = new Texture2D[3];
 			mLastXNATextureSlots = new Texture2D[3];
-			mXNASamplerStateSlots = SamplerState.LinearClamp;
+			mXNASamplerStateSlots = new SamplerState[3];
+			mXNALastSamplerStateSlots = new SamplerState[3];
 			mXNAProjectionMatrix = Matrix.CreateOrthographicOffCenter(0f, GlobalMembers.gSexyAppBase.mWidth, GlobalMembers.gSexyAppBase.mHeight, 0f, -1000f, 1000f);
 			mXNAViewMatrix = Matrix.CreateLookAt(new Vector3(0f, 0f, 300f), Vector3.Zero, Vector3.Up);
 			mXNAWorldMatrix = Matrix.Identity;
@@ -251,7 +252,7 @@ namespace SexyFramework.Drivers.Graphics
 			mStatckDestBlendState = new Stack<Graphics3D.EBlendMode>();
 			mStatckRasterizerState = new Stack<RasterizerState>();
 			mStatckDepthStencilState = new Stack<DepthStencilState>();
-			mStatckSamplerState = new Stack<SamplerState>();
+			mStatckSamplerState = new Stack<SamplerState[]>();
 			mStatckProjectionMatrix = new Stack<Matrix>();
 			mStatckViewMatrix = new Stack<Matrix>();
 			mStatckWorldMatrix = new Stack<Matrix>();
@@ -523,14 +524,14 @@ namespace SexyFramework.Drivers.Graphics
 			mSamplerStates[(int)inSS][(int)inSampler].SetValue(inValue);
 		}
 
-		public void SetSamplerState(SamplerState state)
+		public void SetSamplerState(int theStage, SamplerState state)
 		{
-			if (mXNASamplerStateSlots != state)
+			if (mXNASamplerStateSlots[theStage] != state)
 			{
 				mStateDirty = true;
 			}
-			mXNALastSamplerStateSlots = mXNASamplerStateSlots;
-			mXNASamplerStateSlots = state;
+			mXNALastSamplerStateSlots[theStage] = mXNASamplerStateSlots[theStage];
+			mXNASamplerStateSlots[theStage] = state;
 		}
 
 		public void SetRasterizerState(RasterizerState state)

@@ -8,9 +8,9 @@ namespace BejeweledLivePlus
 {
 	public static class Res
 	{
-		private static ResGlobalPtr[] mGlobalRes = new ResGlobalPtr[1810];
+		private static ResGlobalPtr[] mGlobalRes = new ResGlobalPtr[1811];
 
-		private static Point[] mGlobalResOffset = new Point[1810];
+		private static Point[] mGlobalResOffset = new Point[1811];
 
 		private static BejeweledLivePlusApp mApp = null;
 
