@@ -574,8 +574,11 @@ namespace BejeweledLivePlus.Bej3Graphics
 				Graphics3D graphics3D = g.Get3D();
 				if (graphics3D != null && graphics3D.SupportsPixelShaders())
 				{
-					// Disabled for now as it's very broken
 					RenderDistortEffects(g);
+					if (mHeightImage != null)
+					{
+						ClearDistortionMap(g);
+					}
 				}
 				mHeightImageDirty = false;
 			}
@@ -1154,7 +1157,7 @@ namespace BejeweledLivePlus.Bej3Graphics
 			graphics3D2.SetTextureLinearFilter(1, true);
 			graphics3D2.SetTextureWrap(0, true);
 			graphics3D2.SetTextureWrap(1, true);
-			// graphics3D2.ClearColorBuffer(new Color(128, 128, 128, 255));
+			graphics3D2.ClearColorBuffer(new Color(128, 128, 128, 255));
 			graphics.FillRect(0, 0, mHeightImage.mWidth, mHeightImage.mHeight);
 			graphics.SetColorizeImages(true);
 			graphics.SetColor(Color.White);
@@ -1167,7 +1170,7 @@ namespace BejeweledLivePlus.Bej3Graphics
 					while (enumerator.MoveNext())
 					{
 						DistortEffect current = enumerator.Current;
-						float num = (float)((double)current.mIntensity * (double)mAlpha);
+						float num = (float)((double)current.mIntensity);
 						float num2 = (float)(double)current.mTexturePos;
 						float[] array = new float[4]
 						{
@@ -1176,37 +1179,11 @@ namespace BejeweledLivePlus.Bej3Graphics
 							Math.Max(1f - Math.Abs(num2 - 0.667f) * 3f, 0f) * num,
 							Math.Max(1f - Math.Abs(num2 - 1f) * 3f, 0f) * num
 						};
-						float num3 = (float)(double)current.mRadius;
-						int screenWidth = GlobalMembers.gApp.mWidth;
-						int screenHeight = GlobalMembers.gApp.mHeight;
-
-						float minX = current.mCenter.mX - num3;
-						float minY = current.mCenter.mY - num3;
-						float maxX = current.mCenter.mX + num3;
-						float maxY = current.mCenter.mY + num3;
-            
-						// Convert to screen space
-						float screenMinX = (minX * (float)screenWidth) / 660.0f;
-						float screenMinY = (minY * (float)screenWidth) / 660.0f;
-						float screenMaxX = (maxX * (float)screenWidth) / 660.0f;
-						float screenMaxY = (maxY * (float)screenWidth) / 660.0f;
-            
-						float normalizedCenterX = (current.mCenter.mX * (float)screenWidth) / 660.0f;
-						float normalizedCenterY = (current.mCenter.mY * (float)screenWidth) / 660.0f;
-						
-						float adjustedX = screenMinX * 0.5f + (float)GlobalMembers.gApp.mScreenBounds.mX;
-						float adjustedY = screenMinY * 0.5f + (float)GlobalMembers.gApp.mScreenBounds.mY;
-            
-						float[] aParams = {
-							normalizedCenterX,  // [0] Wave center X in normalized coords
-							normalizedCenterY,  // [1] Wave center Y in normalized coords
-							adjustedX,          // [2] Adjusted X for rendering
-							adjustedY           // [3] Adjusted Y for rendering
-						};
 						effect.SetVector4("Params", array);
+						float num3 = (float)(double)current.mRadius;
 						FRect theTRect = new FRect(
-							(int)GlobalMembers.S((double)current.mCenter.mX + (double)current.mMoveDelta.mX * (double)current.mMovePct - (double)num3) / 2f, 
-							(int)GlobalMembers.S((double)current.mCenter.mY + (double)current.mMoveDelta.mY * (double)current.mMovePct - (double)num3) / 2f, 
+							(int)GlobalMembers.S((double)current.mCenter.mX + (double)current.mMoveDelta.mX * (double)current.mMovePct - (double)num3) , 
+							(int)GlobalMembers.S((double)current.mCenter.mY + (double)current.mMoveDelta.mY * (double)current.mMovePct - (double)num3), 
 							(int)(GlobalMembers.S(num3) * 2f), 
 							(int)(GlobalMembers.S(num3) * 2f));
 						Color color = new Color((int)(array[0] * 255f), (int)(array[1] * 255f), (int)(array[2] * 255f), (int)(array[3] * 255f));
