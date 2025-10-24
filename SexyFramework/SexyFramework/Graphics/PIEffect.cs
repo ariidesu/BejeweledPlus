@@ -667,17 +667,20 @@ namespace SexyFramework.Graphics
 			}
 		}
 
-		public Vector2 GetGeomPos(PIEmitterInstance theEmitterInstance, PIParticleInstance theParticleInstance, float theTravelAngle)
+		public Vector2 GetGeomPos(PIEmitterInstance theEmitterInstance, PIParticleInstance theParticleInstance, ref float theTravelAngle)
 		{
-			return GetGeomPos(theEmitterInstance, theParticleInstance, theTravelAngle, false);
+			bool temp = false;
+			return GetGeomPos(theEmitterInstance, theParticleInstance, ref theTravelAngle, ref temp);
 		}
 
 		public Vector2 GetGeomPos(PIEmitterInstance theEmitterInstance, PIParticleInstance theParticleInstance)
 		{
-			return GetGeomPos(theEmitterInstance, theParticleInstance, 0f, false);
+			float temp = 0f;
+			bool temp2 = false;
+			return GetGeomPos(theEmitterInstance, theParticleInstance, ref temp, ref temp2);
 		}
 
-		public Vector2 GetGeomPos(PIEmitterInstance theEmitterInstance, PIParticleInstance theParticleInstance, float theTravelAngle, bool isMaskedOut)
+		public Vector2 GetGeomPos(PIEmitterInstance theEmitterInstance, PIParticleInstance theParticleInstance, ref float theTravelAngle, ref bool isMaskedOut)
 		{
 			Vector2 thePoint = default(Vector2);
 			PIEmitterInstanceDef mEmitterInstanceDef = theEmitterInstance.mEmitterInstanceDef;
@@ -835,6 +838,7 @@ namespace SexyFramework.Graphics
 				break;
 			}
 			}
+
 			thePoint += GetEmitterPos(theEmitterInstance, false);
 			thePoint += theEmitterInstance.mOffset;
 			thePoint = GlobalPIEffect.TransformFPoint(theEmitterInstance.mTransform, thePoint);
@@ -1250,7 +1254,7 @@ namespace SexyFramework.Graphics
 					bool flag2 = false;
 					if (flag)
 					{
-						vector2 = GetGeomPos(theEmitterInstance, pIParticleInstance2, num12, flag2) - pIParticleInstance2.mEmittedPos;
+						vector2 = GetGeomPos(theEmitterInstance, pIParticleInstance2, ref num12, ref flag2) - pIParticleInstance2.mEmittedPos;
 					}
 					if (flag2)
 					{
