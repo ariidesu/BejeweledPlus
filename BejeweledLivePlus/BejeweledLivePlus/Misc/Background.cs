@@ -78,7 +78,9 @@ namespace BejeweledLivePlus.Misc
 			BejeweledLivePlusApp.LoadContent(mResourceGroup);
 			mResourceImageRef = GlobalMembers.gApp.mResourceManager.GetImageRef(idByPath);
 			mImage = mResourceImageRef.GetSharedImageRef();
-			if (mImage.GetMemoryImage() == null)
+			// Due to the modified BaseXNARenderDevice, background ended up being wiped.... somehow??
+			// We force load it again.
+			//if (mImage.GetMemoryImage() == null)
 			{
 				mImage = GlobalMembers.gApp.mResourceManager.GetImageRef(idByPath).GetSharedImageRef();
 				if (mImage.GetMemoryImage() != null)
