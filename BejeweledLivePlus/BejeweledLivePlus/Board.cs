@@ -5914,13 +5914,6 @@ namespace BejeweledLivePlus
 				mUReplayBuffer.WriteShort(EncodeY(theY));
 			}
 			
-			int aChainReactionCount = 0;
-			Piece aPiece = GetPieceAtScreenXY(theX, theY);
-			if (aPiece != null)
-			{
-				aChainReactionCount = GetMoveStat(aPiece.mMoveCreditId, 3);
-			}
-
 			if (WantsCalmEffects())
 			{
 				BumpColumns(theX, theY, GlobalMembers.M(0.6f));
@@ -5928,6 +5921,12 @@ namespace BejeweledLivePlus
 			else
 			{
 				BumpColumns(theX, theY, GlobalMembers.M(1f));
+			}
+			int aChainReactionCount = 0;
+			Piece aPiece = GetPieceAtScreenXY(theX, theY);
+			if (aPiece != null)
+			{
+				aChainReactionCount = GetMoveStat(aPiece.mMoveCreditId, 12);
 			}
 			ExplodeAtHelper(theX, theY);
 			if (GlobalMembers.M(1) != 0)
@@ -5943,7 +5942,8 @@ namespace BejeweledLivePlus
 				}
 				popAnimEffect.Play();
 				mPostFXManager.AddEffect(popAnimEffect);
-				mPostFXManager.AddHeatwave(theX, theY, aChainReactionCount + 1);
+				// We scale by 0.8 so it can fit the flame gem explosion (lol)
+				mPostFXManager.AddHeatwave(theX, theY, 0.8f * (aChainReactionCount + 1));
 			}
 		}
 
@@ -10775,8 +10775,8 @@ namespace BejeweledLivePlus
 					{
 						(aCelRect.mX - num2 + 64) / (GlobalMembersResourcesWP.IMAGE_GEMS_RED.mWidth),
 						(aCelRect.mY - num2 + 64) / (GlobalMembersResourcesWP.IMAGE_GEMS_RED.mHeight),
-						0.011f,
-						0.01f
+						0.025f,
+						0.02f
 					};
 					float[] aSunVector = new float[4]
 					{
@@ -10787,7 +10787,7 @@ namespace BejeweledLivePlus
 					};
 					aEffect.SetVector4("Params", aParams);
 					aEffect.SetVector4("SunVector", aSunVector);
-					Color color = new Color((int)((aParams[0] + 1f) * 0.5f * 255f), (int)((aParams[1] + 1f) * 0.5f * 255f), (int)((aParams[2] + 1f) * 0.5f * 255f), (int)((aParams[3] + 1f) * 0.5f * 255f));
+					Color color = new Color((int)((aSunVector[0] + 1f) * 0.5f * 255f), (int)((aSunVector[1] + 1f) * 0.5f * 255f), (int)((aSunVector[2] + 1f) * 0.5f * 255f), (int)((aSunVector[3] + 1f) * 0.5f * 255f));
 					g.SetColorizeImages(true);
 					g.SetColor(color);
 					g.DrawImageCel(deviceImage, (int)GlobalMembers.S(thePiece.GetScreenX()), (int)GlobalMembers.S(thePiece.GetScreenY()), theCel);
@@ -11545,12 +11545,6 @@ namespace BejeweledLivePlus
 				{
 					DrawIris(g, GlobalMembers.MS(800), GlobalMembers.MS(100));
 				}
-				if (GlobalMembers.gApp.mInterfaceState != InterfaceState.INTERFACE_STATE_BADGEMENU && GlobalMembers.gApp.mInterfaceState != InterfaceState.INTERFACE_STATE_GAMEDETAILMENU && mHyperspace == null)
-				{
-					g.PushState();
-					mPostFXManager.Draw(g);
-					g.PopState();
-				}
 				return;
 			}
 			if (mSpeedFireBarPIEffect[0] != null)
@@ -11570,12 +11564,6 @@ namespace BejeweledLivePlus
 				g.FillRect(-mX, -mY, mWidth, mHeight);
 				g.SetColor(Color.White);
 				DrawPieces(g, true);
-			}
-			if (GlobalMembers.gApp.mInterfaceState != InterfaceState.INTERFACE_STATE_BADGEMENU && GlobalMembers.gApp.mInterfaceState != InterfaceState.INTERFACE_STATE_GAMEDETAILMENU && mHyperspace == null && mUpdateCnt > 130)
-			{
-				g.PushState();
-				mPostFXManager.Draw(g);
-				g.PopState();
 			}
 			Graphics3D graphics3D = g.Get3D();
 			DrawLightning(g);
@@ -11688,6 +11676,12 @@ namespace BejeweledLivePlus
 			if ((double)mAlphaCurve != 1.0)
 			{
 				g.PopColorMult();
+			}
+			if (GlobalMembers.gApp.mInterfaceState != InterfaceState.INTERFACE_STATE_BADGEMENU && GlobalMembers.gApp.mInterfaceState != InterfaceState.INTERFACE_STATE_GAMEDETAILMENU && mHyperspace == null)
+			{
+				g.PushState();
+				mPostFXManager.Draw(g);
+				g.PopState();
 			}
 		}
 
