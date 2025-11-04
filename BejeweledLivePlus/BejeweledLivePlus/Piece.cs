@@ -602,11 +602,11 @@ namespace BejeweledLivePlus
 			if (IsFlagSet(1u))
 			{
 				bool flag = mBoard.WantsCalmEffects();
-				int num = 1;
-				num = ((((int)GlobalMembers.gApp.mUpdateCount + mId) % GlobalMembers.M(3) == 0) ? 1 : 0);
-				for (int i = 0; i < num; i++)
+				// int num = 1;
+				// num = ((((int)GlobalMembers.gApp.mUpdateCount + mId) % GlobalMembers.M(3) == 0) ? 1 : 0);
+				for (int i = 0; i < 4; i++)
 				{
-					bool flag2 = BejeweledLivePlus.Misc.Common.Rand() % 2 == 0;
+					bool flag2 = BejeweledLivePlus.Misc.Common.Rand() % 5 != 0;
 					EffectsManager effectsManager;
 					Effect effect;
 					if (flag2)
@@ -660,7 +660,8 @@ namespace BejeweledLivePlus
 						{
 							effect.mImage = GlobalMembersResourcesWP.IMAGE_SPARKLET_FAT;
 						}
-						effect.mDY = GlobalMembers.M(-0.4f) + GlobalMembersUtils.GetRandFloat() * GlobalMembers.M(0.15f);
+						effect.mDY = (GlobalMembers.M(-0.4f) +
+						              GlobalMembersUtils.GetRandFloat() * GlobalMembers.M(0.15f));
 						effect.mColor = new Color(GlobalMembers.M(128), BejeweledLivePlus.Misc.Common.Rand() % GlobalMembers.M(32) + GlobalMembers.M(48), BejeweledLivePlus.Misc.Common.Rand() % GlobalMembers.M(24) + GlobalMembers.M(24));
 						bool flag4 = mBoard.mWantsReddishFlamegems && BejeweledLivePlus.Misc.Common.Rand() % GlobalMembers.M(3) <= GlobalMembers.M(0) && effectsManager == mBoard.mPreFXManager;
 						if (mColor == 3 || flag4)
