@@ -1946,24 +1946,14 @@ namespace SexyFramework.Drivers.Graphics
 			if (mCurrentContex == null || mCurrentContex.GetPointer() == null)
 			{
 				mDevice.GraphicsDevice.SetRenderTarget(null);
-
-				// A basic effect specfically for this
-				// Why? During testing, when restarting it would flashbang me
-				// So we do this for now. Not the most elegant solution.
-				BasicEffect aBasicEffect = new BasicEffect(mDevice.GraphicsDevice);
-				aBasicEffect.Projection = mStateMgr.mXNAProjectionMatrix;
-				aBasicEffect.View = mStateMgr.mXNAViewMatrix;
-				aBasicEffect.World = mStateMgr.mXNAWorldMatrix;
-				aBasicEffect.Texture = mStateMgr.mXNATextureSlots[0];
-				aBasicEffect.TextureEnabled = true;
 				
 				Rectangle aRenderRect = new Rectangle(0, 0, mDevice.GraphicsDevice.Viewport.Width, mDevice.GraphicsDevice.Viewport.Height);
 				// We render with the predetermined ratio and center it for mobile
 				if (PlatformInfo.MonoGamePlatform == MonoGamePlatform.iOS ||
 				    PlatformInfo.MonoGamePlatform == MonoGamePlatform.Android)
 				{
-					float targetAspect = (float)mDevice.GraphicsDevice.Viewport.Width / mDevice.GraphicsDevice.Viewport.Height;
-					float baseAspect = 480f / 800f;
+					float targetAspect = (float)mDevice.GraphicsDevice.Viewport.Width / (float)mDevice.GraphicsDevice.Viewport.Height;
+					float baseAspect = (float)mScreenTarget.Width / (float)mScreenTarget.Height;
 
 					int newWidth, newHeight;
 					int offsetX = 0, offsetY = 0;

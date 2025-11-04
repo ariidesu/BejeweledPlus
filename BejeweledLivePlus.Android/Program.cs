@@ -29,9 +29,8 @@ namespace BejeweledLivePlus.Android
 
             _game = new GameMain();
             _view = _game.Services.GetService(typeof(View)) as View;
+            _view.SystemUiVisibility = (StatusBarVisibility)(SystemUiFlags.LayoutStable | SystemUiFlags.LayoutHideNavigation | SystemUiFlags.LayoutFullscreen | SystemUiFlags.HideNavigation | SystemUiFlags.Fullscreen | SystemUiFlags.ImmersiveSticky); 
             
-            
-
             SetContentView(_view);
             _game.Run();
         }
