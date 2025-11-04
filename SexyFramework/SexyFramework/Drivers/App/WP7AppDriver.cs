@@ -6,6 +6,7 @@ using System.IO.IsolatedStorage;
 using System.Threading;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
+using MonoGame.Framework.Utilities;
 using SexyFramework.Drivers.Graphics;
 using SexyFramework.Graphics;
 using SexyFramework.Misc;
@@ -24,6 +25,8 @@ namespace SexyFramework.Drivers.App
 		// private GameTime mGameTime;
 
 		private int mGameStartTime;
+
+		private int mGameLastUpdateTime;
 		
 		public ContentManager mContentManager;
 
@@ -94,7 +97,7 @@ namespace SexyFramework.Drivers.App
 			mApp.mLastDrawWasEmpty = false;
 			mApp.mLastTimeCheck = 0;
 			mApp.mUpdateMultiplier = 1;
-			mApp.mMaxNonDrawCount = 10;
+			mApp.mMaxNonDrawCount = 50;
 			mApp.mPaused = false;
 			mApp.mFastForwardToUpdateNum = 0;
 			mApp.mFastForwardToMarker = false;
@@ -166,7 +169,7 @@ namespace SexyFramework.Drivers.App
 			mApp.mWantFMod = false;
 			mApp.mSyncRefreshRate = 100;
 			mApp.mVSyncUpdates = false;
-			mApp.mNoVSync = true;
+			mApp.mNoVSync = false;
 			mApp.mVSyncBroken = false;
 			mApp.mVSyncBrokenCount = 0;
 			mApp.mVSyncBrokenTestStartTick = 0L;
@@ -266,13 +269,12 @@ namespace SexyFramework.Drivers.App
 					DoUpdateFramesF(1f);
 				}
 			}
-			else
-			{
-				int mUpdateCount = mApp.mUpdateCount;
-				Process();
-				updated = mApp.mUpdateCount != mUpdateCount;
-			}
+			int mUpdateCount = mApp.mUpdateCount;
+			Process();
+			mApp.ProcessSafeDeleteList();
+			updated = mApp.mUpdateCount != mUpdateCount;
 			mApp.mUpdateAppDepth--;
+			mGameLastUpdateTime = timeGetTime();
 			return true;
 		}
 
@@ -776,6 +778,7 @@ namespace SexyFramework.Drivers.App
 			bool isVSynched = mApp.mVSyncUpdates && !mApp.mLastDrawWasEmpty && !mApp.mVSyncBroken && (!mApp.mIsPhysWindowed || (mApp.mIsPhysWindowed && mApp.mWaitForVSync && !mApp.mSoftVSyncWait));
 			double aFrameFTime;
 			double anUpdatesPerUpdateF;
+			int aXNAFrameDelta = timeGetTime() - mGameLastUpdateTime;
 			if (mApp.mVSyncUpdates)
 			{
 				aFrameFTime = (1000.0 / mApp.mSyncRefreshRate) / mApp.mUpdateMultiplier;
@@ -843,11 +846,20 @@ namespace SexyFramework.Drivers.App
 				}
 				else if (mApp.mUpdateAppState == 2)
 				{
+					// For mobile, it's capped at 60FPS, unlike PC which can go unlimited
+					// So this is just some workaround
+					double aDecrement = 1.0;
+					if (PlatformInfo.MonoGamePlatform == MonoGamePlatform.iOS ||
+					    PlatformInfo.MonoGamePlatform == MonoGamePlatform.Android)
+					{
+						aDecrement = Math.Min(4.9 / aXNAFrameDelta, 1.0);
+					}
+					
 					mApp.mUpdateAppState = 3;
 					mApp.mPendingUpdatesAcc += anUpdatesPerUpdateF;
-					mApp.mPendingUpdatesAcc -= 1.0;
+					mApp.mPendingUpdatesAcc -= aDecrement;
 					
-					while (mApp.mPendingUpdatesAcc >= 1.0)
+					while (mApp.mPendingUpdatesAcc >= aDecrement)
 					{
 						mApp.mNonDrawCount++;
 						bool hasRealUpdate = DoUpdateFrames();
@@ -855,7 +867,7 @@ namespace SexyFramework.Drivers.App
 						{
 							break;
 						}
-						mApp.mPendingUpdatesAcc -= 1.0;
+						mApp.mPendingUpdatesAcc -= aDecrement;
 					}
 					DoUpdateFramesF((float) anUpdatesPerUpdateF);
 					
@@ -912,7 +924,6 @@ namespace SexyFramework.Drivers.App
 				}
 			}
 			
-			mApp.ProcessSafeDeleteList();
 			return true;
 		}
 
