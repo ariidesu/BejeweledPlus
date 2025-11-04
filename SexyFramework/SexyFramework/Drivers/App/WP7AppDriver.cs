@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.IO.IsolatedStorage;
 using System.Threading;
@@ -8,6 +9,7 @@ using Microsoft.Xna.Framework.Content;
 using SexyFramework.Drivers.Graphics;
 using SexyFramework.Graphics;
 using SexyFramework.Misc;
+using Color = Microsoft.Xna.Framework.Color;
 
 namespace SexyFramework.Drivers.App
 {
@@ -19,13 +21,17 @@ namespace SexyFramework.Drivers.App
 
 		private Game mWP7Game;
 
-		private GameTime mGameTime;
+		// private GameTime mGameTime;
 
+		private int mGameStartTime;
+		
 		public ContentManager mContentManager;
 
 		private XNAGraphicsDriver mXNAGraphicsDriver;
 
 		private ConfigItemKey mConfigRoot;
+
+		private MemoryImage gFPSImage;
 
 		public static WP7AppDriver CreateAppDriver(SexyAppBase App)
 		{
@@ -240,7 +246,11 @@ namespace SexyFramework.Drivers.App
 			{
 				return false;
 			}
-			if (mApp.mUpdateAppState == 3 || mApp.mUpdateAppState == 0) mApp.mUpdateAppState = 1;
+
+			if (mApp.mUpdateAppState == 0 || mApp.mUpdateAppState == 3)
+			{
+				mApp.mUpdateAppState = 1;
+			}
 			mApp.mUpdateAppDepth++;
 			if (mApp.mStepMode != 0)
 			{
@@ -253,18 +263,16 @@ namespace SexyFramework.Drivers.App
 				{
 					mApp.mStepMode = 2;
 					DoUpdateFrames();
-					DoUpdateFramesF(1.0f);
-					DrawDirtyStuff();
+					DoUpdateFramesF(1f);
 				}
 			}
 			else
 			{
-				int oldUpdateCnt = mApp.mUpdateCount.value;
+				int mUpdateCount = mApp.mUpdateCount;
 				Process();
-				updated = mApp.mUpdateCount.value != oldUpdateCnt;
+				updated = mApp.mUpdateCount != mUpdateCount;
 			}
 			mApp.mUpdateAppDepth--;
-			mApp.ProcessSafeDeleteList();
 			return true;
 		}
 
@@ -716,17 +724,13 @@ namespace SexyFramework.Drivers.App
 			mWP7Game = game;
 			mXNAGraphicsDriver = new XNAGraphicsDriver(mWP7Game, mApp);
 			mContentManager = mWP7Game.Content;
-			mGameTime = new GameTime();
+			mGameStartTime = GetAppTime();
 			mApp.mGraphicsDriver = mXNAGraphicsDriver;
 		}
 
 		public int timeGetTime()
 		{
-			if (mGameTime != null)
-			{
-				return mGameTime.TotalGameTime.Milliseconds;
-			}
-			return 0;
+			return GetAppTime() - mGameStartTime;
 		}
 
 		public int GetTickCount()
@@ -763,19 +767,19 @@ namespace SexyFramework.Drivers.App
 			return "v0.1";
 		}
 
-		private bool Process()
+		private bool Process(bool allowSleep = false)
 		{
 			if (mApp.mLoadingFailed)
 			{
 				mApp.Shutdown();
 			}
-			bool flag = mApp.mVSyncUpdates && !mApp.mLastDrawWasEmpty && !mApp.mVSyncBroken && (!mApp.mIsPhysWindowed || (mApp.mIsPhysWindowed && mApp.mWaitForVSync && !mApp.mSoftVSyncWait));
-			double aFrameFTime = 0.0;
-			double anUpdatesPerUpdateF = 0.0;
+			bool isVSynched = mApp.mVSyncUpdates && !mApp.mLastDrawWasEmpty && !mApp.mVSyncBroken && (!mApp.mIsPhysWindowed || (mApp.mIsPhysWindowed && mApp.mWaitForVSync && !mApp.mSoftVSyncWait));
+			double aFrameFTime;
+			double anUpdatesPerUpdateF;
 			if (mApp.mVSyncUpdates)
 			{
-				aFrameFTime = 1000.0 / (double)mApp.mSyncRefreshRate / mApp.mUpdateMultiplier;
-				anUpdatesPerUpdateF = (float)(1000.0 / (double)(mApp.mFrameTime * (float)mApp.mSyncRefreshRate));
+				aFrameFTime = (1000.0 / mApp.mSyncRefreshRate) / mApp.mUpdateMultiplier;
+				anUpdatesPerUpdateF = (float)(1000.0 / (mApp.mFrameTime * mApp.mSyncRefreshRate));
 			}
 			else
 			{
@@ -784,26 +788,34 @@ namespace SexyFramework.Drivers.App
 			}
 			if (!mApp.mPaused && mApp.mUpdateMultiplier > 0.0)
 			{
-				int num3 = timeGetTime();
-				int num4 = 0;
-				if (!flag)
+				int aStartTime = timeGetTime();
+				int aCumSleepTime = 0;
+				if (!isVSynched)
 				{
 					UpdateFTimeAcc();
 				}
-				bool flag2 = false;
+				bool didUpdate = false;
 				if (mApp.mUpdateAppState == 1)
 				{
-					if (++mApp.mNonDrawCount < (int)Math.Ceiling((double)mApp.mMaxNonDrawCount * mApp.mUpdateMultiplier) || !mApp.mLoaded)
+					if (++mApp.mNonDrawCount < (int)Math.Ceiling(mApp.mMaxNonDrawCount * mApp.mUpdateMultiplier) || !mApp.mLoaded)
 					{
-						bool flag3 = false;
-						if (true /*mApp.mUpdateFTimeAcc >= aFrameFTime*/)
+						bool doUpdate = false;
+						if (isVSynched)
 						{
+							doUpdate = (!mApp.mHasPendingDraw) || (mApp.mUpdateFTimeAcc >= (int)(aFrameFTime * 0.75));
+						}
+						else if (mApp.mUpdateFTimeAcc >= aFrameFTime)
+						{
+							doUpdate = true;
+						}
+
+						if (doUpdate) {
 							if (mApp.mUpdateMultiplier == 1.0)
 							{
-								mApp.mVSyncBrokenTestUpdates++;
-								if ((float)mApp.mVSyncBrokenTestUpdates >= (1000f + mApp.mFrameTime - 1f) / mApp.mFrameTime)
+								mApp.mVSyncBrokenTestUpdates += 1L;
+								if (mApp.mVSyncBrokenTestUpdates >= (1000f + mApp.mFrameTime - 1f) / mApp.mFrameTime)
 								{
-									if (num3 - mApp.mVSyncBrokenTestStartTick <= 800)
+									if (aStartTime - mApp.mVSyncBrokenTestStartTick <= 800L)
 									{
 										mApp.mVSyncBrokenCount++;
 										if (mApp.mVSyncBrokenCount >= 3)
@@ -815,16 +827,17 @@ namespace SexyFramework.Drivers.App
 									{
 										mApp.mVSyncBrokenCount = 0;
 									}
-									mApp.mVSyncBrokenTestStartTick = num3;
+									mApp.mVSyncBrokenTestStartTick = aStartTime;
 									mApp.mVSyncBrokenTestUpdates = 0L;
 								}
 							}
-							if (DoUpdateFrames())
+							bool hadRealUpdate = DoUpdateFrames();
+							if (hadRealUpdate)
 							{
 								mApp.mUpdateAppState = 2;
 							}
 							mApp.mHasPendingDraw = true;
-							flag2 = true;
+							didUpdate = true;
 						}
 					}
 				}
@@ -832,18 +845,21 @@ namespace SexyFramework.Drivers.App
 				{
 					mApp.mUpdateAppState = 3;
 					mApp.mPendingUpdatesAcc += anUpdatesPerUpdateF;
-					//mApp.mPendingUpdatesAcc -= 1.0;
+					mApp.mPendingUpdatesAcc -= 1.0;
+					
 					while (mApp.mPendingUpdatesAcc >= 1.0)
 					{
 						mApp.mNonDrawCount++;
-						if (!DoUpdateFrames())
+						bool hasRealUpdate = DoUpdateFrames();
+						if (!hasRealUpdate)
 						{
 							break;
 						}
-						mApp.mPendingUpdatesAcc -= 0.45f; // Changed this to put the game's update framerate back to how it's expected
+						mApp.mPendingUpdatesAcc -= 1.0;
 					}
-					DoUpdateFramesF((float)anUpdatesPerUpdateF);
-					if (flag)
+					DoUpdateFramesF((float) anUpdatesPerUpdateF);
+					
+					if (isVSynched)
 					{
 						mApp.mUpdateFTimeAcc = Math.Max(mApp.mUpdateFTimeAcc - aFrameFTime - 0.2f, 0.0);
 					}
@@ -855,9 +871,9 @@ namespace SexyFramework.Drivers.App
 					{
 						mApp.mUpdateFTimeAcc = 0.0;
 					}
-					flag2 = true;
+					didUpdate = true;
 				}
-				if (!flag2)
+				if (!didUpdate)
 				{
 					mApp.mUpdateAppState = 3;
 					mApp.mNonDrawCount = 0;
@@ -867,26 +883,36 @@ namespace SexyFramework.Drivers.App
 					}
 					else
 					{
-						int num5 = (int)anUpdatesPerUpdateF - (int)mApp.mUpdateFTimeAcc;
-						if (num5 > 0)
+						int aTimeToNextFrame = (int)(aFrameFTime - mApp.mUpdateFTimeAcc);
+						if (aTimeToNextFrame > 0)
 						{
+							if (!allowSleep)
+							{
+								return false;
+							}
 							mApp.mSleepCount++;
-							//Thread.Sleep(num5);
-							num4 += num5;
+							Thread.Sleep(aTimeToNextFrame);
+							aCumSleepTime += aTimeToNextFrame;
 						}
 					}
 				}
 				if (mApp.mYieldMainThread)
 				{
-					int num6 = timeGetTime();
-					int num7 = num6 - num3 - num4;
-					int num8 = Math.Min(250, num7 * 2 - num4);
-					if (num8 >= 0)
+					int anEndTime = timeGetTime();
+					int anElapsedTime = (anEndTime - aStartTime) - aCumSleepTime;
+					int aLoadingYieldSleepTime = Math.Min(250, anElapsedTime * 2 - aCumSleepTime);
+					if (aLoadingYieldSleepTime >= 0)
 					{
-						Thread.Sleep(num8);
+						if (!allowSleep)
+						{
+							return false;
+						}
+						Thread.Sleep(aLoadingYieldSleepTime);
 					}
 				}
 			}
+			
+			mApp.ProcessSafeDeleteList();
 			return true;
 		}
 
@@ -909,47 +935,131 @@ namespace SexyFramework.Drivers.App
 		{
 			mXNAGraphicsDriver.Redraw(Rect.ZERO_RECT);
 		}
+		
+		private static int gFrameCount = 0;
+		private static int gFPSDisplay = 0;
+		private static bool gForceDisplay = false;
+		private static readonly Stopwatch gFPSTimer = new();
+		private void CalculateFPS()
+		{
+			if (gFPSImage == null)
+			{
+				gFPSImage = new MemoryImage();
+				gFPSImage.Create(50,20);
+				gFPSImage.SetImageMode(false,false);
+				gFPSImage.mPurgeBits = false;
+				gFPSImage.PurgeBits();
+			}
 
+			if (gFPSTimer.ElapsedMilliseconds >= 1000 || gForceDisplay)
+			{
+				gFPSTimer.Stop();
+				if (!gForceDisplay)
+					gFPSDisplay = (int)(gFrameCount*1000/gFPSTimer.ElapsedMilliseconds + 0.5f);
+				else
+				{
+					gForceDisplay = false;
+					gFPSDisplay = 0;
+				}
+
+				gFPSTimer.Start();
+				gFrameCount = 0;
+
+				SexyFramework.Graphics.Graphics aDrawG = new SexyFramework.Graphics.Graphics(gFPSImage);
+				string aFPS = $"FPS: {gFPSDisplay}";
+				aDrawG.SetColor(SexyFramework.Graphics.Color.Black);
+				aDrawG.FillRect(0,0,gFPSImage.GetWidth(),gFPSImage.GetHeight());
+				aDrawG.SetColor(SexyFramework.Graphics.Color.White);
+				aDrawG.DrawString(aFPS,2,20);
+				gFPSImage.mBitsChangedCount++;
+			}
+		}
+
+		private void FPSDrawCoords(int theX, int theY)
+		{
+			if (gFPSImage == null)
+			{
+				gFPSImage = new MemoryImage();
+				gFPSImage.Create(50,20);
+				gFPSImage.SetImageMode(false,false);
+				gFPSImage.mPurgeBits = false;
+				gFPSImage.PurgeBits();
+			}
+
+			SexyFramework.Graphics.Graphics aDrawG = new SexyFramework.Graphics.Graphics(gFPSImage);
+			string aFPS = $"{theX},{theY}";
+			aDrawG.SetColor(SexyFramework.Graphics.Color.Black);
+			aDrawG.FillRect(0,0,gFPSImage.GetWidth(),gFPSImage.GetHeight());
+			aDrawG.SetColor(SexyFramework.Graphics.Color.White);
+			aDrawG.DrawString(aFPS,2,20);
+			gFPSImage.mBitsChangedCount++;
+		}
+		
 		private bool DrawDirtyStuff()
 		{
-			int num = timeGetTime();
+			if (mApp.mShowFPS)
+			{
+				switch (mApp.mShowFPSMode)
+				{
+					case 0: CalculateFPS(); break;
+					case 1:
+						if (mApp.mWidgetManager != null)
+						{
+							FPSDrawCoords(mApp.mWidgetManager.mLastMouseX, mApp.mWidgetManager.mLastMouseY);
+						}
+						break;
+				}
+			}
+			
+			int aStartTime = timeGetTime();
 			mApp.mIsDrawing = true;
 			mXNAGraphicsDriver.mXNARenderDevice.SwitchToScreenImage();
-			bool flag = mApp.mWidgetManager.DrawScreen();
+			bool drewScreen = mApp.mWidgetManager.DrawScreen();
 			mApp.mIsDrawing = false;
-			if ((flag || num - mApp.mLastDrawTick >= 1000 || mApp.mCustomCursorDirty) && num - mApp.mNextDrawTick >= 0)
+			if ((drewScreen || aStartTime - mApp.mLastDrawTick >= 1000 || mApp.mCustomCursorDirty) && aStartTime - mApp.mNextDrawTick >= 0)
 			{
 				mApp.mLastDrawWasEmpty = false;
 				mApp.mDrawCount++;
-				int num2 = timeGetTime();
+				int aMidTime = timeGetTime();
 				mApp.mFPSCount++;
-				mApp.mFPSTime += num2 - num;
-				mApp.mDrawTime += num2 - num;
-				int num3 = timeGetTime();
-				mApp.mLastDrawTick = num3;
+				mApp.mFPSTime += aMidTime - aStartTime;
+				mApp.mDrawTime += aMidTime - aStartTime;
+				if (mApp.mShowFPS)
+				{
+					SexyFramework.Graphics.Graphics g = new SexyFramework.Graphics.Graphics();
+					g.DrawImage(gFPSImage, mApp.mWidth - gFPSImage.GetWidth() - 10, mApp.mHeight - gFPSImage.GetHeight() - 10);
+				}
+				
+				int aPreScreenBltTime = timeGetTime();
+				mApp.mLastDrawTick = aPreScreenBltTime ;
 				ReDraw();
-				int num4 = timeGetTime();
-				mApp.mScreenBltTime = num4 - num3;
+				
+				UpdateFTimeAcc();
+				
+				int aEndTime = timeGetTime();
+				mApp.mScreenBltTime = aEndTime - aPreScreenBltTime;
 				if (mApp.mLoadingThreadStarted && !mApp.mLoadingThreadCompleted)
 				{
-					int val = num4 - num;
-					mApp.mNextDrawTick += 35 + Math.Max(val, 15);
-					if (num4 - mApp.mNextDrawTick >= 0)
+					int aTotalTime = aEndTime - aStartTime;
+					mApp.mNextDrawTick += 35 + Math.Max(aTotalTime, 15);
+					if (aEndTime - mApp.mNextDrawTick >= 0)
 					{
-						mApp.mNextDrawTick = num4;
+						mApp.mNextDrawTick = aEndTime;
 					}
 				}
 				else
 				{
-					mApp.mNextDrawTick = num4;
+					mApp.mNextDrawTick = aEndTime;
 				}
 				mApp.mHasPendingDraw = false;
 				mApp.mCustomCursorDirty = false;
 				return true;
 			}
-			mApp.mHasPendingDraw = false;
-			mApp.mLastDrawWasEmpty = true;
-			
+			else
+			{
+				mApp.mHasPendingDraw = false;
+				mApp.mLastDrawWasEmpty = true;
+			}
 			mXNAGraphicsDriver.mXNARenderDevice.PresentScreenImage();
 			return false;
 		}

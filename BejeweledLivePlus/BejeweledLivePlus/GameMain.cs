@@ -1,5 +1,6 @@
 using System;
 using System.Globalization;
+using System.Threading.Tasks;
 using BejeweledLivePlus.Localization;
 // using Microsoft.Phone.Shell;
 using Microsoft.Xna.Framework;
@@ -71,7 +72,7 @@ namespace BejeweledLivePlus
 		{
 			base.Content = new WP7ContentManager(base.Services);
 			base.Content.RootDirectory = "Content";
-			base.IsFixedTimeStep = true;
+			base.IsFixedTimeStep = false;
 			base.IsMouseVisible = true;
 			theApp = new BejeweledLivePlusApp(this);
 			SexyFramework.GlobalMembers.gSexyApp = theApp;
