@@ -27,10 +27,14 @@ namespace SexyFramework.Drivers.App
 		private int mGameStartTime;
 
 		private int mGameLastUpdateTime;
+
+		private double mUpdTimeAcc;
+
+		private double mLastUpdTime;
 		
 		public ContentManager mContentManager;
 
-		private XNAGraphicsDriver mXNAGraphicsDriver;
+		public XNAGraphicsDriver mXNAGraphicsDriver;
 
 		private ConfigItemKey mConfigRoot;
 
@@ -97,7 +101,7 @@ namespace SexyFramework.Drivers.App
 			mApp.mLastDrawWasEmpty = false;
 			mApp.mLastTimeCheck = 0;
 			mApp.mUpdateMultiplier = 1;
-			mApp.mMaxNonDrawCount = 50;
+			mApp.mMaxNonDrawCount = 10;
 			mApp.mPaused = false;
 			mApp.mFastForwardToUpdateNum = 0;
 			mApp.mFastForwardToMarker = false;
@@ -209,6 +213,7 @@ namespace SexyFramework.Drivers.App
 			mApp.mWidgetInspectorPickMode = false;
 			mApp.mWidgetInspectorLeftAnchor = false;
 			GlobalMembers.gIs3D = true;
+			mUpdTimeAcc = 0;
 			return true;
 		}
 
@@ -245,47 +250,56 @@ namespace SexyFramework.Drivers.App
 		public override bool UpdateAppStep(ref bool updated)
 		{
 			updated = false;
+ 
 			if (mApp.mExitToTop)
+				return false;
+ 
+			if (mApp.mLoadingFailed)
 			{
+				mApp.Shutdown();
 				return false;
 			}
-
-			if (mApp.mUpdateAppState == 0 || mApp.mUpdateAppState == 3)
-			{
-				mApp.mUpdateAppState = 1;
-			}
-			mApp.mUpdateAppDepth++;
+ 
+			if (mApp.mPaused)
+				return true;
+ 
 			if (mApp.mStepMode != 0)
 			{
 				if (mApp.mStepMode == 2)
 				{
-					Thread.Sleep((int)mApp.mFrameTime);
-					mApp.mUpdateAppState = 3;
+					return true;
 				}
-				else
-				{
-					mApp.mStepMode = 2;
-					DoUpdateFrames();
-					DoUpdateFramesF(1f);
-				}
+				mApp.mStepMode = 2;
+				DoUpdateFrames();
+				DoUpdateFramesF(1f);
+				DrawDirtyStuff();
+				updated = true;
+				mApp.ProcessSafeDeleteList();
+				return true;
 			}
-			int mUpdateCount = mApp.mUpdateCount;
-			Process();
+
+			int prevUpdateCount = mApp.mUpdateCount;
+			int now = timeGetTime();
+			if (mLastUpdTime != 0) mUpdTimeAcc += now - mLastUpdTime;
+			mLastUpdTime = now;
+			if (mUpdTimeAcc > 500) mUpdTimeAcc = 500;
+
+			int aCount = 0;
+			while (mUpdTimeAcc >= mApp.mFrameTime && aCount < 50)
+			{
+				DoUpdateFrames();
+				aCount++;
+				mUpdTimeAcc -= mApp.mFrameTime;
+			}
+			
+			DoUpdateFramesF(1f);
 			mApp.ProcessSafeDeleteList();
-			updated = mApp.mUpdateCount != mUpdateCount;
-			mApp.mUpdateAppDepth--;
-			mGameLastUpdateTime = timeGetTime();
+			updated = mApp.mUpdateCount != prevUpdateCount;
 			return true;
 		}
 
 		public override void ClearUpdateBacklog(bool relaxForASecond)
 		{
-			mApp.mLastTimeCheck = timeGetTime();
-			mApp.mUpdateFTimeAcc = 0.0;
-			if (relaxForASecond)
-			{
-				mApp.mRelaxUpdateBacklogCount = 1000;
-			}
 		}
 
 		public override void Shutdown()
@@ -714,6 +728,7 @@ namespace SexyFramework.Drivers.App
 		{
 			mXNAGraphicsDriver.ClearColorBuffer(SexyFramework.Graphics.Color.Black);
 			DrawDirtyStuff();
+			mXNAGraphicsDriver.mXNARenderDevice.PresentScreenImage();
 		}
 
 		public override int GetAppTime()
@@ -849,15 +864,16 @@ namespace SexyFramework.Drivers.App
 					// For mobile, it's capped at 60FPS, unlike PC which can go unlimited
 					// So this is just some workaround
 					double aDecrement = 1.0;
-					if (PlatformInfo.MonoGamePlatform == MonoGamePlatform.iOS ||
-					    PlatformInfo.MonoGamePlatform == MonoGamePlatform.Android)
-					{
-						aDecrement = Math.Min(4.9 / aXNAFrameDelta, 1.0);
-					}
+					// if (PlatformInfo.MonoGamePlatform == MonoGamePlatform.iOS ||
+					//     PlatformInfo.MonoGamePlatform == MonoGamePlatform.Android)
+					// {
+					// 	aDecrement = Math.Min(4.9 / aXNAFrameDelta, 1.0);
+					// }
 					
 					mApp.mUpdateAppState = 3;
 					mApp.mPendingUpdatesAcc += anUpdatesPerUpdateF;
 					mApp.mPendingUpdatesAcc -= aDecrement;
+					mApp.ProcessSafeDeleteList();
 					
 					while (mApp.mPendingUpdatesAcc >= aDecrement)
 					{
@@ -885,7 +901,7 @@ namespace SexyFramework.Drivers.App
 					}
 					didUpdate = true;
 				}
-				if (!didUpdate)
+				// if (!didUpdate)
 				{
 					mApp.mUpdateAppState = 3;
 					mApp.mNonDrawCount = 0;
@@ -933,7 +949,7 @@ namespace SexyFramework.Drivers.App
 			if (mApp.mLastTimeCheck != 0)
 			{
 				int num2 = num - mApp.mLastTimeCheck;
-				mApp.mUpdateFTimeAcc = Math.Min(mApp.mUpdateFTimeAcc + (double)num2, (float)mApp.mMaxUpdateBacklog);
+                mApp.mUpdateFTimeAcc = Math.Min(mApp.mUpdateFTimeAcc + (double)num2, (float)mApp.mMaxUpdateBacklog);
 				if (mApp.mRelaxUpdateBacklogCount > 0)
 				{
 					mApp.mRelaxUpdateBacklogCount = Math.Max(mApp.mRelaxUpdateBacklogCount - num2, 0);
@@ -1043,7 +1059,7 @@ namespace SexyFramework.Drivers.App
 				
 				int aPreScreenBltTime = timeGetTime();
 				mApp.mLastDrawTick = aPreScreenBltTime ;
-				ReDraw();
+				// ReDraw();
 				
 				UpdateFTimeAcc();
 				
@@ -1071,7 +1087,6 @@ namespace SexyFramework.Drivers.App
 				mApp.mHasPendingDraw = false;
 				mApp.mLastDrawWasEmpty = true;
 			}
-			mXNAGraphicsDriver.mXNARenderDevice.PresentScreenImage();
 			return false;
 		}
 

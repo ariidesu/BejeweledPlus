@@ -885,6 +885,8 @@ namespace SexyFramework.Drivers.Graphics
 				};
 				SetTextureDirect(0, null);
 				mStateMgr.SetWorldTransform(Matrix.Identity);
+				CheckBatchAndCommit();
+				FlushBufferedTriangles();
 				DoCommitAllRenderState();
 				DrawPrimitiveInternal(3, 1, inVertData, 32uL, mDefaultVertexFVF, false, Matrix.Identity);
 			}
@@ -961,134 +963,129 @@ namespace SexyFramework.Drivers.Graphics
 
 		public override void BltTriangles(Image theImage, SexyVertex2D[,] theVertices, int theNumTriangles, SexyFramework.Graphics.Color theColor, int theDrawMode, float tx, float ty, bool blend, Rect theClipRect)
 		{
-			BltTrianglesHelper(theImage, theVertices, theNumTriangles, theColor, theDrawMode, tx, ty, blend, theClipRect);
-		}
-
-		public void BltTrianglesHelper(Image theImage, SexyVertex2D[,] theVertices, int theNumTriangles, SexyFramework.Graphics.Color theColor, int theDrawMode, float tx, float ty, bool blend, Rect theClipRect)
-		{
-			Image image = theImage;
-			theImage = SetupAtlasState(0, theImage);
-			MemoryImage inImage = theImage as MemoryImage;
-			if (!CreateImageRenderData(ref inImage))
-			{
-				return;
-			}
-			if (image.mAtlasImage != null)
-			{
-				int num = image.mAtlasEndX - image.mAtlasStartX;
-				int num2 = image.mAtlasEndY - image.mAtlasStartY;
-				int length = theVertices.GetLength(0);
-				for (int i = 0; i < length; i++)
-				{
-					for (int j = 0; j < 3; j++)
-					{
-						theVertices[i, j].u = (theVertices[i, j].u * (float)num + (float)image.mAtlasStartX) / (float)inImage.mWidth;
-						theVertices[i, j].v = (theVertices[i, j].v * (float)num2 + (float)image.mAtlasStartY) / (float)inImage.mHeight;
-					}
-				}
-			}
-			SetupDrawMode(theDrawMode);
-			XNATextureData xNATextureData = (XNATextureData)inImage.GetRenderData();
-			if (!((double)xNATextureData.mMaxTotalU <= 1.0) || !((double)xNATextureData.mMaxTotalV <= 1.0))
-			{
-				return;
-			}
-			SetTextureDirect(0, xNATextureData.mTextures[0].mTexture);
-			float z = 0f;
-			bool flag = mTransformStack.Count != 0;
-			bool flag2 = theClipRect != Rect.INVALIDATE_RECT && (theClipRect.mX != 0 || theClipRect.mY != 0 || theClipRect.mWidth != mScreenWidth || theClipRect.mHeight != mScreenHeight);
-			CheckBatchAndCommit();
-			if (flag)
-			{
-				SexyMatrix3 sexyMatrix = mTransformStack.Peek();
-				for (int k = 0; k < theNumTriangles; k++)
-				{
-					if (mBatchedTriangleIndex > mBatchedTriangleSize - 3)
-					{
-						DoCommitAllRenderState();
-						FlushBufferedTriangles();
-					}
-					SexyVector2[] array = new SexyVector2[3];
-					array[0].x = theVertices[k, 0].x + tx;
-					array[0].y = theVertices[k, 0].y + ty;
-					array[1].x = theVertices[k, 1].x + tx;
-					array[1].y = theVertices[k, 1].y + ty;
-					array[2].x = theVertices[k, 2].x + tx;
-					array[2].y = theVertices[k, 2].y + ty;
-					array[0].x = array[0].x * sexyMatrix.m00 + array[0].y * sexyMatrix.m01 + sexyMatrix.m02;
-					array[0].y = array[0].x * sexyMatrix.m10 + array[0].y * sexyMatrix.m11 + sexyMatrix.m12;
-					array[1].x = array[1].x * sexyMatrix.m00 + array[1].y * sexyMatrix.m01 + sexyMatrix.m02;
-					array[1].y = array[1].x * sexyMatrix.m10 + array[1].y * sexyMatrix.m11 + sexyMatrix.m12;
-					array[2].x = array[2].x * sexyMatrix.m00 + array[2].y * sexyMatrix.m01 + sexyMatrix.m02;
-					array[2].y = array[2].x * sexyMatrix.m10 + array[2].y * sexyMatrix.m11 + sexyMatrix.m12;
-					mBatchedTriangleBuffer[mBatchedTriangleIndex++] = new VertexPositionColorTexture(new Vector3(array[0].x, array[0].y, z), (theVertices[k, 0].color != SexyFramework.Graphics.Color.Zero) ? GetXNAColor(theVertices[k, 0].color) : GetXNAColor(theColor), new Vector2(theVertices[k, 0].u * xNATextureData.mMaxTotalU, theVertices[k, 0].v * xNATextureData.mMaxTotalV));
-					mBatchedTriangleBuffer[mBatchedTriangleIndex++] = new VertexPositionColorTexture(new Vector3(array[1].x, array[1].y, z), (theVertices[k, 1].color != SexyFramework.Graphics.Color.Zero) ? GetXNAColor(theVertices[k, 1].color) : GetXNAColor(theColor), new Vector2(theVertices[k, 1].u * xNATextureData.mMaxTotalU, theVertices[k, 1].v * xNATextureData.mMaxTotalV));
-					mBatchedTriangleBuffer[mBatchedTriangleIndex++] = new VertexPositionColorTexture(new Vector3(array[2].x, array[2].y, z), (theVertices[k, 2].color != SexyFramework.Graphics.Color.Zero) ? GetXNAColor(theVertices[k, 2].color) : GetXNAColor(theColor), new Vector2(theVertices[k, 2].u * xNATextureData.mMaxTotalU, theVertices[k, 2].v * xNATextureData.mMaxTotalV));
-					new SexyVector2(mBatchedTriangleBuffer[mBatchedTriangleIndex - 3].TextureCoordinate.X, mBatchedTriangleBuffer[mBatchedTriangleIndex - 3].TextureCoordinate.Y);
-					new SexyVector2(mBatchedTriangleBuffer[mBatchedTriangleIndex - 2].TextureCoordinate.X, mBatchedTriangleBuffer[mBatchedTriangleIndex - 2].TextureCoordinate.Y);
-					new SexyVector2(mBatchedTriangleBuffer[mBatchedTriangleIndex - 1].TextureCoordinate.X, mBatchedTriangleBuffer[mBatchedTriangleIndex - 1].TextureCoordinate.Y);
-					AdjustVertsForAtlas(0, ref mBatchedTriangleBuffer, mBatchedTriangleIndex - 3, 3, 0u, 32, 0);
-					if (!SUPPORT_HW_CLIP && flag2)
-					{
-						VertexPositionColorTexture[] array2 = new VertexPositionColorTexture[3];
-						for (int l = 0; l < 3; l++)
-						{
-							array2[l] = mBatchedTriangleBuffer[mBatchedTriangleIndex - (3 - l)];
-						}
-						mBatchedTriangleIndex -= 3;
-						DrawPolyClipped(theClipRect, array2);
-					}
-				}
-				return;
-			}
-			if (!SUPPORT_HW_CLIP && flag2)
-			{
-				for (int m = 0; m < theNumTriangles; m++)
-				{
-					if (mBatchedTriangleIndex > mBatchedTriangleSize - 3)
-					{
-						DoCommitAllRenderState();
-						FlushBufferedTriangles();
-					}
-					mBatchedTriangleBuffer[mBatchedTriangleIndex++] = new VertexPositionColorTexture(new Vector3(theVertices[m, 0].x, theVertices[m, 0].y, z), (theVertices[m, 0].color != SexyFramework.Graphics.Color.Zero) ? GetXNAColor(theVertices[m, 0].color) : GetXNAColor(theColor), new Vector2(theVertices[m, 0].u * xNATextureData.mMaxTotalU, theVertices[m, 0].v * xNATextureData.mMaxTotalV));
-					mBatchedTriangleBuffer[mBatchedTriangleIndex++] = new VertexPositionColorTexture(new Vector3(theVertices[m, 1].x, theVertices[m, 1].y, z), (theVertices[m, 1].color != SexyFramework.Graphics.Color.Zero) ? GetXNAColor(theVertices[m, 1].color) : GetXNAColor(theColor), new Vector2(theVertices[m, 1].u * xNATextureData.mMaxTotalU, theVertices[m, 1].v * xNATextureData.mMaxTotalV));
-					mBatchedTriangleBuffer[mBatchedTriangleIndex++] = new VertexPositionColorTexture(new Vector3(theVertices[m, 2].x, theVertices[m, 2].y, z), (theVertices[m, 2].color != SexyFramework.Graphics.Color.Zero) ? GetXNAColor(theVertices[m, 2].color) : GetXNAColor(theColor), new Vector2(theVertices[m, 2].u * xNATextureData.mMaxTotalU, theVertices[m, 2].v * xNATextureData.mMaxTotalV));
-					AdjustVertsForAtlas(0, ref mBatchedTriangleBuffer, mBatchedTriangleIndex - 3, 3, 0u, 32, 0);
-					if (!SUPPORT_HW_CLIP && flag2)
-					{
-						VertexPositionColorTexture[] array3 = new VertexPositionColorTexture[3];
-						for (int n = 0; n < 3; n++)
-						{
-							array3[n] = mBatchedTriangleBuffer[mBatchedTriangleIndex - (3 - n)];
-						}
-						mBatchedTriangleIndex -= 3;
-						DrawPolyClipped(theClipRect, array3);
-					}
-				}
-				return;
-			}
-			int num3 = 0;
-			while (num3 < theNumTriangles)
-			{
-				if (mBatchedTriangleIndex >= mBatchedTriangleSize)
-				{
-					DoCommitAllRenderState();
-					FlushBufferedTriangles();
-				}
-				int inStartIndex = mBatchedTriangleIndex;
-				int num4 = 0;
-				int num5 = Math.Min(mBatchedTriangleSize - mBatchedTriangleIndex, theNumTriangles - num3);
-				while (num4 < num5)
-				{
-					mBatchedTriangleBuffer[mBatchedTriangleIndex++] = new VertexPositionColorTexture(new Vector3(theVertices[num3, 0].x, theVertices[num3, 0].y, z), (theVertices[num3, 0].color != SexyFramework.Graphics.Color.Zero) ? GetXNAColor(theVertices[num3, 0].color) : GetXNAColor(theColor), new Vector2(theVertices[num3, 0].u * xNATextureData.mMaxTotalU, theVertices[num3, 0].v * xNATextureData.mMaxTotalV));
-					mBatchedTriangleBuffer[mBatchedTriangleIndex++] = new VertexPositionColorTexture(new Vector3(theVertices[num3, 1].x, theVertices[num3, 1].y, z), (theVertices[num3, 1].color != SexyFramework.Graphics.Color.Zero) ? GetXNAColor(theVertices[num3, 1].color) : GetXNAColor(theColor), new Vector2(theVertices[num3, 1].u * xNATextureData.mMaxTotalU, theVertices[num3, 1].v * xNATextureData.mMaxTotalV));
-					mBatchedTriangleBuffer[mBatchedTriangleIndex++] = new VertexPositionColorTexture(new Vector3(theVertices[num3, 2].x, theVertices[num3, 2].y, z), (theVertices[num3, 2].color != SexyFramework.Graphics.Color.Zero) ? GetXNAColor(theVertices[num3, 2].color) : GetXNAColor(theColor), new Vector2(theVertices[num3, 2].u * xNATextureData.mMaxTotalU, theVertices[num3, 2].v * xNATextureData.mMaxTotalV));
-					num4 += 3;
-					num3++;
-				}
-				AdjustVertsForAtlas(0, ref mBatchedTriangleBuffer, inStartIndex, num4, 0u, 32, 0);
-			}
-		}
+            Image image = theImage;
+            theImage = SetupAtlasState(0, theImage);
+            MemoryImage inImage = theImage as MemoryImage;
+            if (!CreateImageRenderData(ref inImage))
+            {
+                return;
+            }
+            if (image.mAtlasImage != null)
+            {
+                int num = image.mAtlasEndX - image.mAtlasStartX;
+                int num2 = image.mAtlasEndY - image.mAtlasStartY;
+                int length = theVertices.GetLength(0);
+                for (int i = 0; i < length; i++)
+                {
+                    for (int j = 0; j < 3; j++)
+                    {
+                        theVertices[i, j].u = (theVertices[i, j].u * (float)num + (float)image.mAtlasStartX) / (float)inImage.mWidth;
+                        theVertices[i, j].v = (theVertices[i, j].v * (float)num2 + (float)image.mAtlasStartY) / (float)inImage.mHeight;
+                    }
+                }
+            }
+            SetupDrawMode(theDrawMode);
+            XNATextureData xNATextureData = (XNATextureData)inImage.GetRenderData();
+            if (!((double)xNATextureData.mMaxTotalU <= 1.0) || !((double)xNATextureData.mMaxTotalV <= 1.0))
+            {
+                return;
+            }
+            SetTextureDirect(0, xNATextureData.mTextures[0].mTexture);
+            float z = 0f;
+            bool flag = mTransformStack.Count != 0;
+            bool flag2 = theClipRect != Rect.INVALIDATE_RECT && (theClipRect.mX != 0 || theClipRect.mY != 0 || theClipRect.mWidth != mScreenWidth || theClipRect.mHeight != mScreenHeight);
+            CheckBatchAndCommit();
+            if (flag)
+            {
+                SexyMatrix3 sexyMatrix = mTransformStack.Peek();
+                for (int k = 0; k < theNumTriangles; k++)
+                {
+                    if (mBatchedTriangleIndex > mBatchedTriangleSize - 3)
+                    {
+                        DoCommitAllRenderState();
+                        FlushBufferedTriangles();
+                    }
+                    SexyVector2[] array = new SexyVector2[3];
+                    array[0].x = theVertices[k, 0].x + tx;
+                    array[0].y = theVertices[k, 0].y + ty;
+                    array[1].x = theVertices[k, 1].x + tx;
+                    array[1].y = theVertices[k, 1].y + ty;
+                    array[2].x = theVertices[k, 2].x + tx;
+                    array[2].y = theVertices[k, 2].y + ty;
+                    array[0].x = array[0].x * sexyMatrix.m00 + array[0].y * sexyMatrix.m01 + sexyMatrix.m02;
+                    array[0].y = array[0].x * sexyMatrix.m10 + array[0].y * sexyMatrix.m11 + sexyMatrix.m12;
+                    array[1].x = array[1].x * sexyMatrix.m00 + array[1].y * sexyMatrix.m01 + sexyMatrix.m02;
+                    array[1].y = array[1].x * sexyMatrix.m10 + array[1].y * sexyMatrix.m11 + sexyMatrix.m12;
+                    array[2].x = array[2].x * sexyMatrix.m00 + array[2].y * sexyMatrix.m01 + sexyMatrix.m02;
+                    array[2].y = array[2].x * sexyMatrix.m10 + array[2].y * sexyMatrix.m11 + sexyMatrix.m12;
+                    mBatchedTriangleBuffer[mBatchedTriangleIndex++] = new VertexPositionColorTexture(new Vector3(array[0].x, array[0].y, z), (theVertices[k, 0].color != SexyFramework.Graphics.Color.Zero) ? GetXNAColor(theVertices[k, 0].color) : GetXNAColor(theColor), new Vector2(theVertices[k, 0].u * xNATextureData.mMaxTotalU, theVertices[k, 0].v * xNATextureData.mMaxTotalV));
+                    mBatchedTriangleBuffer[mBatchedTriangleIndex++] = new VertexPositionColorTexture(new Vector3(array[1].x, array[1].y, z), (theVertices[k, 1].color != SexyFramework.Graphics.Color.Zero) ? GetXNAColor(theVertices[k, 1].color) : GetXNAColor(theColor), new Vector2(theVertices[k, 1].u * xNATextureData.mMaxTotalU, theVertices[k, 1].v * xNATextureData.mMaxTotalV));
+                    mBatchedTriangleBuffer[mBatchedTriangleIndex++] = new VertexPositionColorTexture(new Vector3(array[2].x, array[2].y, z), (theVertices[k, 2].color != SexyFramework.Graphics.Color.Zero) ? GetXNAColor(theVertices[k, 2].color) : GetXNAColor(theColor), new Vector2(theVertices[k, 2].u * xNATextureData.mMaxTotalU, theVertices[k, 2].v * xNATextureData.mMaxTotalV));
+                    new SexyVector2(mBatchedTriangleBuffer[mBatchedTriangleIndex - 3].TextureCoordinate.X, mBatchedTriangleBuffer[mBatchedTriangleIndex - 3].TextureCoordinate.Y);
+                    new SexyVector2(mBatchedTriangleBuffer[mBatchedTriangleIndex - 2].TextureCoordinate.X, mBatchedTriangleBuffer[mBatchedTriangleIndex - 2].TextureCoordinate.Y);
+                    new SexyVector2(mBatchedTriangleBuffer[mBatchedTriangleIndex - 1].TextureCoordinate.X, mBatchedTriangleBuffer[mBatchedTriangleIndex - 1].TextureCoordinate.Y);
+                    AdjustVertsForAtlas(0, ref mBatchedTriangleBuffer, mBatchedTriangleIndex - 3, 3, 0u, 32, 0);
+                    if (!SUPPORT_HW_CLIP && flag2)
+                    {
+                        VertexPositionColorTexture[] array2 = new VertexPositionColorTexture[3];
+                        for (int l = 0; l < 3; l++)
+                        {
+                            array2[l] = mBatchedTriangleBuffer[mBatchedTriangleIndex - (3 - l)];
+                        }
+                        mBatchedTriangleIndex -= 3;
+                        DrawPolyClipped(theClipRect, array2);
+                    }
+                }
+                return;
+            }
+            if (!SUPPORT_HW_CLIP && flag2)
+            {
+                for (int m = 0; m < theNumTriangles; m++)
+                {
+                    if (mBatchedTriangleIndex > mBatchedTriangleSize - 3)
+                    {
+                        DoCommitAllRenderState();
+                        FlushBufferedTriangles();
+                    }
+                    mBatchedTriangleBuffer[mBatchedTriangleIndex++] = new VertexPositionColorTexture(new Vector3(theVertices[m, 0].x, theVertices[m, 0].y, z), (theVertices[m, 0].color != SexyFramework.Graphics.Color.Zero) ? GetXNAColor(theVertices[m, 0].color) : GetXNAColor(theColor), new Vector2(theVertices[m, 0].u * xNATextureData.mMaxTotalU, theVertices[m, 0].v * xNATextureData.mMaxTotalV));
+                    mBatchedTriangleBuffer[mBatchedTriangleIndex++] = new VertexPositionColorTexture(new Vector3(theVertices[m, 1].x, theVertices[m, 1].y, z), (theVertices[m, 1].color != SexyFramework.Graphics.Color.Zero) ? GetXNAColor(theVertices[m, 1].color) : GetXNAColor(theColor), new Vector2(theVertices[m, 1].u * xNATextureData.mMaxTotalU, theVertices[m, 1].v * xNATextureData.mMaxTotalV));
+                    mBatchedTriangleBuffer[mBatchedTriangleIndex++] = new VertexPositionColorTexture(new Vector3(theVertices[m, 2].x, theVertices[m, 2].y, z), (theVertices[m, 2].color != SexyFramework.Graphics.Color.Zero) ? GetXNAColor(theVertices[m, 2].color) : GetXNAColor(theColor), new Vector2(theVertices[m, 2].u * xNATextureData.mMaxTotalU, theVertices[m, 2].v * xNATextureData.mMaxTotalV));
+                    AdjustVertsForAtlas(0, ref mBatchedTriangleBuffer, mBatchedTriangleIndex - 3, 3, 0u, 32, 0);
+                    if (!SUPPORT_HW_CLIP && flag2)
+                    {
+                        VertexPositionColorTexture[] array3 = new VertexPositionColorTexture[3];
+                        for (int n = 0; n < 3; n++)
+                        {
+                            array3[n] = mBatchedTriangleBuffer[mBatchedTriangleIndex - (3 - n)];
+                        }
+                        mBatchedTriangleIndex -= 3;
+                        DrawPolyClipped(theClipRect, array3);
+                    }
+                }
+                return;
+            }
+            int num3 = 0;
+            while (num3 < theNumTriangles)
+            {
+                if (mBatchedTriangleIndex >= mBatchedTriangleSize)
+                {
+                    DoCommitAllRenderState();
+                    FlushBufferedTriangles();
+                }
+                int inStartIndex = mBatchedTriangleIndex;
+                int num4 = 0;
+                int num5 = Math.Min(mBatchedTriangleSize - mBatchedTriangleIndex, theNumTriangles - num3);
+                while (num4 < num5)
+                {
+                    mBatchedTriangleBuffer[mBatchedTriangleIndex++] = new VertexPositionColorTexture(new Vector3(theVertices[num3, 0].x, theVertices[num3, 0].y, z), (theVertices[num3, 0].color != SexyFramework.Graphics.Color.Zero) ? GetXNAColor(theVertices[num3, 0].color) : GetXNAColor(theColor), new Vector2(theVertices[num3, 0].u * xNATextureData.mMaxTotalU, theVertices[num3, 0].v * xNATextureData.mMaxTotalV));
+                    mBatchedTriangleBuffer[mBatchedTriangleIndex++] = new VertexPositionColorTexture(new Vector3(theVertices[num3, 1].x, theVertices[num3, 1].y, z), (theVertices[num3, 1].color != SexyFramework.Graphics.Color.Zero) ? GetXNAColor(theVertices[num3, 1].color) : GetXNAColor(theColor), new Vector2(theVertices[num3, 1].u * xNATextureData.mMaxTotalU, theVertices[num3, 1].v * xNATextureData.mMaxTotalV));
+                    mBatchedTriangleBuffer[mBatchedTriangleIndex++] = new VertexPositionColorTexture(new Vector3(theVertices[num3, 2].x, theVertices[num3, 2].y, z), (theVertices[num3, 2].color != SexyFramework.Graphics.Color.Zero) ? GetXNAColor(theVertices[num3, 2].color) : GetXNAColor(theColor), new Vector2(theVertices[num3, 2].u * xNATextureData.mMaxTotalU, theVertices[num3, 2].v * xNATextureData.mMaxTotalV));
+                    num4 += 3;
+                    num3++;
+                }
+                AdjustVertsForAtlas(0, ref mBatchedTriangleBuffer, inStartIndex, num4, 0u, 32, 0);
+            }
+        }
 
 		private void CheckBatchAndCommit()
 		{
