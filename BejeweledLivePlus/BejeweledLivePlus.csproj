@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <TargetFramework>net8.0</TargetFramework>
+        <TargetFramework>net9.0</TargetFramework>
         <RollForward>Major</RollForward>
         <PublishReadyToRun>false</PublishReadyToRun>
         <TieredCompilation>false</TieredCompilation>
@@ -8,10 +8,10 @@
 		<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     </PropertyGroup>
     <ItemGroup>
-        <PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.1.303">
+        <PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.4.1">
             <PrivateAssets>All</PrivateAssets>
         </PackageReference>
-        <PackageReference Include="MonoGame.Content.Builder.Task" Version="3.8.1.303"/>
+        <PackageReference Include="MonoGame.Content.Builder.Task" Version="3.8.4.1" />
     </ItemGroup>
     <ItemGroup>
       <ProjectReference Include="..\SexyFramework\SexyFramework.csproj" />
@@ -19,8 +19,4 @@
     <ItemGroup>
         <MonoGameContentReference Include=".\Content\Content.mgcb"/>
     </ItemGroup>
-    <Target Name="RestoreDotnetTools" BeforeTargets="Restore">
-        <Message Text="Restoring dotnet tools" Importance="High"/>
-        <Exec Command="dotnet tool restore"/>
-    </Target>
 </Project>

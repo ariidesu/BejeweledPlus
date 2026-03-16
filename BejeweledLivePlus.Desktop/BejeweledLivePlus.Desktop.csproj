@@ -2,7 +2,7 @@
 
     <PropertyGroup>
         <OutputType>WinExe</OutputType>
-        <TargetFramework>net8.0</TargetFramework>
+        <TargetFramework>net9.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
     </PropertyGroup>
@@ -11,7 +11,7 @@
         <Reference Include="System"/>
     </ItemGroup>
     <ItemGroup>
-        <PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.1.303"/>
+        <PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.4.1" />
     </ItemGroup>
     <ItemGroup>
       <ProjectReference Include="..\BejeweledLivePlus\BejeweledLivePlus.csproj" />

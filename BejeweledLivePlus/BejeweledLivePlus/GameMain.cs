@@ -260,7 +260,7 @@ namespace BejeweledLivePlus
 			base.OnDeactivated(sender, args);
 		}
 
-		protected override void OnExiting(object sender, EventArgs args)
+		protected override void OnExiting(object sender, ExitingEventArgs args)
 		{
 			if (theApp.IsLoadingCompleted())
 			{
