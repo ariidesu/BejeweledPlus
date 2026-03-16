@@ -917,16 +917,16 @@ namespace BejeweledLivePlus
 			mTimeFXManager.Update();
 			if (GetTicksLeft() > 1250 || mBonusTime > 0)
 			{
-				mPanicScalePct = Math.Max(0f, mPanicScalePct - GlobalMembers.M(0.005f));
+				mPanicScalePct = Math.Max(0f, mPanicScalePct - GlobalMembers.M(0.0025f));
 			}
 			else if (mBonusTime == 0)
 			{
-				mPanicScalePct = Math.Min(1f, mPanicScalePct + GlobalMembers.M(0.005f));
+				mPanicScalePct = Math.Min(1f, mPanicScalePct + GlobalMembers.M(0.0025f));
 			}
 			CustomBassMusicInterface theMusicInterface = (CustomBassMusicInterface)GlobalMembers.gApp.mMusicInterface;
 			if (theMusicInterface.mSongName == "Speed")
 			{
-				theMusicInterface.SetTempo("Speed", 125 + (int)((mPointMultiplier - 1) * 3.5f));
+				theMusicInterface.SetTempo("Speed", 125 + (int)((mPointMultiplier - 1) * 6.5f));
 			}
 
 			SongInfo speedSongInfo = theMusicInterface.FindSong("Speed");
