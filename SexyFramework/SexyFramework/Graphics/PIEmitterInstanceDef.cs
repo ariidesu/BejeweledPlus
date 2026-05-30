@@ -69,10 +69,10 @@ namespace SexyFramework.Graphics
 		public PIEmitterInstanceDef()
 		{
 			mPosition = new PIValue2D();
-			mValues = new PIValue[19];
+			mValues = new PIValue[(int)PIEmitterValue.NUM_VALUES];
 			mPoints = new List<PIValue2D>();
 			mFreeEmitterIndices = new List<int>();
-			for (int i = 0; i < 19; i++)
+			for (int i = 0; i < (int)PIEmitterValue.NUM_VALUES; i++)
 			{
 				mValues[i] = new PIValue();
 			}
@@ -82,7 +82,7 @@ namespace SexyFramework.Graphics
 		{
 			mFreeEmitterIndices.Clear();
 			mPosition.Dispose();
-			for (int i = 0; i < 19; i++)
+			for (int i = 0; i < (int)PIEmitterValue.NUM_VALUES; i++)
 			{
 				mValues[i].Dispose();
 			}

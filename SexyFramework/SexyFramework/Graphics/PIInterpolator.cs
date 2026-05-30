@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 namespace SexyFramework.Graphics
@@ -12,24 +13,21 @@ namespace SexyFramework.Graphics
 			{
 				return mInterpolatorPointVector[0].mValue;
 			}
-			PIInterpolatorPoint pIInterpolatorPoint = mInterpolatorPointVector[0];
-			PIInterpolatorPoint pIInterpolatorPoint2 = mInterpolatorPointVector[mInterpolatorPointVector.Count - 1];
-			float num = pIInterpolatorPoint.mTime + theTime * (pIInterpolatorPoint2.mTime - pIInterpolatorPoint.mTime);
+			float aScaledTime = mInterpolatorPointVector[0].mTime + theTime * (mInterpolatorPointVector[mInterpolatorPointVector.Count - 1].mTime - mInterpolatorPointVector[0].mTime);
 			for (int i = 1; i < mInterpolatorPointVector.Count; i++)
 			{
-				PIInterpolatorPoint pIInterpolatorPoint3 = mInterpolatorPointVector[i - 1];
-				PIInterpolatorPoint pIInterpolatorPoint4 = mInterpolatorPointVector[i];
-				if (num > pIInterpolatorPoint3.mTime && num < pIInterpolatorPoint4.mTime)
+				PIInterpolatorPoint aP1 = mInterpolatorPointVector[i - 1];
+				PIInterpolatorPoint aP2 = mInterpolatorPointVector[i];
+				if (aScaledTime >= aP1.mTime && aScaledTime <= aP2.mTime)
 				{
-					return (int)GlobalPIEffect.InterpColor(pIInterpolatorPoint3.mValue, pIInterpolatorPoint4.mValue, (num - pIInterpolatorPoint3.mTime) / (pIInterpolatorPoint4.mTime - pIInterpolatorPoint3.mTime));
+					float aDenom = aP2.mTime - aP1.mTime;
+					float aPct = (aDenom > 0f) ? (aScaledTime - aP1.mTime) / aDenom : 0f;
+					if (aPct > 1f) aPct = 1f;
+					return (int)GlobalPIEffect.InterpColor(aP1.mValue, aP2.mValue, aPct);
 				}
 				if (i == mInterpolatorPointVector.Count - 1)
 				{
-					if (num >= pIInterpolatorPoint4.mTime)
-					{
-						return pIInterpolatorPoint4.mValue;
-					}
-					return pIInterpolatorPoint3.mValue;
+					return aP2.mValue;
 				}
 			}
 			return 0;

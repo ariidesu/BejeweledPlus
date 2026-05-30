@@ -65,9 +65,9 @@ namespace SexyFramework.Graphics
 
 		public PIEmitter()
 		{
-			mValues = new PIValue[42];
+			mValues = new PIValue[(int)PIEmitterValue.NUM_VALUES];
 			mParticleDefVector = new List<PIParticleDef>();
-			for (int i = 0; i < 42; i++)
+			for (int i = 0; i < (int)PIEmitterValue.NUM_VALUES; i++)
 			{
 				mValues[i] = new PIValue();
 			}

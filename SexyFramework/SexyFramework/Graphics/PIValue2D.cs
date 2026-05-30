@@ -45,13 +45,15 @@ namespace SexyFramework.Graphics
 			{
 				return mLastPoint = mBezier.Evaluate(theTime);
 			}
-			for (int i = 1; i < mValuePoint2DVector.Count; i++)
+			for (int aKeyIdx = 1; aKeyIdx < mValuePoint2DVector.Count; aKeyIdx++)
 			{
-				PIValuePoint2D pIValuePoint2D = mValuePoint2DVector[i - 1];
-				PIValuePoint2D pIValuePoint2D2 = mValuePoint2DVector[i];
-				if ((theTime >= pIValuePoint2D.mTime && theTime <= pIValuePoint2D2.mTime) || i == mValuePoint2DVector.Count - 1)
+				PIValuePoint2D aP1 = mValuePoint2DVector[aKeyIdx - 1];
+				PIValuePoint2D aP2 = mValuePoint2DVector[aKeyIdx];
+				if ((theTime >= aP1.mTime && theTime <= aP2.mTime) || aKeyIdx == mValuePoint2DVector.Count - 1)
 				{
-					return mLastPoint = pIValuePoint2D.mValue + (pIValuePoint2D2.mValue - pIValuePoint2D.mValue) * Math.Min(1f, (theTime - pIValuePoint2D.mTime) / (pIValuePoint2D2.mTime - pIValuePoint2D.mTime));
+					float aDenom = aP2.mTime - aP1.mTime;
+					float aPct = (aDenom > 0f) ? Math.Min(1f, (theTime - aP1.mTime) / aDenom) : 0f;
+					return mLastPoint = aP1.mValue + (aP2.mValue - aP1.mValue) * aPct;
 				}
 			}
 			return mLastPoint = new Vector2(0f, 0f);
@@ -72,13 +74,13 @@ namespace SexyFramework.Graphics
 			{
 				return mLastVelocity = mBezier.Velocity(theTime, false);
 			}
-			for (int i = 1; i < mValuePoint2DVector.Count; i++)
+			for (int aKeyIdx = 1; aKeyIdx < mValuePoint2DVector.Count; aKeyIdx++)
 			{
-				PIValuePoint2D pIValuePoint2D = mValuePoint2DVector[i - 1];
-				PIValuePoint2D pIValuePoint2D2 = mValuePoint2DVector[i];
-				if ((theTime >= pIValuePoint2D.mTime && theTime <= pIValuePoint2D2.mTime) || i == mValuePoint2DVector.Count - 1)
+				PIValuePoint2D aP1 = mValuePoint2DVector[aKeyIdx - 1];
+				PIValuePoint2D aP2 = mValuePoint2DVector[aKeyIdx];
+				if ((theTime >= aP1.mTime && theTime <= aP2.mTime) || aKeyIdx == mValuePoint2DVector.Count - 1)
 				{
-					return mLastVelocity = pIValuePoint2D2.mValue - pIValuePoint2D.mValue;
+					return mLastVelocity = aP2.mValue - aP1.mValue;
 				}
 			}
 			return mLastVelocity = new Vector2(0f, 0f);

@@ -111,9 +111,9 @@ namespace SexyFramework.Graphics
 
 		public PIParticleDef()
 		{
-			mValues = new PIValue[28];
+			mValues = new PIValue[(int)PIParticleDefValue.NUM_VALUES];
 			mRefPointOfs = default(Vector2);
-			for (int i = 0; i < 28; i++)
+			for (int i = 0; i < (int)PIParticleDefValue.NUM_VALUES; i++)
 			{
 				mValues[i] = new PIValue();
 			}

@@ -44,7 +44,7 @@ namespace SexyFramework.Graphics
 
 		public float mImgAngle;
 
-		public float[] mVariationValues = new float[9];
+		public float[] mVariationValues = new float[(int)PIParticleVariation.NUM_VARIATIONS];
 
 		public float mZoom;
 
@@ -72,6 +72,12 @@ namespace SexyFramework.Graphics
 
 		public float mLifePct;
 
+		public int mLifePctInt;
+
+		public int mLifePctIntInc;
+
+		public float mLifePctInc;
+
 		public bool mHasDrawn;
 
 		public uint mBkgColor;
@@ -94,8 +100,7 @@ namespace SexyFramework.Graphics
 
 		public void Reset()
 		{
-			mPos.X = 0f;
-			mPos.Y = 0f;
+			mPos = Vector2.Zero;
 			mPrev = null;
 			mNext = null;
 			mParticleDef = null;
@@ -106,11 +111,13 @@ namespace SexyFramework.Graphics
 			mBkgColor = uint.MaxValue;
 			mSrcSizeXMult = 1f;
 			mSrcSizeYMult = 1f;
-			mParentFreeEmitter = null;
 			mHasDrawn = false;
 			mTicks = 0f;
 			mLife = 0f;
 			mLifePct = 0f;
+			mLifePctInt = 0;
+			mLifePctIntInc = 0;
+			mLifePctInc = 0f;
 		}
 
 		public void Init()

@@ -36,61 +36,63 @@ namespace SexyFramework.Graphics
 
 		public void QuantizeCurve()
 		{
-			float mTime = mValuePointVector[0].mTime;
-			float mTime2 = mValuePointVector[mValuePointVector.Count - 1].mTime;
+			float aMinTime = mValuePointVector[0].mTime;
+			float aMaxTime = mValuePointVector[mValuePointVector.Count - 1].mTime;
 			mQuantTable.Clear();
 			Common.Resize(mQuantTable, GlobalPIEffect.PI_QUANT_SIZE);
-			bool flag = true;
-			int num = 0;
-			float num2 = 0f;
-			float num3 = mTime;
-			float num4 = (mTime2 - mTime) / (float)GlobalPIEffect.PI_QUANT_SIZE / 2f;
-			int num5 = 0;
+			bool isFirstSample = true;
+			int aLastQuantIdx = 0;
+			float aLastValue = 0f;
+			float aCurT = aMinTime;
+			float aTStep = (aMaxTime - aMinTime) / (float)GlobalPIEffect.PI_QUANT_SIZE / 2f;
+			int aCurKeyIdx = 0;
 			while (true)
 			{
-				Vector2 vector = mBezier.Evaluate(num3);
-				int num6 = (int)GlobalPIEffect.TIME_TO_X(vector.X, mTime, mTime2);
-				bool flag2 = false;
-				while (vector.X >= mValuePointVector[num5 + 1].mTime)
+				Vector2 aPt = mBezier.Evaluate(aCurT);
+				int aCurQuantIdx = (int)GlobalPIEffect.TIME_TO_X(aPt.X, aMinTime, aMaxTime);
+				bool isDone = false;
+				while (aPt.X >= mValuePointVector[aCurKeyIdx + 1].mTime)
 				{
-					num5++;
-					if (num5 >= mValuePointVector.Count - 1)
+					aCurKeyIdx++;
+					if (aCurKeyIdx >= mValuePointVector.Count - 1)
 					{
-						flag2 = true;
+						isDone = true;
 						break;
 					}
 				}
-				if (flag2)
+				if (isDone)
 				{
 					break;
 				}
-				if (vector.X >= mValuePointVector[num5].mTime)
+				if (aPt.X >= mValuePointVector[aCurKeyIdx].mTime)
 				{
-					if (!flag && num6 > num + 1)
+					if (!isFirstSample && aCurQuantIdx > aLastQuantIdx + 1)
 					{
-						for (int i = num; i <= num6; i++)
+						for (int i = aLastQuantIdx; i <= aCurQuantIdx; i++)
 						{
-							float num7 = (float)(i - num) / (float)(num6 - num);
-							float value = num7 * vector.Y + (1f - num7) * num2;
-							mQuantTable[i] = value;
+							float aFrac = (float)(i - aLastQuantIdx) / (float)(aCurQuantIdx - aLastQuantIdx);
+							float aValue = aFrac * aPt.Y + (1f - aFrac) * aLastValue;
+							mQuantTable[i] = aValue;
 						}
 					}
 					else
 					{
-						float y = vector.Y;
-						mQuantTable[num6] = y;
+						mQuantTable[aCurQuantIdx] = aPt.Y;
 					}
-					num = num6;
-					num2 = vector.Y;
+					aLastQuantIdx = aCurQuantIdx;
+					aLastValue = aPt.Y;
 				}
-				flag = false;
-				num3 += num4;
+				isFirstSample = false;
+				aCurT += aTStep;
 			}
-			for (int j = 0; j < mValuePointVector.Count; j++)
+			for (int aKeyIdx = 0; aKeyIdx < mValuePointVector.Count; aKeyIdx++)
 			{
-				mQuantTable[(int)GlobalPIEffect.TIME_TO_X(mValuePointVector[j].mTime, mTime, mTime2)] = mValuePointVector[j].mValue;
+				mQuantTable[(int)GlobalPIEffect.TIME_TO_X(mValuePointVector[aKeyIdx].mTime, aMinTime, aMaxTime)] = mValuePointVector[aKeyIdx].mValue;
 			}
 		}
+
+		private static readonly float[] sErrorFactor = new float[4] { 0.1f, 0.1f, 0.1f, 0.5f };
+		private static readonly float[] sBezierFactors = new float[3] { 1f, 0.75f, 1.25f };
 
 		public float GetValueAt(float theTime)
 		{
@@ -103,7 +105,7 @@ namespace SexyFramework.Graphics
 			{
 				return mLastValue;
 			}
-			float num = mLastTime;
+			float aPrevTime = mLastTime;
 			mLastTime = theTime;
 			if (mValuePointVector.Count == 1)
 			{
@@ -111,91 +113,96 @@ namespace SexyFramework.Graphics
 			}
 			if (mBezier.IsInitialized())
 			{
-				float mTime = mValuePointVector[0].mTime;
-				float mTime2 = mValuePointVector[mValuePointVector.Count - 1].mTime;
-				if (mTime2 <= 1.001f)
+				float aMinTime = mValuePointVector[0].mTime;
+				float aMaxTime = mValuePointVector[mValuePointVector.Count - 1].mTime;
+				if (aMaxTime <= 1.001f)
 				{
 					if (mQuantTable.Count == 0)
 					{
 						QuantizeCurve();
 					}
-					float num2 = GlobalPIEffect.TIME_TO_X(theTime, mTime, mTime2);
-					if (num2 <= 0f)
+					float aQPos = GlobalPIEffect.TIME_TO_X(theTime, aMinTime, aMaxTime);
+					if (aQPos <= 0f)
 					{
 						return mLastValue = mValuePointVector[0].mValue;
 					}
-					if (num2 >= (float)(GlobalPIEffect.PI_QUANT_SIZE - 1))
+					if (aQPos >= (float)(GlobalPIEffect.PI_QUANT_SIZE - 1))
 					{
 						return mLastValue = mValuePointVector[mValuePointVector.Count - 1].mValue;
 					}
-					int num3 = (int)num2;
-					float num4 = num2 - (float)num3;
-					mLastValue = mQuantTable[num3] * (1f - num4) + mQuantTable[num3 + 1] * num4;
+					int aLeft = (int)aQPos;
+					float aFrac = aQPos - (float)aLeft;
+					mLastValue = mQuantTable[aLeft] * (1f - aFrac) + mQuantTable[aLeft + 1] * aFrac;
 					return mLastValue;
 				}
-				float num5 = Math.Min(0.1f, (mTime2 - mTime) / 1000f);
-				if (theTime <= mTime)
+				float aMaxError = Math.Min(0.1f, (aMaxTime - aMinTime) / 1000f);
+				if (theTime <= aMinTime)
 				{
 					return mLastValue = mValuePointVector[0].mValue;
 				}
-				if (theTime >= mTime2)
+				if (theTime >= aMaxTime)
 				{
 					return mLastValue = mValuePointVector[mValuePointVector.Count - 1].mValue;
 				}
-				float num6 = mTime;
-				float num7 = mTime2;
-				Vector2 vector = default(Vector2);
-				float num8 = 0f;
-				bool flag = (theTime - num) / (mTime2 - mTime) > 0.05f;
-				float[] array = new float[4] { 0.1f, 0.1f, 0.1f, 0.5f };
-				float[] array2 = new float[3] { 1f, 0.75f, 1.25f };
-				for (int i = 0; i < 1000; i++)
+				float aL = aMinTime;
+				float aR = aMaxTime;
+				Vector2 aPt = default(Vector2);
+				float aTryT = 0f;
+				bool isBigChange = (theTime - aPrevTime) / (aMaxTime - aMinTime) > 0.05f;
+				float[] anErrorFactor = sErrorFactor;
+				float[] aFactors = sBezierFactors;
+				for (int aTryCount = 0; aTryCount < 1000; aTryCount++)
 				{
-					float num9 = num5;
-					if (i < 4 && !flag)
+					float aWantError = aMaxError;
+					if (aTryCount < 4 && !isBigChange)
 					{
-						num9 *= array[i];
+						aWantError *= anErrorFactor[aTryCount];
 					}
-					num8 = ((i >= 3 || mLastCurveTDelta == 0f || flag) ? (num6 + (num7 - num6) / 2f) : (mLastCurveT + mLastCurveTDelta * array2[i]));
-					if (num8 >= num6 && num8 <= num7)
+					aTryT = ((aTryCount >= 3 || mLastCurveTDelta == 0f || isBigChange)
+						? (aL + (aR - aL) / 2f)
+						: (mLastCurveT + mLastCurveTDelta * aFactors[aTryCount]));
+					if (aTryT >= aL && aTryT <= aR)
 					{
-						vector = mBezier.Evaluate(num8);
-						float num10 = vector.X - theTime;
-						if (Math.Abs(num10) <= num9)
+						aPt = mBezier.Evaluate(aTryT);
+						float aDiff = aPt.X - theTime;
+						if (Math.Abs(aDiff) <= aWantError)
 						{
 							break;
 						}
-						if (num10 < 0f)
+						if (aDiff < 0f)
 						{
-							num6 = num8;
+							aL = aTryT;
 						}
 						else
 						{
-							num7 = num8;
+							aR = aTryT;
 						}
 					}
 				}
-				mLastCurveTDelta = mLastCurveTDelta * 0.5f + (num8 - mLastCurveT) * 0.5f;
-				mLastCurveT = num8;
-				return mLastValue = vector.Y;
+				mLastCurveTDelta = mLastCurveTDelta * 0.5f + (aTryT - mLastCurveT) * 0.5f;
+				mLastCurveT = aTryT;
+				return mLastValue = aPt.Y;
 			}
-			for (int j = 1; j < mValuePointVector.Count; j++)
+			for (int aKeyIdx = 1; aKeyIdx < mValuePointVector.Count; aKeyIdx++)
 			{
-				PIValuePoint pIValuePoint = mValuePointVector[j - 1];
-				PIValuePoint pIValuePoint2 = mValuePointVector[j];
-				if (theTime > pIValuePoint.mTime && theTime < pIValuePoint2.mTime)
+				PIValuePoint aP1 = mValuePointVector[aKeyIdx - 1];
+				PIValuePoint aP2 = mValuePointVector[aKeyIdx];
+				if (theTime >= aP1.mTime && theTime <= aP2.mTime)
 				{
-					return mLastValue = pIValuePoint.mValue + (pIValuePoint2.mValue - pIValuePoint.mValue) * (theTime - pIValuePoint.mTime) / (pIValuePoint2.mTime - pIValuePoint.mTime);
+					float aDenom = aP2.mTime - aP1.mTime;
+					float aPct = (aDenom > 0f) ? (theTime - aP1.mTime) / aDenom : 0f;
+					if (aPct > 1f) aPct = 1f;
+					return mLastValue = aP1.mValue + (aP2.mValue - aP1.mValue) * aPct;
 				}
-				if (j == mValuePointVector.Count - 1)
+				if (aKeyIdx == mValuePointVector.Count - 1)
 				{
-					if (theTime >= pIValuePoint2.mTime)
+					if (theTime >= aP2.mTime)
 					{
-						mLastValue = pIValuePoint2.mValue;
+						mLastValue = aP2.mValue;
 					}
 					else
 					{
-						mLastValue = pIValuePoint.mValue;
+						mLastValue = aP1.mValue;
 					}
 					return mLastValue;
 				}
@@ -205,12 +212,12 @@ namespace SexyFramework.Graphics
 
 		public float GetLastKeyframe(float theTime)
 		{
-			for (int num = mValuePointVector.Count - 1; num >= 0; num--)
+			for (int aKeyIdx = mValuePointVector.Count - 1; aKeyIdx >= 0; aKeyIdx--)
 			{
-				PIValuePoint pIValuePoint = mValuePointVector[num];
-				if (theTime >= pIValuePoint.mTime)
+				PIValuePoint aPt = mValuePointVector[aKeyIdx];
+				if (theTime >= aPt.mTime)
 				{
-					return pIValuePoint.mValue;
+					return aPt.mValue;
 				}
 			}
 			return 0f;
@@ -218,12 +225,12 @@ namespace SexyFramework.Graphics
 
 		public float GetLastKeyframeTime(float theTime)
 		{
-			for (int num = mValuePointVector.Count - 1; num >= 0; num--)
+			for (int aKeyIdx = mValuePointVector.Count - 1; aKeyIdx >= 0; aKeyIdx--)
 			{
-				PIValuePoint pIValuePoint = mValuePointVector[num];
-				if (theTime >= pIValuePoint.mTime)
+				PIValuePoint aPt = mValuePointVector[aKeyIdx];
+				if (theTime >= aPt.mTime)
 				{
-					return pIValuePoint.mTime;
+					return aPt.mTime;
 				}
 			}
 			return 0f;
@@ -231,12 +238,12 @@ namespace SexyFramework.Graphics
 
 		public float GetNextKeyframeTime(float theTime)
 		{
-			for (int i = 0; i < mValuePointVector.Count; i++)
+			for (int aKeyIdx = 0; aKeyIdx < mValuePointVector.Count; aKeyIdx++)
 			{
-				PIValuePoint pIValuePoint = mValuePointVector[i];
-				if (pIValuePoint.mTime >= theTime)
+				PIValuePoint aPt = mValuePointVector[aKeyIdx];
+				if (aPt.mTime >= theTime)
 				{
-					return pIValuePoint.mTime;
+					return aPt.mTime;
 				}
 			}
 			return 0f;
@@ -244,12 +251,12 @@ namespace SexyFramework.Graphics
 
 		public int GetNextKeyframeIdx(float theTime)
 		{
-			for (int i = 0; i < mValuePointVector.Count; i++)
+			for (int aKeyIdx = 0; aKeyIdx < mValuePointVector.Count; aKeyIdx++)
 			{
-				PIValuePoint pIValuePoint = mValuePointVector[i];
-				if (pIValuePoint.mTime >= theTime)
+				PIValuePoint aPt = mValuePointVector[aKeyIdx];
+				if (aPt.mTime >= theTime)
 				{
-					return i;
+					return aKeyIdx;
 				}
 			}
 			return -1;
