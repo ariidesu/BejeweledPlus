@@ -1287,7 +1287,17 @@ namespace SexyFramework.Resource
 
 		public virtual bool DoLoadGenericResFile(GenericResFileRes theRes)
 		{
-			return true;
+            lock (mLoadCrit)
+			{
+                GenericResFile genericResFile = new GenericResFile();
+                genericResFile.mFilePath = theRes.mPath;
+                if (theRes.mGlobalPtr != null)
+                {
+                    theRes.mGlobalPtr.mResObject = genericResFile;
+                }
+				theRes.mGenericResFile = genericResFile;
+                return true;
+            }
 		}
 
 		public int GetNumResources(string theGroup, Dictionary<string, BaseRes> theMap, bool curArtResOnly, bool curLocSetOnly)
@@ -2128,7 +2138,17 @@ namespace SexyFramework.Resource
 
 		public virtual GenericResFile GetGenericResFileThrow(string theId)
 		{
-			return null;
+			GenericResFile r = GetGenericResFile(theId);
+			if (r == null)
+			{
+				BaseRes baseRes = GetBaseRes(6, theId);
+				if (baseRes is GenericResFileRes gres)
+				{
+					DoLoadGenericResFile(gres);
+					r = gres.mGenericResFile;
+				}
+			}
+			return r;
 		}
 
 		public ResourceRef GetResourceRef(BaseRes theBaseRes)
