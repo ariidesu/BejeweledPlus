@@ -121,6 +121,7 @@ namespace SexyFramework.Graphics
 
 			public void GetViewMatrix(SexyMatrix4 outM)
 			{
+				mCoords.GetInboundMatrix(outM);
 			}
 
 			public abstract void GetProjectionMatrix(SexyMatrix4 outM);
@@ -181,6 +182,11 @@ namespace SexyFramework.Graphics
 
 			public override void GetProjectionMatrix(SexyMatrix4 outM)
 			{
+				if (outM == null) return;
+				outM.m[0, 0] = mProjS.x; outM.m[0, 1] = 0f; outM.m[0, 2] = 0f; outM.m[0, 3] = 0f;
+				outM.m[1, 0] = 0f; outM.m[1, 1] = mProjS.y; outM.m[1, 2] = 0f; outM.m[1, 3] = 0f;
+				outM.m[2, 0] = 0f; outM.m[2, 1] = 0f; outM.m[2, 2] = mProjS.z; outM.m[2, 3] = 1f;
+				outM.m[3, 0] = 0f; outM.m[3, 1] = 0f; outM.m[3, 2] = mProjT;   outM.m[3, 3] = 0f;
 			}
 
 			public override bool IsOrtho()

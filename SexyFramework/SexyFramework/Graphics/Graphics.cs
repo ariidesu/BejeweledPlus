@@ -480,6 +480,10 @@ namespace SexyFramework.Graphics
 					mDestRect.mY = theY + (int)mTransY;
 					mDestRect.mWidth = theWidth;
 					mDestRect.mHeight = theHeight;
+					if (mScaleX != 1f || mScaleY != 1f)
+					{
+						mDestRect = new Rect((int)((double)mScaleOrigX + Math.Floor(((float)mDestRect.mX - mScaleOrigX) * mScaleX)), (int)((double)mScaleOrigY + Math.Floor(((float)mDestRect.mY - mScaleOrigY) * mScaleY)), (int)Math.Ceiling((float)mDestRect.mWidth * mScaleX), (int)Math.Ceiling((float)mDestRect.mHeight * mScaleY));
+					}
 					Rect theRect = mDestRect.Intersection(mClipRect);
 					mRenderDevice.FillRect(theRect, finalColor, mDrawMode);
 				}
