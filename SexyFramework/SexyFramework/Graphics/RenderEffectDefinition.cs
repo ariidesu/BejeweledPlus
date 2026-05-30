@@ -14,6 +14,8 @@ namespace SexyFramework.Graphics
 
         public string mSrcFileName;
 
+        public string mFileName;
+
         public string mDataFormat;
 
         public bool LoadFromMem(int inDataLen, byte[] inData, string inSrcFileName, string inDataFormat)
@@ -26,18 +28,45 @@ namespace SexyFramework.Graphics
 
         public bool LoadFromFile(string inFileName, string inSrcFileName)
         {
-        	string text = Common.GetFileDir(inFileName, true) + Common.GetFileName(inFileName, true);
-        	mSrcFileName = inSrcFileName;
-        	try
-        	{
-        		mEffect = WP7AppDriver.sWP7AppDriverInstance.mContentManager.Load<Effect>(text);
-        		return mEffect != null;
-        	}
-        	catch
-        	{
-        		mEffect = null;
-        		return false;
-        	}
+            bool result = false;
+            string text = Common.GetFileDir(inFileName, true) + Common.GetFileName(inFileName, true);
+            mFileName = inFileName;
+            mSrcFileName = inSrcFileName;
+
+            string[] paths = { inFileName, text };
+            for (int i = 0; i < paths.Length && !result; i++)
+            {
+                PFILE pFILE = new PFILE(paths[i], "rb");
+                if (pFILE.Open())
+                {
+                    byte[] data = pFILE.GetData();
+                    if (data != null)
+                    {
+                        string text2 = string.Empty;
+                        int num = paths[i].LastIndexOf('.');
+                        if (num >= 0)
+                        {
+                            text2 = paths[i].Substring(num);
+                        }
+                        if (text2.Length > 1)
+                        {
+                            text2 = text2.Substring(1);
+                        }
+                        result = LoadFromMem(data.Length, data, inSrcFileName, text2);
+                    }
+                    pFILE.Close();
+                }
+            }
+
+            try
+            {
+                mEffect = WP7AppDriver.sWP7AppDriverInstance.mContentManager.Load<Effect>(text);
+            }
+            catch
+            {
+                mEffect = null;
+            }
+            return result || mEffect != null;
         }
 
         public void Initialize(GraphicsDevice theGraphicsDevice)
