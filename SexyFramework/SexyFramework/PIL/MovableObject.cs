@@ -50,11 +50,13 @@ namespace SexyFramework.PIL
 
 		protected LifetimeSettings mInterpLifetimeSettings = new LifetimeSettings();
 
+		private static readonly LifetimeSettings sDefaultLifetimeSettings = new LifetimeSettings();
+
 		protected LifetimeSettings GetInterpLifetimeSettings()
 		{
 			if (Common.size(mLifetimeKeyFrames) == 0)
 			{
-				return new LifetimeSettings();
+				return sDefaultLifetimeSettings;
 			}
 			if (mKeyFrameIndex == Common.size(mLifetimeKeyFrames) || mKeyFrameIndex + 1 == Common.size(mLifetimeKeyFrames))
 			{
