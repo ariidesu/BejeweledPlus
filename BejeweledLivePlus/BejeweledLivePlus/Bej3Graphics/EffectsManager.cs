@@ -79,7 +79,7 @@ namespace BejeweledLivePlus.Bej3Graphics
 
 		public void CreateDistortionMap(Graphics g)
 		{
-			if (mHeightImage != null /*&& (mHeightImage.mWidth != GlobalMembers.gApp.mScreenBounds.mWidth / 2 || mHeightImage.mHeight != GlobalMembers.gApp.mScreenBounds.mHeight / 2)*/)
+			if (mHeightImage != null && (mHeightImage.mWidth != GlobalMembers.gApp.mScreenBounds.mWidth / 2 || mHeightImage.mHeight != GlobalMembers.gApp.mScreenBounds.mHeight / 2))
 			{
 				mHeightImageSharedRT.Unlock();
 				mHeightImage = null;
@@ -1085,7 +1085,10 @@ namespace BejeweledLivePlus.Bej3Graphics
 					if (current.mPieceRel == thePiece)
 					{
 						current.mPieceRel = null;
-						current.mDeleteMe = true;
+						if (current.mType != Effect.Type.TYPE_PI)
+						{
+							current.mDeleteMe = true;
+						}
 					}
 				}
 			}
@@ -1137,6 +1140,9 @@ namespace BejeweledLivePlus.Bej3Graphics
 
 		public void RenderDistortEffects(Graphics g)
 		{
+			if (mDistortEffectList.Count == 0)
+				return;
+
 			CreateDistortionMap(g);
 			if (mHeightImage == null)
 			{
@@ -1221,6 +1227,7 @@ namespace BejeweledLivePlus.Bej3Graphics
 					}
 				}
 				graphics3D.SetTexture(1, null);
+				graphics3D.SetBlend(Graphics3D.EBlendMode.BLEND_DEFAULT, Graphics3D.EBlendMode.BLEND_DEFAULT);
 				sharedRenderTarget.Unlock();
 				g.PopState();
 				return;
@@ -1250,6 +1257,7 @@ namespace BejeweledLivePlus.Bej3Graphics
 			}
 			sharedRenderTarget2.Unlock();
 			graphics3D.SetTexture(1, null);
+			graphics3D.SetBlend(Graphics3D.EBlendMode.BLEND_DEFAULT, Graphics3D.EBlendMode.BLEND_DEFAULT);
 			theImage = sharedRenderTarget2.LockScreenImage("DistortQuadB");
 			for (int j = 0; j < num5; j++)
 			{
