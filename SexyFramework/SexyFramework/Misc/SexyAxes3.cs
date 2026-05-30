@@ -51,14 +51,14 @@ namespace SexyFramework.Misc
 		private void EndterSelf(SexyAxes3 inAxes)
 		{
 			vX = vX.Enter(inAxes);
-			vY = vX.Enter(inAxes);
+			vY = vY.Enter(inAxes);
 			vZ = vZ.Enter(inAxes);
 		}
 
 		private void LeaveSelf(SexyAxes3 inAxes)
 		{
 			vX = vX.Leave(inAxes);
-			vY = vX.Leave(inAxes);
+			vY = vY.Leave(inAxes);
 			vZ = vZ.Leave(inAxes);
 		}
 

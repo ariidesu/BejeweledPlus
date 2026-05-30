@@ -230,7 +230,7 @@ namespace SexyFramework.Misc
 		public SexyMatrix4(float in00, float in01, float in02, float in03, float in10, float in11, float in12, float in13, float in20, float in21, float in22, float in23, float in30, float in31, float in32, float in33)
 		{
 			m00 = in00;
-			m01 = in00;
+			m01 = in01;
 			m02 = in02;
 			m03 = in03;
 			m10 = in10;
@@ -244,7 +244,7 @@ namespace SexyFramework.Misc
 			m30 = in30;
 			m31 = in31;
 			m32 = in32;
-			m32 = in33;
+			m33 = in33;
 		}
 
 		public void LoadIdentity()
