@@ -484,7 +484,7 @@ namespace SexyFramework
                 return false;
             }
 
-            string aUpperName = theSongInfo.mName.ToUpper();
+            string aUpperName = aFilename.ToUpper();
             int foundMusicId;
             int musicId;
 
@@ -575,7 +575,7 @@ namespace SexyFramework
                 return false;
             }
 
-            mSongs[aUpperName] = theSongInfo;
+            mSongs[theSongInfo.mName.ToUpper()] = theSongInfo;
             return true;
         }
 
