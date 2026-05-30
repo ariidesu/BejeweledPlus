@@ -23,6 +23,10 @@
     <ItemGroup>
         <MonoGameContentReference Include="..\BejeweledLivePlus\Content\Content.mgcb" Link="Content\Content.mgcb" />
     </ItemGroup>
+
+    <ItemGroup>
+        <AndroidAsset Include="..\BejeweledLivePlus\Content\effects\*.fx" Link="Content\effects\%(Filename)%(Extension)" />
+    </ItemGroup>
     
     <ItemGroup>
 	    <TrimmerRootDescriptor Include="TrimmerRoots.xml" />

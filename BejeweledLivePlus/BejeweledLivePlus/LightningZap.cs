@@ -48,92 +48,97 @@ namespace BejeweledLivePlus
 
 		private static SexyVertex2D[] LZ_Draw_aTriVertices = new SexyVertex2D[4];
 
+		private static SexyVertex2D[,] LZ_Seg1 = new SexyVertex2D[2, 3];
+		
+		private static SexyVertex2D[,] LZ_Seg2 = new SexyVertex2D[2, 3];
+        
 		public LightningZap(Board theBoard, int theStartX, int theStartY, int theEndX, int theEndY, Color theColor, float theTime, bool isFlamimg)
-		{
-			mBoard = theBoard;
-			mDeleteMe = false;
-			mFlaming = isFlamimg;
-			mPercentDone = 0f;
-			mDoneTime = theTime;
-			mTimer = 0f;
-			mColor = theColor;
-			mStartPoint = new FPoint(theStartX, theStartY);
-			mEndPoint = new FPoint(theEndX, theEndY);
-			float num = mEndPoint.mY - mStartPoint.mY;
-			float num2 = mEndPoint.mX - mStartPoint.mX;
-			mAngle = (float)Math.Atan2(num, num2);
-			mLength = (float)Math.Sqrt(num2 * num2 + num * num);
-			mFrame = 0;
-			mUpdates = 0;
-			Update();
-		}
+        {
+            mBoard = theBoard;
+            mDeleteMe = false;
+            mFlaming = isFlamimg;
+            mPercentDone = 0f;
+            mDoneTime = theTime;
+            mTimer = 0f;
+            mColor = theColor;
+            mStartPoint = new FPoint(theStartX, theStartY);
+            mEndPoint = new FPoint(theEndX, theEndY);
+            float num = mEndPoint.mY - mStartPoint.mY;
+            float num2 = mEndPoint.mX - mStartPoint.mX;
+            mAngle = (float)Math.Atan2(num, num2);
+            mLength = (float)Math.Sqrt(num2 * num2 + num * num);
+            mFrame = 0;
+            mUpdates = 0;
+            Update();
+        }
 
-		public void Dispose()
-		{
-		}
+        public void Dispose()
+        {
+        }
 
-		public void Update()
+        public void Update()
+        {
+            Image iMAGE_LIGHTNING = GlobalMembersResourcesWP.IMAGE_LIGHTNING;
+            bool flag = mBoard.WantsCalmEffects();
+            mUpdates++;
+            if (flag)
+            {
+                mTimer += GlobalMembers.M(0.05f);
+            }
+            else
+            {
+                mTimer += GlobalMembers.M(0.1f);
+            }
+            float num = mEndPoint.mX - mStartPoint.mX;
+            float num2 = mEndPoint.mY - mStartPoint.mY;
+            float num3 = Math.Max(GlobalMembers.M(1f), (float)Math.Sqrt(num * num + num2 * num2));
+            float num4 = ConstantsWP.LIGHTNING_THICKNESS;
+            float num5 = num4 * num2 / num3;
+            float num6 = num4 * num / num3;
+            if ((flag && mUpdates % GlobalMembers.M(7) == 0) || (!flag && mUpdates % GlobalMembers.M(4) == 0))
+            {
+                mPoints[0].Clear();
+                mPoints[1].Clear();
+                mFrame = BejeweledLivePlus.Misc.Common.Rand() % 5;
+                int num7 = (int)Math.Max(1f, GlobalMembers.M(0.5f) * GlobalMembers.S(mLength) / (float)iMAGE_LIGHTNING.GetCelHeight()) + 1;
+                for (int i = 0; i < num7; i++)
+                {
+                    FPoint[] array = new FPoint[2]
+                    {
+                        default(FPoint),
+                        default(FPoint)
+                    };
+                    float num8 = (float)i / (float)(num7 - 1);
+                    int num9 = 1;
+                    if (i != 0 && i < num7 - 1)
+                    {
+                        num9 = Math.Max(GlobalMembers.M(80), (int)(GlobalMembers.M(160f) * 0.5f * mTimer / mDoneTime));
+                    }
+                    if (flag)
+                    {
+                        num9 = Math.Max(1, (int)((float)num9 * GlobalMembers.M(0.5f)));
+                    }
+                    array[0].mX = (array[1].mX = mStartPoint.mX + num8 * num + (float)(num9 / 2) - (float)(BejeweledLivePlus.Misc.Common.Rand() % num9));
+                    array[0].mY = (array[1].mY = mStartPoint.mY + num8 * num2 + (float)(num9 / 2) - (float)(BejeweledLivePlus.Misc.Common.Rand() % num9));
+                    array[0].mX -= num5;
+                    array[1].mX += num5;
+                    array[0].mY += num6;
+                    array[1].mY -= num6;
+                    mPoints[0].Add(array[0]);
+                    mPoints[1].Add(array[1]);
+                }
+            }
+            mPercentDone = mTimer / mDoneTime;
+            if (mPercentDone >= 1f)
+            {
+                mDeleteMe = true;
+            }
+        }
+
+        public void Draw(Graphics g)
 		{
 			Image iMAGE_LIGHTNING = GlobalMembersResourcesWP.IMAGE_LIGHTNING;
-			bool flag = mBoard.WantsCalmEffects();
-			mUpdates++;
-			if (flag)
-			{
-				mTimer += GlobalMembers.M(0.05f);
-			}
-			else
-			{
-				mTimer += GlobalMembers.M(0.1f);
-			}
-			float num = mEndPoint.mX - mStartPoint.mX;
-			float num2 = mEndPoint.mY - mStartPoint.mY;
-			float num3 = Math.Max(GlobalMembers.M(1f), (float)Math.Sqrt(num * num + num2 * num2));
-			float num4 = ConstantsWP.LIGHTNING_THICKNESS;
-			float num5 = num4 * num2 / num3;
-			float num6 = num4 * num / num3;
-			if ((flag && mUpdates % GlobalMembers.M(7) == 0) || (!flag && mUpdates % GlobalMembers.M(4) == 0))
-			{
-				mPoints[0].Clear();
-				mPoints[1].Clear();
-				mFrame = BejeweledLivePlus.Misc.Common.Rand() % 5;
-				int num7 = (int)Math.Max(1f, GlobalMembers.M(0.5f) * GlobalMembers.S(mLength) / (float)iMAGE_LIGHTNING.GetCelHeight()) + 1;
-				for (int i = 0; i < num7; i++)
-				{
-					FPoint[] array = new FPoint[2]
-					{
-						default(FPoint),
-						default(FPoint)
-					};
-					float num8 = (float)i / (float)(num7 - 1);
-					int num9 = 1;
-					if (i != 0 && i < num7 - 1)
-					{
-						num9 = Math.Max(GlobalMembers.M(80), (int)(GlobalMembers.M(160f) * 0.5f * mTimer / mDoneTime));
-					}
-					if (flag)
-					{
-						num9 = Math.Max(1, (int)((float)num9 * GlobalMembers.M(0.5f)));
-					}
-					array[0].mX = (array[1].mX = mStartPoint.mX + num8 * num + (float)(num9 / 2) - (float)(BejeweledLivePlus.Misc.Common.Rand() % num9));
-					array[0].mY = (array[1].mY = mStartPoint.mY + num8 * num2 + (float)(num9 / 2) - (float)(BejeweledLivePlus.Misc.Common.Rand() % num9));
-					array[0].mX -= num5;
-					array[1].mX += num5;
-					array[0].mY += num6;
-					array[1].mY -= num6;
-					mPoints[0].Add(array[0]);
-					mPoints[1].Add(array[1]);
-				}
-			}
-			mPercentDone = mTimer / mDoneTime;
-			if (mPercentDone >= 1f)
-			{
-				mDeleteMe = true;
-			}
-		}
-
-		public void Draw(Graphics g)
-		{
-			Image iMAGE_LIGHTNING = GlobalMembersResourcesWP.IMAGE_LIGHTNING;
+			Image iMAGE_GRITTYBLURRY = GlobalMembersResourcesWP.IMAGE_GRITTYBLURRY;
 			Graphics3D graphics3D = g.Get3D();
 			float num;
 			float num2 = (num = 5f / 32f);
@@ -148,7 +153,6 @@ namespace BejeweledLivePlus
 			g.Translate(GlobalMembers.S(mBoard.GetBoardX()), GlobalMembers.S(mBoard.GetBoardY()));
 			g.SetColorizeImages(true);
 			graphics3D?.SetTextureWrap(0, true);
-			int num5 = 0;
 			int mAlpha = Math.Min(255, (int)(GlobalMembers.M(800f) * num3));
 			Color color = mColor;
 			color.mAlpha = mAlpha;
@@ -200,42 +204,42 @@ namespace BejeweledLivePlus
 				lZ_Draw_aTriVertices[3].y = y4;
 				lZ_Draw_aTriVertices[3].u = 0f;
 				lZ_Draw_aTriVertices[3].v = v2;
-				LZ_Draw_aTriList_1[num5, 0] = LZ_Draw_aTriVertices[0];
-				LZ_Draw_aTriList_1[num5, 1] = LZ_Draw_aTriVertices[1];
-				LZ_Draw_aTriList_1[num5, 2] = LZ_Draw_aTriVertices[2];
-				LZ_Draw_aTriList_1[num5 + 1, 0] = LZ_Draw_aTriVertices[2];
-				LZ_Draw_aTriList_1[num5 + 1, 1] = LZ_Draw_aTriVertices[3];
-				LZ_Draw_aTriList_1[num5 + 1, 2] = LZ_Draw_aTriVertices[0];
-				lZ_Draw_aTriVertices = LZ_Draw_aTriVertices;
+				LZ_Seg1[0, 0] = lZ_Draw_aTriVertices[0];
+				LZ_Seg1[0, 1] = lZ_Draw_aTriVertices[1];
+				LZ_Seg1[0, 2] = lZ_Draw_aTriVertices[2];
+				LZ_Seg1[1, 0] = lZ_Draw_aTriVertices[2];
+				LZ_Seg1[1, 1] = lZ_Draw_aTriVertices[3];
+				LZ_Seg1[1, 2] = lZ_Draw_aTriVertices[0];
+
+				if (flag)
+				{
+					g.DrawTrianglesTex(iMAGE_GRITTYBLURRY, LZ_Seg1, 2, color, 1, 0f, 0f, true, Rect.INVALIDATE_RECT);
+					g.DrawTrianglesTex(iMAGE_GRITTYBLURRY, LZ_Seg1, 2, color, 1, 0f, 0f, true, Rect.INVALIDATE_RECT);
+				}
+
 				lZ_Draw_aTriVertices[0].u = num2;
 				lZ_Draw_aTriVertices[1].u = num;
 				lZ_Draw_aTriVertices[2].u = num;
 				lZ_Draw_aTriVertices[3].u = num2;
-				LZ_Draw_aTriList_2[num5, 0] = LZ_Draw_aTriVertices[0];
-				LZ_Draw_aTriList_2[num5, 1] = LZ_Draw_aTriVertices[1];
-				LZ_Draw_aTriList_2[num5, 2] = LZ_Draw_aTriVertices[2];
-				LZ_Draw_aTriList_2[num5 + 1, 0] = LZ_Draw_aTriVertices[2];
-				LZ_Draw_aTriList_2[num5 + 1, 1] = LZ_Draw_aTriVertices[3];
-				LZ_Draw_aTriList_2[num5 + 1, 2] = LZ_Draw_aTriVertices[0];
-				num5 += 2;
-				// if (num5 >= Bej3Com.MAX_TRIS)
-				// {
-				// 	break;
-				// }
-			}
-			if (flag)
-			{
-				g.DrawTrianglesTex(GlobalMembersResourcesWP.IMAGE_GRITTYBLURRY, LZ_Draw_aTriList_1, num5, color, 1, 0f, 0f, true, Rect.INVALIDATE_RECT);
-				g.DrawTrianglesTex(GlobalMembersResourcesWP.IMAGE_GRITTYBLURRY, LZ_Draw_aTriList_1, num5, color, 1, 0f, 0f, true, Rect.INVALIDATE_RECT);
-				g.DrawTrianglesTex(iMAGE_LIGHTNING, LZ_Draw_aTriList_1, num5, theColor, 1, 0f, 0f, true, Rect.INVALIDATE_RECT);
-				g.DrawTrianglesTex(iMAGE_LIGHTNING, LZ_Draw_aTriList_2, num5, theColor, 1, 0f, 0f, true, Rect.INVALIDATE_RECT);
-			}
-			else
-			{
-				g.SetColor(color);
-				g.SetDrawMode(1);
-				g.DrawTrianglesTex(iMAGE_LIGHTNING, LZ_Draw_aTriList_1, num5);
-				g.DrawTrianglesTex(iMAGE_LIGHTNING, LZ_Draw_aTriList_2, num5);
+				LZ_Seg2[0, 0] = lZ_Draw_aTriVertices[0];
+				LZ_Seg2[0, 1] = lZ_Draw_aTriVertices[1];
+				LZ_Seg2[0, 2] = lZ_Draw_aTriVertices[2];
+				LZ_Seg2[1, 0] = lZ_Draw_aTriVertices[2];
+				LZ_Seg2[1, 1] = lZ_Draw_aTriVertices[3];
+				LZ_Seg2[1, 2] = lZ_Draw_aTriVertices[0];
+
+				if (flag)
+				{
+					g.DrawTrianglesTex(iMAGE_LIGHTNING, LZ_Seg2, 2, theColor, 1, 0f, 0f, true, Rect.INVALIDATE_RECT);
+					g.DrawTrianglesTex(iMAGE_LIGHTNING, LZ_Seg2, 2, theColor, 1, 0f, 0f, true, Rect.INVALIDATE_RECT);
+				}
+				else
+				{
+					g.SetColor(color);
+					g.SetDrawMode(1);
+					g.DrawTrianglesTex(iMAGE_GRITTYBLURRY, LZ_Seg1, 2);
+					g.DrawTrianglesTex(iMAGE_LIGHTNING, LZ_Seg2, 2);
+				}
 			}
 			g.PopState();
 		}

@@ -20,6 +20,9 @@
     <ItemGroup>
         <MonoGameContentReference Include="..\BejeweledLivePlus\Content\Content.mgcb" Link="Content\Content.mgcb" />
     </ItemGroup>
+    <ItemGroup>
+        <Content Include="..\BejeweledLivePlus\Content\effects\*.fx" Link="Content\effects\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+    </ItemGroup>
 
     <PropertyGroup>
         <ApplicationManifest>app.manifest</ApplicationManifest>
