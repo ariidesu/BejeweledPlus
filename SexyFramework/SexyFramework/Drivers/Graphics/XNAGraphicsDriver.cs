@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -21,6 +22,8 @@ namespace SexyFramework.Drivers.Graphics
 		public int mWidth;
 
 		public int mHeight;
+
+		private HashSet<Mesh> mMeshSet = new HashSet<Mesh>();
 
 		public override int GetVersion()
 		{
@@ -169,12 +172,19 @@ namespace SexyFramework.Drivers.Graphics
 
 		public override Mesh LoadMesh(string thePath, MeshListener theListener)
 		{
-			throw new NotImplementedException();
+			Mesh aMesh = new Mesh();
+			aMesh.mListener = theListener;
+			aMesh.mFileName = thePath;
+			if (!aMesh.LoadFromFile(thePath))
+			{
+				return null;
+			}
+			return aMesh;
 		}
 
 		public override void AddMesh(Mesh theMesh)
 		{
-			throw new NotImplementedException();
+			mMeshSet.Add(theMesh);
 		}
 
 		public XNAGraphicsDriver(Game game, SexyAppBase app)
