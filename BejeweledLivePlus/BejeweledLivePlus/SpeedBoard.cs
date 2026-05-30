@@ -924,10 +924,16 @@ namespace BejeweledLivePlus
 				mPanicScalePct = Math.Min(1f, mPanicScalePct + GlobalMembers.M(0.0025f));
 			}
 			CustomBassMusicInterface theMusicInterface = (CustomBassMusicInterface)GlobalMembers.gApp.mMusicInterface;
-			if (theMusicInterface.mSongName == "Speed")
-			{
-				theMusicInterface.SetTempo("Speed", 125 + (int)((mPointMultiplier - 1) * 6.5f));
-			}
+            if (theMusicInterface.mSongName == "Speed")
+            {
+                float aNewTempo = Math.Min(110 + ((mPointMultiplier - 1) * 10), 160);
+                if (mCurTempo == 0.0f)
+                    mCurTempo = aNewTempo;
+                else if (mCurTempo < aNewTempo)
+                    mCurTempo += 0.1f;
+
+                theMusicInterface.SetTempo("Speed", (int)mCurTempo);
+            }
 
 			SongInfo speedSongInfo = theMusicInterface.FindSong("Speed");
 			if (speedSongInfo != null)
