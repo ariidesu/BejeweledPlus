@@ -4,6 +4,7 @@ using System.IO;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Framework.Utilities;
+using SexyFramework.Drivers.App;
 using SexyFramework.Graphics;
 using SexyFramework.Misc;
 
@@ -26,6 +27,15 @@ namespace SexyFramework.Drivers.Graphics
 
 		public GraphicsDeviceManager mDevice;
 
+		// Sexy2D shader (replaces BasicEffect for 2D batched rendering).
+		// Falls back to BasicEffect if Sexy2D fails to load (e.g. content not built).
+		protected Effect mSexy2DEffect;
+		protected EffectParameter mSexy2DWVP;
+		protected EffectParameter mSexy2DTex0;
+		protected EffectTechnique mSexy2DTextured;
+		protected EffectTechnique mSexy2DUntextured;
+
+		// Fallback. Used when mSexy2DEffect is null.
 		protected BasicEffect mBasicEffect;
 
 		public BaseXNAStateManager mStateMgr;
@@ -104,9 +114,14 @@ namespace SexyFramework.Drivers.Graphics
 
 		public VertexPositionColor[] mTmpVPCBuffer;
 
-		private BlendState mNormalState = new BlendState();
+		// Scratch buffers reused by per-call paths so we don't allocate on the hot path.
+		private VertexPositionColorTexture[] mScratchTri = new VertexPositionColorTexture[3];
+		private VertexPositionColorTexture[] mScratchPoly = new VertexPositionColorTexture[64];
+		private VertexPositionColor[] mScratchLine = new VertexPositionColor[2];
 
-		private BlendState mAdditiveState = new BlendState();
+		private BlendState mNormalState;
+
+		private BlendState mAdditiveState;
 
 		private int mCurDrawMode;
 
@@ -123,7 +138,9 @@ namespace SexyFramework.Drivers.Graphics
 			mDevice.SynchronizeWithVerticalRetrace = false;
 			mGame = (theDriver as XNAGraphicsDriver).GetMainGame();
 			mStateMgr = new BaseXNAStateManager(ref mDevice);
+			mStateMgr.mRenderDevice = this;
 			mDevice.SynchronizeWithVerticalRetrace = false;
+			mDevice.ApplyChanges();
 			mTransformStack = new Stack<SexyTransform2D>();
 			mBatchedTriangleBuffer = new VertexPositionColorTexture[mBatchedTriangleSize];
 			mBatchedIndexBuffer = new short[mBatchedTriangleSize * 2];
@@ -136,6 +153,8 @@ namespace SexyFramework.Drivers.Graphics
 			mDevice = new GraphicsDeviceManager(game);
 			mDevice.SynchronizeWithVerticalRetrace = false;
 			mStateMgr = new BaseXNAStateManager(ref mDevice);
+			mStateMgr.mRenderDevice = this;
+			mDevice.ApplyChanges();
 			mTransformStack = new Stack<SexyTransform2D>();
 			mBatchedTriangleBuffer = new VertexPositionColorTexture[mBatchedTriangleSize];
 			mBatchedIndexBuffer = new short[mBatchedTriangleSize * 2];
@@ -166,7 +185,7 @@ namespace SexyFramework.Drivers.Graphics
 				if (theDestImage != null)
 				{
 					HRenderContext hRenderContext = new HRenderContext();
-					XNATextureData xNATextureData = (XNATextureData)theDestImage.GetRenderData();
+					XNATextureData xNATextureData = theDestImage.GetRenderData() as XNATextureData;
 					if (xNATextureData != null && xNATextureData.mTextures[0].mTexture != null)
 					{
 						renderTarget2D = (RenderTarget2D)xNATextureData.mTextures[0].mTexture;
@@ -295,12 +314,16 @@ namespace SexyFramework.Drivers.Graphics
 		{
 			if (inImage != null && inImage.mRenderData != null)
 			{
-				XNATextureData xNATextureData = (XNATextureData)inImage.GetRenderData();
-				if (xNATextureData.mOptimizedLoad)
+				XNATextureData xNATextureData = inImage.GetRenderData() as XNATextureData;
+				if (xNATextureData != null)
 				{
-					xNATextureData.mImageFlags = inImage.GetImageFlags();
+					if (xNATextureData.mOptimizedLoad)
+					{
+						xNATextureData.mImageFlags = inImage.GetImageFlags();
+					}
+					return true;
 				}
-				return true;
+				inImage.SetRenderData(null);
 			}
 			if (inImage != null)
 			{
@@ -402,7 +425,8 @@ namespace SexyFramework.Drivers.Graphics
 			Microsoft.Xna.Framework.Color color = new Microsoft.Xna.Framework.Color(theColor.mRed, theColor.mGreen, theColor.mBlue, theColor.mAlpha);
 			SetupDrawMode(theDrawMode);
 			mImage.InitAtalasState();
-			VertexPositionColorTexture[] array = new VertexPositionColorTexture[num];
+			if (mScratchPoly.Length < num) mScratchPoly = new VertexPositionColorTexture[num];
+			VertexPositionColorTexture[] array = mScratchPoly;
 			if ((theVertexFormat & 4) != 0 && (color.PackedValue != 0 || tx != 0f || ty != 0f || mTransformStack.Count != 0))
 			{
 				for (int i = 0; i < num; i++)
@@ -553,15 +577,15 @@ namespace SexyFramework.Drivers.Graphics
 
 		public override void ClearDepthBuffer()
 		{
+			mDevice.GraphicsDevice.Clear(Microsoft.Xna.Framework.Graphics.ClearOptions.DepthBuffer, Microsoft.Xna.Framework.Color.Black, 1f, 0);
 		}
 
 		public override void SetDepthState(Graphics3D.ECompareFunc inDepthTestFunc, bool inDepthWriteEnabled)
 		{
-			DepthStencilState depthStencilState = new DepthStencilState();
-			depthStencilState.DepthBufferFunction = GetXNACompareFunc(inDepthTestFunc);
-			depthStencilState.DepthBufferEnable = inDepthWriteEnabled;
-			depthStencilState.DepthBufferWriteEnable = inDepthWriteEnabled;
-			mStateMgr.SetDepthStencilState(depthStencilState);
+			bool depthTestEnabled = inDepthWriteEnabled
+				|| (inDepthTestFunc != Graphics3D.ECompareFunc.COMPARE_ALWAYS
+					&& inDepthTestFunc != Graphics3D.ECompareFunc.COMPARE_NEVER);
+			mStateMgr.SetDepthStencilState(StateCache.GetDepth(depthTestEnabled, inDepthWriteEnabled, GetXNACompareFunc(inDepthTestFunc)));
 		}
 
 		public override void SetAlphaTest(Graphics3D.ECompareFunc inAlphaTestFunc, int inRefAlpha)
@@ -583,7 +607,16 @@ namespace SexyFramework.Drivers.Graphics
 
 		public override void SetBackfaceCulling(int inCullClockwise, int inCullCounterClockwise)
 		{
-		}
+			if (inCullClockwise == 1 || inCullCounterClockwise == 1)
+			{
+				CullMode mode = inCullClockwise == 1 ? CullMode.CullClockwiseFace : CullMode.CullCounterClockwiseFace;
+				mStateMgr.SetRasterizerState(StateCache.GetRaster(mode, FillMode.Solid));
+			}
+			else
+			{
+				mStateMgr.SetRasterizerState(StateCache.GetRaster(CullMode.None, FillMode.Solid));
+            }
+        }
 
 		public override void SetLightingEnabled(int inLightingEnabled)
 		{
@@ -593,106 +626,418 @@ namespace SexyFramework.Drivers.Graphics
 		{
 		}
 
-		public void DoCommitAllRenderState()
+		private struct MeshVertexPNUC : IVertexType
 		{
-			mBasicEffect.Projection = mStateMgr.mXNAProjectionMatrix;
-			mBasicEffect.View = mStateMgr.mXNAViewMatrix;
-			mBasicEffect.World = mStateMgr.mXNAWorldMatrix;
-			mBasicEffect.VertexColorEnabled = true;
-			if (mStateMgr.mXNATextureSlots[0] != null)
-			{
-				mBasicEffect.Texture = mStateMgr.mXNATextureSlots[0];
-				mBasicEffect.TextureEnabled = true;
-			}
-			else
-			{
-				mBasicEffect.TextureEnabled = false;
-			}
-			mBasicEffect.GraphicsDevice.RasterizerState = mStateMgr.mXNARasterizerState;
-			mBasicEffect.GraphicsDevice.BlendState = mStateMgr.mXNABlendState;
-			mBasicEffect.GraphicsDevice.DepthStencilState = mStateMgr.mXNADepthStencilState;
-			mBasicEffect.GraphicsDevice.SamplerStates[0] = mStateMgr.mXNASamplerStateSlots[0];
+			public Vector3 Position;
+			public Vector3 Normal;
+			public Microsoft.Xna.Framework.Color Color;
+			public Vector2 TexCoord0;
+
+			public static readonly VertexDeclaration VertexDeclaration = new VertexDeclaration(
+				new VertexElement(0, VertexElementFormat.Vector3, VertexElementUsage.Position, 0),
+				new VertexElement(12, VertexElementFormat.Vector3, VertexElementUsage.Normal, 0),
+				new VertexElement(24, VertexElementFormat.Color, VertexElementUsage.Color, 0),
+				new VertexElement(28, VertexElementFormat.Vector2, VertexElementUsage.TextureCoordinate, 0));
+
+			VertexDeclaration IVertexType.VertexDeclaration => VertexDeclaration;
 		}
 
-		public void DoCommitLastAllRenderState()
+		// SexyVF flag bits matching JS at bejewel/js/gf/ext/_jsfext_webgl.js:339-352.
+		private const int SexyVF_XYZ = 0x002;
+		private const int SexyVF_Normal = 0x010;
+		private const int SexyVF_Diffuse = 0x040;
+		private const int SexyVF_Tex1 = 0x100;
+		private const int SexyVF_Tex2 = 0x200;
+
+		public void SetupMesh(Mesh theMesh)
 		{
-			if (mStateMgr.mProjectMatrixDirty)
+			GraphicsDevice gd = mDevice.GraphicsDevice;
+			foreach (var aPiece in theMesh.mPieces)
 			{
-				mBasicEffect.Projection = mStateMgr.mXNALastProjectionMatrix;
+				if (aPiece.mVertexData == null) continue;
+				MeshVertexPNUC[] vertices = new MeshVertexPNUC[aPiece.mVertexBufferCount];
+				using (BinaryReader br = new BinaryReader(new MemoryStream(aPiece.mVertexData)))
+				{
+					for (int i = 0; i < aPiece.mVertexBufferCount; i++)
+					{
+						vertices[i].Position.X = br.ReadSingle();
+						vertices[i].Position.Y = br.ReadSingle();
+						vertices[i].Position.Z = br.ReadSingle();
+						vertices[i].Normal.X = br.ReadSingle();
+						vertices[i].Normal.Y = br.ReadSingle();
+						vertices[i].Normal.Z = br.ReadSingle();
+						byte r = br.ReadByte();
+						byte g = br.ReadByte();
+						byte b = br.ReadByte();
+						byte a = br.ReadByte();
+						vertices[i].Color = new Microsoft.Xna.Framework.Color(r, g, b, a);
+						vertices[i].TexCoord0.X = br.ReadSingle();
+						vertices[i].TexCoord0.Y = br.ReadSingle();
+					}
+				}
+				aPiece.mXYZBuffer = new VertexBuffer(gd, MeshVertexPNUC.VertexDeclaration, aPiece.mVertexBufferCount, BufferUsage.WriteOnly);
+				aPiece.mXYZBuffer.SetData(vertices);
+				aPiece.mNormalBuffer = null;
+				aPiece.mColorBuffer = null;
+				aPiece.mTexCoords0Buffer = null;
+				aPiece.mTexCoords1Buffer = null;
+
+				ushort[] indices = new ushort[aPiece.mIndexBufferCount];
+				System.Buffer.BlockCopy(aPiece.mIndexData, 0, indices, 0, aPiece.mIndexBufferCount * 2);
+				aPiece.mIndexBuffer = new IndexBuffer(gd, IndexElementSize.SixteenBits, aPiece.mIndexBufferCount, BufferUsage.WriteOnly);
+				aPiece.mIndexBuffer.SetData(indices);
+
+				// Free the raw bytes; we won't need them again.
+				aPiece.mVertexData = null;
+				aPiece.mIndexData = null;
+			}
+		}
+
+		private bool mLogBlendOnce = true;
+		private bool mLoggedRenderMeshError;
+		private bool mLoggedRenderMeshSinglePassError;
+
+		private static void SetEffectMatrixForSemantic(EffectParameter param, Matrix matrix, XNAMatrixSemanticFlags flags)
+		{
+			if (param == null)
+			{
+				return;
+			}
+
+			if ((flags & XNAMatrixSemanticFlags.Transpose) != 0)
+			{
+				// Prime uploads _TRANSPOSE semantics as raw matrix memory. In MonoGame,
+				// SetValueTranspose is the raw upload path because SetValue(Matrix)
+				// transposes into the effect constant buffer internally.
+				param.SetValueTranspose(matrix);
+				return;
+			}
+
+			param.SetValue(matrix);
+		}
+
+		private static Matrix ComposeSemanticMatrix(XNAMatrixSemanticFlags flags, Matrix world, Matrix view, Matrix proj)
+		{
+			Matrix result = Matrix.Identity;
+			bool hasMatrix = false;
+
+			if ((flags & XNAMatrixSemanticFlags.World) != 0)
+			{
+				result = world;
+				hasMatrix = true;
+			}
+			if ((flags & XNAMatrixSemanticFlags.View) != 0)
+			{
+				result = hasMatrix ? result * view : view;
+				hasMatrix = true;
+			}
+			if ((flags & XNAMatrixSemanticFlags.Projection) != 0)
+			{
+				result = hasMatrix ? result * proj : proj;
+				hasMatrix = true;
+			}
+
+			return hasMatrix ? result : Matrix.Identity;
+		}
+
+		private void CommitActiveEffectMatrices(XNARenderEffect activeRE)
+		{
+			Matrix world = mStateMgr.mXNAWorldMatrix;
+			Matrix view = mStateMgr.mXNAViewMatrix;
+			Matrix proj = mStateMgr.mXNAProjectionMatrix;
+
+			CommitEffectMatrices(activeRE, world, view, proj);
+		}
+
+		private void CommitEffectMatrices(XNARenderEffect activeRE, Matrix world, Matrix view, Matrix proj)
+		{
+			if (activeRE == null)
+			{
+				return;
+			}
+
+			foreach (var binding in activeRE.mMatrixSemantics)
+			{
+				Matrix matrix = ComposeSemanticMatrix(binding.Flags, world, view, proj);
+				SetEffectMatrixForSemantic(binding.Param, matrix, binding.Flags);
+			}
+		}
+
+		public void RenderMeshSinglePass(Mesh theMesh, SexyMatrix4 theMatrix, int passIndex)
+		{
+			SetupMesh(theMesh);
+			GraphicsDevice gd = mDevice.GraphicsDevice;
+			SetWorldTransform(theMatrix);
+			SetupDrawMode(0);
+			theMesh.mListener?.MeshPreDraw(theMesh);
+
+			XNARenderEffect activeRE = (mStateMgr.mActiveEffects != null && mStateMgr.mActiveEffects.Count > 0)
+				? mStateMgr.mActiveEffects[mStateMgr.mActiveEffects.Count - 1] : null;
+			Effect activeEffect = activeRE?.mDefinition.mEffect;
+
+			foreach (var aPiece in theMesh.mPieces)
+			{
+				if (aPiece.mIndexBuffer == null || aPiece.mXYZBuffer == null) continue;
+				try
+				{
+					gd.SetVertexBuffer(aPiece.mXYZBuffer);
+					gd.Indices = aPiece.mIndexBuffer;
+
+					if (aPiece.mTexture != null && aPiece.mTexture.GetImage() != null)
+					{
+						SetTexture(0, aPiece.mTexture.GetImage());
+					}
+					else
+					{
+						SetTexture(0, null);
+					}
+					if (aPiece.mBumpTexture != null && aPiece.mBumpTexture.GetImage() != null)
+					{
+						SetTexture(1, aPiece.mBumpTexture.GetImage());
+					}
+					else
+					{
+						SetTexture(1, null);
+					}
+					theMesh.mListener?.MeshPreDrawSet(theMesh, aPiece.mObjectName, aPiece.mSetName, aPiece.mBumpTexture != null && aPiece.mBumpTexture.GetImage() != null);
+					SetupDrawMode(0);
+
+					if (activeRE != null)
+					{
+						DoCommitEffectRenderState(activeRE);
+					}
+					else
+					{
+						DoCommitAllRenderState();
+					}
+
+					int triCount = aPiece.mIndexBufferCount / 3;
+					if (activeEffect != null)
+					{
+						var passes = activeEffect.CurrentTechnique.Passes;
+						if (passIndex >= 0 && passIndex < passes.Count)
+						{
+							passes[passIndex].Apply();
+							gd.DrawIndexedPrimitives(PrimitiveType.TriangleList, 0, 0, triCount);
+						}
+					}
+					else
+					{
+						mBasicEffect.CurrentTechnique.Passes[0].Apply();
+						gd.DrawIndexedPrimitives(PrimitiveType.TriangleList, 0, 0, triCount);
+					}
+
+					theMesh.mListener?.MeshPostDrawSet(theMesh, aPiece.mObjectName, aPiece.mSetName);
+				}
+				catch (Exception ex)
+				{
+					if (!mLoggedRenderMeshSinglePassError)
+					{
+						mLoggedRenderMeshSinglePassError = true;
+						Console.WriteLine($"[RenderMeshSinglePass] {ex.GetType().Name}: {ex.Message}");
+					}
+				}
+			}
+
+			theMesh.mListener?.MeshPostDraw(theMesh);
+		}
+
+		// Port of JS JSFExt_RenderMesh (bejewel/js/gf/ext/_jsfext_webgl.js:494).
+		// Binds the currently-active Effect's matrix params and per-piece textures,
+		// then draws each piece as an indexed TRIANGLES list.
+		// Cross-checked against Prime D3DInterface::RenderMesh (D3DInterface.cpp:3629).
+		public override void RenderMesh(Mesh theMesh, SexyMatrix4 theMatrix, SexyFramework.Graphics.Color theColor, bool doSetup)
+		{
+			SetupMesh(theMesh);
+
+			GraphicsDevice gd = mDevice.GraphicsDevice;
+
+			// Push the world matrix; view/projection are set by the caller (HyperspaceUltra).
+			SetWorldTransform(theMatrix);
+			SetupDrawMode(0);
+
+			// Notify the listener (Prime mirrors this with MeshPreDraw).
+			theMesh.mListener?.MeshPreDraw(theMesh);
+
+			// Rebind whatever Effect the active RenderEffect set up. RenderEffect.Begin
+			// has already configured techniques and uniforms; we just need to feed it
+			// world/view/proj from the state manager and bind per-piece textures.
+			XNARenderEffect activeRE = (mStateMgr.mActiveEffects != null && mStateMgr.mActiveEffects.Count > 0)
+				? mStateMgr.mActiveEffects[mStateMgr.mActiveEffects.Count - 1] : null;
+			Effect activeEffect = activeRE?.mDefinition.mEffect;
+
+			foreach (var aPiece in theMesh.mPieces)
+			{
+				if (aPiece.mIndexBuffer == null || aPiece.mXYZBuffer == null) continue;
+
+				try
+				{
+					// Bind the piece's diffuse texture first; listeners may override
+					// the active texture slots afterwards, matching JS / Prime order.
+					if (aPiece.mTexture != null && aPiece.mTexture.GetImage() != null)
+					{
+						SetTexture(0, aPiece.mTexture.GetImage());
+					}
+					else
+					{
+						SetTexture(0, null);
+					}
+					if (aPiece.mBumpTexture != null && aPiece.mBumpTexture.GetImage() != null)
+					{
+						SetTexture(1, aPiece.mBumpTexture.GetImage());
+					}
+					else
+					{
+						SetTexture(1, null);
+					}
+
+					// Per-piece listener hook (used by Hyperspace to push EFFECT_TUBE_3D's
+					// IMAGE_WARP_LINES_01 / IMAGE_HYPERSPACE_INITIAL into TS0/TS1).
+					bool hasBump = aPiece.mBumpTexture != null && aPiece.mBumpTexture.GetImage() != null;
+					theMesh.mListener?.MeshPreDrawSet(theMesh, aPiece.mObjectName, aPiece.mSetName, hasBump);
+					SetupDrawMode(0);
+
+					// Sync the active effect and the device state from the state manager
+					// AFTER the listener ran, so listener texture overrides win.
+					if (activeRE != null)
+					{
+						DoCommitEffectRenderState(activeRE);
+					}
+					else
+					{
+						DoCommitAllRenderState();
+					}
+
+					gd.SetVertexBuffer(aPiece.mXYZBuffer);
+					gd.Indices = aPiece.mIndexBuffer;
+
+					// RenderMesh is a single draw under the caller's active pass/state.
+					int triCount = aPiece.mIndexBufferCount / 3;
+					if (activeEffect == null)
+					{
+						mBasicEffect.CurrentTechnique.Passes[0].Apply();
+					}
+					else if (activeRE.mCurrentPass >= 0 && activeRE.mCurrentPass < activeEffect.CurrentTechnique.Passes.Count)
+					{
+						activeEffect.CurrentTechnique.Passes[activeRE.mCurrentPass].Apply();
+					}
+					gd.DrawIndexedPrimitives(PrimitiveType.TriangleList, 0, 0, triCount);
+
+					theMesh.mListener?.MeshPostDrawSet(theMesh, aPiece.mObjectName, aPiece.mSetName);
+				}
+				catch (Exception ex)
+				{
+					if (!mLoggedRenderMeshError)
+					{
+						mLoggedRenderMeshError = true;
+						Console.WriteLine($"[RenderMesh] {ex.GetType().Name}: {ex.Message}");
+					}
+				}
+			}
+
+			theMesh.mListener?.MeshPostDraw(theMesh);
+		}
+
+		public void DoCommitAllRenderState()
+		{
+			Texture2D tex = mStateMgr.mXNATextureSlots[0];
+			GraphicsDevice gd = mDevice.GraphicsDevice;
+
+			if (mSexy2DEffect != null)
+			{
+				mSexy2DEffect.CurrentTechnique = (tex != null) ? mSexy2DTextured : mSexy2DUntextured;
+				if (mSexy2DWVP != null) mSexy2DWVP.SetValue(mStateMgr.mXNAWorldMatrix * mStateMgr.mXNAViewMatrix * mStateMgr.mXNAProjectionMatrix);
+				if (mSexy2DTex0 != null) mSexy2DTex0.SetValue(tex);
 			}
 			else
 			{
 				mBasicEffect.Projection = mStateMgr.mXNAProjectionMatrix;
+				mBasicEffect.View = mStateMgr.mXNAViewMatrix;
+				mBasicEffect.World = mStateMgr.mXNAWorldMatrix;
+				mBasicEffect.VertexColorEnabled = true;
+				mBasicEffect.Texture = tex;
+				mBasicEffect.TextureEnabled = (tex != null);
 			}
-			mBasicEffect.View = mStateMgr.mXNAViewMatrix;
-			mBasicEffect.World = mStateMgr.mXNALastWorldMatrix;
-			mBasicEffect.VertexColorEnabled = true;
-			if (mStateMgr.mLastXNATextureSlots[0] != null)
+
+			gd.Textures[0]        = tex;
+			gd.SamplerStates[0]   = mStateMgr.mXNASamplerStateSlots[0] ?? SamplerState.LinearClamp;
+			gd.RasterizerState    = mStateMgr.mXNARasterizerState;
+			gd.BlendState         = mStateMgr.mXNABlendState;
+			gd.DepthStencilState  = mStateMgr.mXNADepthStencilState;
+		}
+
+		public void DoCommitLastAllRenderState()
+		{
+			Texture2D tex = mStateMgr.mLastXNATextureSlots[0];
+			GraphicsDevice gd = mDevice.GraphicsDevice;
+			Matrix proj = mStateMgr.mProjectMatrixDirty ? mStateMgr.mXNALastProjectionMatrix : mStateMgr.mXNAProjectionMatrix;
+
+			if (mSexy2DEffect != null)
 			{
-				mBasicEffect.Texture = mStateMgr.mLastXNATextureSlots[0];
-				mBasicEffect.TextureEnabled = true;
+				mSexy2DEffect.CurrentTechnique = (tex != null) ? mSexy2DTextured : mSexy2DUntextured;
+				if (mSexy2DWVP != null) mSexy2DWVP.SetValue(mStateMgr.mXNALastWorldMatrix * mStateMgr.mXNAViewMatrix * proj);
+				if (mSexy2DTex0 != null) mSexy2DTex0.SetValue(tex);
 			}
 			else
 			{
-				mBasicEffect.TextureEnabled = false;
+				mBasicEffect.Projection = proj;
+				mBasicEffect.View = mStateMgr.mXNAViewMatrix;
+				mBasicEffect.World = mStateMgr.mXNALastWorldMatrix;
+				mBasicEffect.VertexColorEnabled = true;
+				mBasicEffect.Texture = tex;
+				mBasicEffect.TextureEnabled = (tex != null);
 			}
-			mBasicEffect.GraphicsDevice.RasterizerState = mStateMgr.mXNARasterizerState;
-			mBasicEffect.GraphicsDevice.BlendState = mStateMgr.mXNALastBlendState;
-			mBasicEffect.GraphicsDevice.DepthStencilState = mStateMgr.mXNADepthStencilState;
-			mBasicEffect.GraphicsDevice.SamplerStates[0] = mStateMgr.mXNALastSamplerStateSlots[0];
+
+			gd.Textures[0]        = tex;
+			gd.SamplerStates[0]   = mStateMgr.mXNALastSamplerStateSlots[0] ?? SamplerState.LinearClamp;
+			gd.RasterizerState    = mStateMgr.mXNARasterizerState;
+			gd.BlendState         = mStateMgr.mXNALastBlendState ?? mStateMgr.mXNABlendState;
+			gd.DepthStencilState  = mStateMgr.mXNADepthStencilState;
 		}
 		
 		public void DoCommitEffectRenderState(RenderEffect aEffect)
 		{
+			XNARenderEffect xna = aEffect as XNARenderEffect;
+			if (xna == null) return;
+
+			CommitActiveEffectMatrices(xna);
+
+			if (xna.mParamTex0 != null) xna.mParamTex0.SetValue(mStateMgr.mXNATextureSlots[0]);
+			if (xna.mParamTex1 != null) xna.mParamTex1.SetValue(mStateMgr.mXNATextureSlots[1]);
+			if (xna.mParamTex2 != null) xna.mParamTex2.SetValue(mStateMgr.mXNATextureSlots[2]);
+
+			GraphicsDevice gd = mDevice.GraphicsDevice;
 			for (int i = 0; i < 3; i++)
 			{
-				aEffect.GetDefinition().mEffect.GraphicsDevice.Textures[i] = mStateMgr.mXNATextureSlots[i];
-				if (mStateMgr.mXNASamplerStateSlots[i] != null)
-				{
-					aEffect.GetDefinition().mEffect.GraphicsDevice.SamplerStates[i] = mStateMgr.mXNASamplerStateSlots[i];
-				}
+				gd.Textures[i] = mStateMgr.mXNATextureSlots[i];
+                if (mStateMgr.mXNASamplerStateSlots[i] != null)
+					gd.SamplerStates[i] = mStateMgr.mXNASamplerStateSlots[i];
 			}
-			aEffect.GetDefinition().mEffect.GraphicsDevice.RasterizerState = mStateMgr.mXNARasterizerState;
-			aEffect.GetDefinition().mEffect.GraphicsDevice.BlendState = mStateMgr.mXNABlendState;
-			aEffect.GetDefinition().mEffect.GraphicsDevice.DepthStencilState = mStateMgr.mXNADepthStencilState;
-				
-			if (aEffect.GetDefinition().mEffect.Parameters["world"] != null)
-			{
-				aEffect.GetDefinition().mEffect.Parameters["world"].SetValue(mStateMgr.mXNAWorldMatrix);
-			}
-			if (aEffect.GetDefinition().mEffect.Parameters["view"] != null)
-			{
-				aEffect.GetDefinition().mEffect.Parameters["view"].SetValue(mStateMgr.mXNAViewMatrix);
-			}
-			if (aEffect.GetDefinition().mEffect.Parameters["projection"] != null)
-			{
-				aEffect.GetDefinition().mEffect.Parameters["projection"].SetValue(mStateMgr.mXNAProjectionMatrix);
-			}
+			gd.RasterizerState   = mStateMgr.mXNARasterizerState;
+			gd.BlendState        = mStateMgr.mXNABlendState;
+			gd.DepthStencilState = mStateMgr.mXNADepthStencilState;
 		}
-		
+
 		public void DoCommitEffectLastRenderState(RenderEffect aEffect)
 		{
+			XNARenderEffect xna = aEffect as XNARenderEffect;
+			if (xna == null) return;
+
+			Matrix proj = mStateMgr.mProjectMatrixDirty ? mStateMgr.mXNALastProjectionMatrix : mStateMgr.mXNAProjectionMatrix;
+			Matrix world = mStateMgr.mXNALastWorldMatrix;
+			Matrix view = mStateMgr.mXNAViewMatrix;
+			CommitEffectMatrices(xna, world, view, proj);
+
+			GraphicsDevice gd = mDevice.GraphicsDevice;
 			for (int i = 0; i < 3; i++)
 			{
-				aEffect.GetDefinition().mEffect.GraphicsDevice.Textures[i] = mStateMgr.mLastXNATextureSlots[i];
-				aEffect.GetDefinition().mEffect.GraphicsDevice.SamplerStates[i] = mStateMgr.mXNALastSamplerStateSlots[i];
+				gd.Textures[i] = mStateMgr.mLastXNATextureSlots[i];
+				if (mStateMgr.mXNALastSamplerStateSlots[i] != null)
+					gd.SamplerStates[i] = mStateMgr.mXNALastSamplerStateSlots[i];
 			}
-			aEffect.GetDefinition().mEffect.GraphicsDevice.RasterizerState = mStateMgr.mXNARasterizerState;
-			aEffect.GetDefinition().mEffect.GraphicsDevice.BlendState = mStateMgr.mXNALastBlendState;
-			aEffect.GetDefinition().mEffect.GraphicsDevice.DepthStencilState = mStateMgr.mXNADepthStencilState;
-				
-			if (aEffect.GetDefinition().mEffect.Parameters["world"] != null)
-			{
-				aEffect.GetDefinition().mEffect.Parameters["world"].SetValue(mStateMgr.mXNALastWorldMatrix);
-			}
-			if (aEffect.GetDefinition().mEffect.Parameters["view"] != null)
-			{
-				aEffect.GetDefinition().mEffect.Parameters["view"].SetValue(mStateMgr.mXNAViewMatrix);
-			}
-			if (aEffect.GetDefinition().mEffect.Parameters["projection"] != null)
-			{
-				aEffect.GetDefinition().mEffect.Parameters["projection"].SetValue(mStateMgr.mXNALastProjectionMatrix);
-			}
+			gd.RasterizerState   = mStateMgr.mXNARasterizerState;
+			gd.BlendState        = mStateMgr.mXNALastBlendState ?? mStateMgr.mXNABlendState;
+			gd.DepthStencilState = mStateMgr.mXNADepthStencilState;
 		}
 
 		public override void ClearRect(Rect theRect)
@@ -737,27 +1082,32 @@ namespace SexyFramework.Drivers.Graphics
 			SetupDrawMode(theDrawMode);
 			Microsoft.Xna.Framework.Color color = new Microsoft.Xna.Framework.Color(theColor.mRed, theColor.mGreen, theColor.mBlue, theColor.mAlpha);
 			float z = 0f;
-			VertexPositionColorTexture[] array = new VertexPositionColorTexture[theNumVertices];
+			if (mScratchPoly.Length < theNumVertices) mScratchPoly = new VertexPositionColorTexture[theNumVertices];
 			for (int i = 0; i < theNumVertices; i++)
 			{
-				array[i].Position = new Vector3((float)theVertices[i].mX + (float)tx, (float)theVertices[i].mY + (float)ty, z);
-				array[i].Color = color;
+				mScratchPoly[i].Position = new Vector3((float)theVertices[i].mX + (float)tx, (float)theVertices[i].mY + (float)ty, z);
+				mScratchPoly[i].Color = color;
 				if (mTransformStack.Count != 0)
 				{
-					SexyVector2 sexyVector = new SexyVector2(array[i].Position.X, array[i].Position.Y);
+					SexyVector2 sexyVector = new SexyVector2(mScratchPoly[i].Position.X, mScratchPoly[i].Position.Y);
 					sexyVector = mTransformStack.Peek() * sexyVector;
-					array[i].Position.X = sexyVector.x;
-					array[i].Position.Y = sexyVector.y;
+					mScratchPoly[i].Position.X = sexyVector.x;
+					mScratchPoly[i].Position.Y = sexyVector.y;
 				}
 			}
-			DrawPolyClipped(theClipRect, array);
+			DrawPolyClipped(theClipRect, mScratchPoly, theNumVertices);
 		}
 
 		public void DrawPolyClipped(Rect theClipRect, VertexPositionColorTexture[] theList)
 		{
+			DrawPolyClipped(theClipRect, theList, theList.Length);
+		}
+
+		public void DrawPolyClipped(Rect theClipRect, VertexPositionColorTexture[] theList, int theCount)
+		{
 			DPC_l2.Clear();
 			DPC_l1.Clear();
-			DPC_l1.AddRange(theList);
+			for (int i = 0; i < theCount; i++) DPC_l1.Add(theList[i]);
 			int mX = theClipRect.mX;
 			int num = mX + theClipRect.mWidth;
 			int mY = theClipRect.mY;
@@ -772,7 +1122,10 @@ namespace SexyFramework.Drivers.Graphics
 			CheckBatchAndCommit();
 			if (DPC_l1.Count >= 3)
 			{
-				BufferedDrawPrimitive(6, DPC_l1.Count - 2, DPC_l1.ToArray(), (int)mDefaultVertexSize, mDefaultVertexFVF, Matrix.Identity);
+				int n = DPC_l1.Count;
+				if (mScratchPoly.Length < n) mScratchPoly = new VertexPositionColorTexture[n];
+				for (int i = 0; i < n; i++) mScratchPoly[i] = DPC_l1[i];
+				BufferedDrawPrimitive(6, n - 2, mScratchPoly, (int)mDefaultVertexSize, mDefaultVertexFVF, Matrix.Identity);
 			}
 		}
 
@@ -878,17 +1231,14 @@ namespace SexyFramework.Drivers.Graphics
 				float y2 = (float)theEndY;
 				float z = 0f;
 				Microsoft.Xna.Framework.Color color = new Microsoft.Xna.Framework.Color(theColor.mRed, theColor.mGreen, theColor.mBlue, theColor.mAlpha);
-				VertexPositionColor[] inVertData = new VertexPositionColor[2]
-				{
-					new VertexPositionColor(new Vector3(x, y, z), color),
-					new VertexPositionColor(new Vector3(x2, y2, z), color)
-				};
+				mScratchLine[0] = new VertexPositionColor(new Vector3(x, y, z), color);
+				mScratchLine[1] = new VertexPositionColor(new Vector3(x2, y2, z), color);
 				SetTextureDirect(0, null);
 				mStateMgr.SetWorldTransform(Matrix.Identity);
 				CheckBatchAndCommit();
 				FlushBufferedTriangles();
 				DoCommitAllRenderState();
-				DrawPrimitiveInternal(3, 1, inVertData, 32uL, mDefaultVertexFVF, false, Matrix.Identity);
+				DrawPrimitiveInternal(3, 1, mScratchLine, 32uL, mDefaultVertexFVF, false, Matrix.Identity);
 			}
 		}
 
@@ -964,28 +1314,19 @@ namespace SexyFramework.Drivers.Graphics
 		public override void BltTriangles(Image theImage, SexyVertex2D[,] theVertices, int theNumTriangles, SexyFramework.Graphics.Color theColor, int theDrawMode, float tx, float ty, bool blend, Rect theClipRect)
 		{
             Image image = theImage;
+            image.InitAtalasState();
             theImage = SetupAtlasState(0, theImage);
             MemoryImage inImage = theImage as MemoryImage;
             if (!CreateImageRenderData(ref inImage))
             {
                 return;
             }
-            if (image.mAtlasImage != null)
-            {
-                int num = image.mAtlasEndX - image.mAtlasStartX;
-                int num2 = image.mAtlasEndY - image.mAtlasStartY;
-                int length = theVertices.GetLength(0);
-                for (int i = 0; i < length; i++)
-                {
-                    for (int j = 0; j < 3; j++)
-                    {
-                        theVertices[i, j].u = (theVertices[i, j].u * (float)num + (float)image.mAtlasStartX) / (float)inImage.mWidth;
-                        theVertices[i, j].v = (theVertices[i, j].v * (float)num2 + (float)image.mAtlasStartY) / (float)inImage.mHeight;
-                    }
-                }
-            }
             SetupDrawMode(theDrawMode);
-            XNATextureData xNATextureData = (XNATextureData)inImage.GetRenderData();
+            XNATextureData xNATextureData = inImage.GetRenderData() as XNATextureData;
+            if (xNATextureData == null)
+            {
+                return;
+            }
             if (!((double)xNATextureData.mMaxTotalU <= 1.0) || !((double)xNATextureData.mMaxTotalV <= 1.0))
             {
                 return;
@@ -1005,35 +1346,30 @@ namespace SexyFramework.Drivers.Graphics
                         DoCommitAllRenderState();
                         FlushBufferedTriangles();
                     }
-                    SexyVector2[] array = new SexyVector2[3];
-                    array[0].x = theVertices[k, 0].x + tx;
-                    array[0].y = theVertices[k, 0].y + ty;
-                    array[1].x = theVertices[k, 1].x + tx;
-                    array[1].y = theVertices[k, 1].y + ty;
-                    array[2].x = theVertices[k, 2].x + tx;
-                    array[2].y = theVertices[k, 2].y + ty;
-                    array[0].x = array[0].x * sexyMatrix.m00 + array[0].y * sexyMatrix.m01 + sexyMatrix.m02;
-                    array[0].y = array[0].x * sexyMatrix.m10 + array[0].y * sexyMatrix.m11 + sexyMatrix.m12;
-                    array[1].x = array[1].x * sexyMatrix.m00 + array[1].y * sexyMatrix.m01 + sexyMatrix.m02;
-                    array[1].y = array[1].x * sexyMatrix.m10 + array[1].y * sexyMatrix.m11 + sexyMatrix.m12;
-                    array[2].x = array[2].x * sexyMatrix.m00 + array[2].y * sexyMatrix.m01 + sexyMatrix.m02;
-                    array[2].y = array[2].x * sexyMatrix.m10 + array[2].y * sexyMatrix.m11 + sexyMatrix.m12;
-                    mBatchedTriangleBuffer[mBatchedTriangleIndex++] = new VertexPositionColorTexture(new Vector3(array[0].x, array[0].y, z), (theVertices[k, 0].color != SexyFramework.Graphics.Color.Zero) ? GetXNAColor(theVertices[k, 0].color) : GetXNAColor(theColor), new Vector2(theVertices[k, 0].u * xNATextureData.mMaxTotalU, theVertices[k, 0].v * xNATextureData.mMaxTotalV));
-                    mBatchedTriangleBuffer[mBatchedTriangleIndex++] = new VertexPositionColorTexture(new Vector3(array[1].x, array[1].y, z), (theVertices[k, 1].color != SexyFramework.Graphics.Color.Zero) ? GetXNAColor(theVertices[k, 1].color) : GetXNAColor(theColor), new Vector2(theVertices[k, 1].u * xNATextureData.mMaxTotalU, theVertices[k, 1].v * xNATextureData.mMaxTotalV));
-                    mBatchedTriangleBuffer[mBatchedTriangleIndex++] = new VertexPositionColorTexture(new Vector3(array[2].x, array[2].y, z), (theVertices[k, 2].color != SexyFramework.Graphics.Color.Zero) ? GetXNAColor(theVertices[k, 2].color) : GetXNAColor(theColor), new Vector2(theVertices[k, 2].u * xNATextureData.mMaxTotalU, theVertices[k, 2].v * xNATextureData.mMaxTotalV));
-                    new SexyVector2(mBatchedTriangleBuffer[mBatchedTriangleIndex - 3].TextureCoordinate.X, mBatchedTriangleBuffer[mBatchedTriangleIndex - 3].TextureCoordinate.Y);
-                    new SexyVector2(mBatchedTriangleBuffer[mBatchedTriangleIndex - 2].TextureCoordinate.X, mBatchedTriangleBuffer[mBatchedTriangleIndex - 2].TextureCoordinate.Y);
-                    new SexyVector2(mBatchedTriangleBuffer[mBatchedTriangleIndex - 1].TextureCoordinate.X, mBatchedTriangleBuffer[mBatchedTriangleIndex - 1].TextureCoordinate.Y);
+                    float ax0 = theVertices[k, 0].x + tx, ay0 = theVertices[k, 0].y + ty;
+                    float ax1 = theVertices[k, 1].x + tx, ay1 = theVertices[k, 1].y + ty;
+                    float ax2 = theVertices[k, 2].x + tx, ay2 = theVertices[k, 2].y + ty;
+                    float tx0 = ax0 * sexyMatrix.m00 + ay0 * sexyMatrix.m01 + sexyMatrix.m02;
+                    float ty0 = ax0 * sexyMatrix.m10 + ay0 * sexyMatrix.m11 + sexyMatrix.m12;
+                    float tx1 = ax1 * sexyMatrix.m00 + ay1 * sexyMatrix.m01 + sexyMatrix.m02;
+                    float ty1 = ax1 * sexyMatrix.m10 + ay1 * sexyMatrix.m11 + sexyMatrix.m12;
+                    float tx2 = ax2 * sexyMatrix.m00 + ay2 * sexyMatrix.m01 + sexyMatrix.m02;
+                    float ty2 = ax2 * sexyMatrix.m10 + ay2 * sexyMatrix.m11 + sexyMatrix.m12;
+                    Vector2 uv0 = image.mVectorBase + image.mVectorU * theVertices[k, 0].u + image.mVectorV * theVertices[k, 0].v;
+                    Vector2 uv1 = image.mVectorBase + image.mVectorU * theVertices[k, 1].u + image.mVectorV * theVertices[k, 1].v;
+                    Vector2 uv2 = image.mVectorBase + image.mVectorU * theVertices[k, 2].u + image.mVectorV * theVertices[k, 2].v;
+                    mBatchedTriangleBuffer[mBatchedTriangleIndex++] = new VertexPositionColorTexture(new Vector3(tx0, ty0, z), (theVertices[k, 0].color != SexyFramework.Graphics.Color.Zero) ? GetXNAColor(theVertices[k, 0].color) : GetXNAColor(theColor), new Vector2(uv0.X * xNATextureData.mMaxTotalU, uv0.Y * xNATextureData.mMaxTotalV));
+                    mBatchedTriangleBuffer[mBatchedTriangleIndex++] = new VertexPositionColorTexture(new Vector3(tx1, ty1, z), (theVertices[k, 1].color != SexyFramework.Graphics.Color.Zero) ? GetXNAColor(theVertices[k, 1].color) : GetXNAColor(theColor), new Vector2(uv1.X * xNATextureData.mMaxTotalU, uv1.Y * xNATextureData.mMaxTotalV));
+                    mBatchedTriangleBuffer[mBatchedTriangleIndex++] = new VertexPositionColorTexture(new Vector3(tx2, ty2, z), (theVertices[k, 2].color != SexyFramework.Graphics.Color.Zero) ? GetXNAColor(theVertices[k, 2].color) : GetXNAColor(theColor), new Vector2(uv2.X * xNATextureData.mMaxTotalU, uv2.Y * xNATextureData.mMaxTotalV));
                     AdjustVertsForAtlas(0, ref mBatchedTriangleBuffer, mBatchedTriangleIndex - 3, 3, 0u, 32, 0);
                     if (!SUPPORT_HW_CLIP && flag2)
                     {
-                        VertexPositionColorTexture[] array2 = new VertexPositionColorTexture[3];
                         for (int l = 0; l < 3; l++)
                         {
-                            array2[l] = mBatchedTriangleBuffer[mBatchedTriangleIndex - (3 - l)];
+                            mScratchTri[l] = mBatchedTriangleBuffer[mBatchedTriangleIndex - (3 - l)];
                         }
                         mBatchedTriangleIndex -= 3;
-                        DrawPolyClipped(theClipRect, array2);
+                        DrawPolyClipped(theClipRect, mScratchTri);
                     }
                 }
                 return;
@@ -1047,19 +1383,21 @@ namespace SexyFramework.Drivers.Graphics
                         DoCommitAllRenderState();
                         FlushBufferedTriangles();
                     }
-                    mBatchedTriangleBuffer[mBatchedTriangleIndex++] = new VertexPositionColorTexture(new Vector3(theVertices[m, 0].x, theVertices[m, 0].y, z), (theVertices[m, 0].color != SexyFramework.Graphics.Color.Zero) ? GetXNAColor(theVertices[m, 0].color) : GetXNAColor(theColor), new Vector2(theVertices[m, 0].u * xNATextureData.mMaxTotalU, theVertices[m, 0].v * xNATextureData.mMaxTotalV));
-                    mBatchedTriangleBuffer[mBatchedTriangleIndex++] = new VertexPositionColorTexture(new Vector3(theVertices[m, 1].x, theVertices[m, 1].y, z), (theVertices[m, 1].color != SexyFramework.Graphics.Color.Zero) ? GetXNAColor(theVertices[m, 1].color) : GetXNAColor(theColor), new Vector2(theVertices[m, 1].u * xNATextureData.mMaxTotalU, theVertices[m, 1].v * xNATextureData.mMaxTotalV));
-                    mBatchedTriangleBuffer[mBatchedTriangleIndex++] = new VertexPositionColorTexture(new Vector3(theVertices[m, 2].x, theVertices[m, 2].y, z), (theVertices[m, 2].color != SexyFramework.Graphics.Color.Zero) ? GetXNAColor(theVertices[m, 2].color) : GetXNAColor(theColor), new Vector2(theVertices[m, 2].u * xNATextureData.mMaxTotalU, theVertices[m, 2].v * xNATextureData.mMaxTotalV));
+                    Vector2 uv0m = image.mVectorBase + image.mVectorU * theVertices[m, 0].u + image.mVectorV * theVertices[m, 0].v;
+                    Vector2 uv1m = image.mVectorBase + image.mVectorU * theVertices[m, 1].u + image.mVectorV * theVertices[m, 1].v;
+                    Vector2 uv2m = image.mVectorBase + image.mVectorU * theVertices[m, 2].u + image.mVectorV * theVertices[m, 2].v;
+                    mBatchedTriangleBuffer[mBatchedTriangleIndex++] = new VertexPositionColorTexture(new Vector3(theVertices[m, 0].x, theVertices[m, 0].y, z), (theVertices[m, 0].color != SexyFramework.Graphics.Color.Zero) ? GetXNAColor(theVertices[m, 0].color) : GetXNAColor(theColor), new Vector2(uv0m.X * xNATextureData.mMaxTotalU, uv0m.Y * xNATextureData.mMaxTotalV));
+                    mBatchedTriangleBuffer[mBatchedTriangleIndex++] = new VertexPositionColorTexture(new Vector3(theVertices[m, 1].x, theVertices[m, 1].y, z), (theVertices[m, 1].color != SexyFramework.Graphics.Color.Zero) ? GetXNAColor(theVertices[m, 1].color) : GetXNAColor(theColor), new Vector2(uv1m.X * xNATextureData.mMaxTotalU, uv1m.Y * xNATextureData.mMaxTotalV));
+                    mBatchedTriangleBuffer[mBatchedTriangleIndex++] = new VertexPositionColorTexture(new Vector3(theVertices[m, 2].x, theVertices[m, 2].y, z), (theVertices[m, 2].color != SexyFramework.Graphics.Color.Zero) ? GetXNAColor(theVertices[m, 2].color) : GetXNAColor(theColor), new Vector2(uv2m.X * xNATextureData.mMaxTotalU, uv2m.Y * xNATextureData.mMaxTotalV));
                     AdjustVertsForAtlas(0, ref mBatchedTriangleBuffer, mBatchedTriangleIndex - 3, 3, 0u, 32, 0);
                     if (!SUPPORT_HW_CLIP && flag2)
                     {
-                        VertexPositionColorTexture[] array3 = new VertexPositionColorTexture[3];
                         for (int n = 0; n < 3; n++)
                         {
-                            array3[n] = mBatchedTriangleBuffer[mBatchedTriangleIndex - (3 - n)];
+                            mScratchTri[n] = mBatchedTriangleBuffer[mBatchedTriangleIndex - (3 - n)];
                         }
                         mBatchedTriangleIndex -= 3;
-                        DrawPolyClipped(theClipRect, array3);
+                        DrawPolyClipped(theClipRect, mScratchTri);
                     }
                 }
                 return;
@@ -1077,9 +1415,12 @@ namespace SexyFramework.Drivers.Graphics
                 int num5 = Math.Min(mBatchedTriangleSize - mBatchedTriangleIndex, theNumTriangles - num3);
                 while (num4 < num5)
                 {
-                    mBatchedTriangleBuffer[mBatchedTriangleIndex++] = new VertexPositionColorTexture(new Vector3(theVertices[num3, 0].x, theVertices[num3, 0].y, z), (theVertices[num3, 0].color != SexyFramework.Graphics.Color.Zero) ? GetXNAColor(theVertices[num3, 0].color) : GetXNAColor(theColor), new Vector2(theVertices[num3, 0].u * xNATextureData.mMaxTotalU, theVertices[num3, 0].v * xNATextureData.mMaxTotalV));
-                    mBatchedTriangleBuffer[mBatchedTriangleIndex++] = new VertexPositionColorTexture(new Vector3(theVertices[num3, 1].x, theVertices[num3, 1].y, z), (theVertices[num3, 1].color != SexyFramework.Graphics.Color.Zero) ? GetXNAColor(theVertices[num3, 1].color) : GetXNAColor(theColor), new Vector2(theVertices[num3, 1].u * xNATextureData.mMaxTotalU, theVertices[num3, 1].v * xNATextureData.mMaxTotalV));
-                    mBatchedTriangleBuffer[mBatchedTriangleIndex++] = new VertexPositionColorTexture(new Vector3(theVertices[num3, 2].x, theVertices[num3, 2].y, z), (theVertices[num3, 2].color != SexyFramework.Graphics.Color.Zero) ? GetXNAColor(theVertices[num3, 2].color) : GetXNAColor(theColor), new Vector2(theVertices[num3, 2].u * xNATextureData.mMaxTotalU, theVertices[num3, 2].v * xNATextureData.mMaxTotalV));
+                    Vector2 uv0n = image.mVectorBase + image.mVectorU * theVertices[num3, 0].u + image.mVectorV * theVertices[num3, 0].v;
+                    Vector2 uv1n = image.mVectorBase + image.mVectorU * theVertices[num3, 1].u + image.mVectorV * theVertices[num3, 1].v;
+                    Vector2 uv2n = image.mVectorBase + image.mVectorU * theVertices[num3, 2].u + image.mVectorV * theVertices[num3, 2].v;
+                    mBatchedTriangleBuffer[mBatchedTriangleIndex++] = new VertexPositionColorTexture(new Vector3(theVertices[num3, 0].x, theVertices[num3, 0].y, z), (theVertices[num3, 0].color != SexyFramework.Graphics.Color.Zero) ? GetXNAColor(theVertices[num3, 0].color) : GetXNAColor(theColor), new Vector2(uv0n.X * xNATextureData.mMaxTotalU, uv0n.Y * xNATextureData.mMaxTotalV));
+                    mBatchedTriangleBuffer[mBatchedTriangleIndex++] = new VertexPositionColorTexture(new Vector3(theVertices[num3, 1].x, theVertices[num3, 1].y, z), (theVertices[num3, 1].color != SexyFramework.Graphics.Color.Zero) ? GetXNAColor(theVertices[num3, 1].color) : GetXNAColor(theColor), new Vector2(uv1n.X * xNATextureData.mMaxTotalU, uv1n.Y * xNATextureData.mMaxTotalV));
+                    mBatchedTriangleBuffer[mBatchedTriangleIndex++] = new VertexPositionColorTexture(new Vector3(theVertices[num3, 2].x, theVertices[num3, 2].y, z), (theVertices[num3, 2].color != SexyFramework.Graphics.Color.Zero) ? GetXNAColor(theVertices[num3, 2].color) : GetXNAColor(theColor), new Vector2(uv2n.X * xNATextureData.mMaxTotalU, uv2n.Y * xNATextureData.mMaxTotalV));
                     num4 += 3;
                     num3++;
                 }
@@ -1089,16 +1430,17 @@ namespace SexyFramework.Drivers.Graphics
 
 		private void CheckBatchAndCommit()
 		{
-			if (mSceneBegun && mBatchedTriangleIndex >= 0 && (mStateMgr.mStateDirty || mStateMgr.mTextureStateDirty || mStateMgr.mProjectMatrixDirty))
+			mStateMgr.mStateDirty = false;
+			mStateMgr.mTextureStateDirty = false;
+			mStateMgr.mProjectMatrixDirty = false;
+		}
+
+		public void FlushBatchBeforeStateChange()
+		{
+			if (mSceneBegun && mBatchedTriangleIndex > 0)
 			{
-				if (mBatchedTriangleIndex > 0)
-				{
-					DoCommitLastAllRenderState();
-					FlushBufferedTriangles();
-				}
-				mStateMgr.mStateDirty = false;
-				mStateMgr.mTextureStateDirty = false;
-				mStateMgr.mProjectMatrixDirty = false;
+				DoCommitAllRenderState();
+				FlushBufferedTriangles();
 			}
 		}
 
@@ -1166,16 +1508,22 @@ namespace SexyFramework.Drivers.Graphics
 			mDevice.ApplyChanges();
 			mTmpVPCTBuffer = new VertexPositionColorTexture[4];
 			mTmpVPCBuffer = new VertexPositionColor[4];
+			try
+			{
+				mSexy2DEffect = WP7AppDriver.sWP7AppDriverInstance.mContentManager.Load<Effect>("effects/Sexy2D");
+				mSexy2DWVP        = mSexy2DEffect.Parameters["WorldViewProj"];
+				mSexy2DTex0       = mSexy2DEffect.Parameters["Tex0Texture"];
+				mSexy2DTextured   = mSexy2DEffect.Techniques["Textured"];
+				mSexy2DUntextured = mSexy2DEffect.Techniques["Untextured"];
+			}
+			catch
+			{
+				mSexy2DEffect = null;
+			}
 			mBasicEffect = new BasicEffect(mDevice.GraphicsDevice);
 			mSpriteBatch = new SpriteBatch(mDevice.GraphicsDevice);
-			mAdditiveState.AlphaDestinationBlend = Blend.One;
-			mAdditiveState.ColorDestinationBlend = Blend.One;
-			mAdditiveState.AlphaSourceBlend = Blend.SourceAlpha;
-			mAdditiveState.ColorSourceBlend = Blend.SourceAlpha;
-			mNormalState.AlphaDestinationBlend = Blend.InverseSourceAlpha;
-			mNormalState.ColorDestinationBlend = Blend.InverseSourceAlpha;
-			mNormalState.AlphaSourceBlend = Blend.SourceAlpha;
-			mNormalState.ColorSourceBlend = Blend.SourceAlpha;
+			mAdditiveState = StateCache.GetBlend(Blend.SourceAlpha, Blend.One, Blend.SourceAlpha, Blend.One);
+			mNormalState   = StateCache.GetBlend(Blend.SourceAlpha, Blend.InverseSourceAlpha, Blend.SourceAlpha, Blend.InverseSourceAlpha);
 			SetSamplerState(0, 0);
 			SetBlend(Graphics3D.EBlendMode.BLEND_DEFAULT, Graphics3D.EBlendMode.BLEND_DEFAULT);
 			SetDepthState(Graphics3D.ECompareFunc.COMPARE_NEVER, false);
@@ -1183,8 +1531,7 @@ namespace SexyFramework.Drivers.Graphics
 			SetDefaultState(null, false);
 			mStateMgr.mStateDirty = false;
 			mCurDrawMode = 0;
-			mScreenTarget = new RenderTarget2D(mDevice.GraphicsDevice, mScreenWidth, mScreenHeight, false, 0, 0, 0,  RenderTargetUsage.PreserveContents);
-			mScreenImageData = new Microsoft.Xna.Framework.Color[mScreenTarget.Width * mScreenTarget.Height];
+			mScreenTarget = new RenderTarget2D(mDevice.GraphicsDevice, mScreenWidth, mScreenHeight, false, 0, DepthFormat.Depth24, 0,  RenderTargetUsage.PreserveContents);
 		}
 
 		public void SetDefaultState(Image theImage, bool isInScene)
@@ -1220,27 +1567,20 @@ namespace SexyFramework.Drivers.Graphics
 
 		public void SetRenderState(SEXY3DRSS theRenderState, uint theValue)
 		{
-			DepthStencilState depthStencilState = new DepthStencilState();
-			depthStencilState.DepthBufferEnable = false;
-			depthStencilState.DepthBufferWriteEnable = false;
-			mDevice.GraphicsDevice.DepthStencilState = depthStencilState;
-			RasterizerState rasterizerState = new RasterizerState();
-			rasterizerState.CullMode = CullMode.None;
-			mDevice.GraphicsDevice.RasterizerState = rasterizerState;
-			mDevice.GraphicsDevice.BlendState = BlendState.AlphaBlend;
+			GraphicsDevice gd = mDevice.GraphicsDevice;
+			gd.DepthStencilState = StateCache.GetDepth(false, false, CompareFunction.Always);
+			gd.RasterizerState   = StateCache.GetRaster(CullMode.None);
+			gd.BlendState        = BlendState.AlphaBlend;
 		}
 
 		public void SetSamplerState(int theSampler, int theValue)
 		{
-			mStateMgr.SetSamplerState(theSampler, SamplerState.LinearClamp);
+			mStateMgr.SetSamplerState(theSampler, StateCache.GetSampler(TextureAddressMode.Clamp, TextureAddressMode.Clamp, TextureFilter.Linear));
 		}
 
 		public void SetRasterizerState(int fillMode, int cullMode)
 		{
-			RasterizerState rasterizerState = new RasterizerState();
-			rasterizerState.FillMode = (FillMode)fillMode;
-			rasterizerState.CullMode = (CullMode)cullMode;
-			mStateMgr.SetRasterizerState(rasterizerState);
+			mStateMgr.SetRasterizerState(StateCache.GetRaster((CullMode)cullMode, (FillMode)fillMode));
 		}
 
 		public override bool SetTexture(int inTextureIndex, Image inImage)
@@ -1253,17 +1593,26 @@ namespace SexyFramework.Drivers.Graphics
 			}
 			mImage = inImage;
 			inImage = SetupAtlasState(inTextureIndex, inImage);
+
+			XNATextureData xNATextureData = inImage.GetRenderData() as XNATextureData;
 			MemoryImage inImage2 = inImage.AsMemoryImage();
-			if (inImage2 == null)
+			if (xNATextureData == null)
 			{
-				return false;
-			}
-			if (!CreateImageRenderData(ref inImage2))
-			{
-				return false;
+				if (inImage2 == null)
+				{
+					return false;
+				}
+				if (!CreateImageRenderData(ref inImage2))
+				{
+					return false;
+				}
+				xNATextureData = inImage2?.GetRenderData() as XNATextureData;
 			}
 
-			XNATextureData xNATextureData = (XNATextureData)inImage2.GetRenderData();
+			if (xNATextureData == null || xNATextureData.mTextures[0] == null)
+			{
+				return false;
+			}
 			SetTextureDirect(inTextureIndex, xNATextureData.mTextures[0].mTexture);
 			return true;
 		}
@@ -1316,7 +1665,11 @@ namespace SexyFramework.Drivers.Graphics
 				SetBlend(Graphics3D.EBlendMode.BLEND_ONE, Graphics3D.EBlendMode.BLEND_ZERO);
 				flag = true;
 			}
-			XNATextureData xNATextureData = (XNATextureData)inImage.GetRenderData();
+			XNATextureData xNATextureData = inImage.GetRenderData() as XNATextureData;
+			if (xNATextureData == null)
+			{
+				return;
+			}
 			if (center)
 			{
 				num5 = (float)(-theSrcRect.mWidth) / 2f;
@@ -1405,7 +1758,11 @@ namespace SexyFramework.Drivers.Graphics
 			if (CreateImageRenderData(ref inImage))
 			{
 				SetupDrawMode(theDrawMode);
-				XNATextureData xNATextureData = (XNATextureData)inImage.GetRenderData();
+				XNATextureData xNATextureData = inImage.GetRenderData() as XNATextureData;
+				if (xNATextureData == null)
+				{
+					return;
+				}
 				int mX = theSrcRect.mX;
 				int mY = theSrcRect.mY;
 				int num = mX + theSrcRect.mWidth;
@@ -1473,6 +1830,11 @@ namespace SexyFramework.Drivers.Graphics
 
 		public void SetupDrawMode(int theDrawMode)
 		{
+			if (mStateMgr.mSrcBlendMode != Graphics3D.EBlendMode.BLEND_DEFAULT
+			 || mStateMgr.mDestBlendMode != Graphics3D.EBlendMode.BLEND_DEFAULT)
+			{
+				return;
+			}
 			if (theDrawMode == 0)
 			{
 				mStateMgr.SetBlendStateState(mNormalState);
@@ -1776,8 +2138,6 @@ namespace SexyFramework.Drivers.Graphics
 				break;
 			}
 			}
-			DoCommitAllRenderState();
-			FlushBufferedTriangles();
 		}
 
 		public void DrawPrimitiveInternal<T>(int inPrimType, int inPrimCount, T[] inVertData, ulong inVertStride, ulong inVertFormat, bool inDoCommit, Matrix transform) where T : struct, IVertexType
@@ -1823,20 +2183,25 @@ namespace SexyFramework.Drivers.Graphics
 
 			if (mStateMgr.mActiveEffects.Count == 0)
 			{
-				foreach (EffectPass pass in mBasicEffect.CurrentTechnique.Passes)
+				Effect baseFx = mSexy2DEffect ?? mBasicEffect;
+				foreach (EffectPass pass in baseFx.CurrentTechnique.Passes)
 				{
 					pass.Apply();
-					mBasicEffect.GraphicsDevice.DrawUserPrimitives(primitiveType, inVertData, 0, inPrimCount);
+					mDevice.GraphicsDevice.DrawUserPrimitives(primitiveType, inVertData, 0, inPrimCount);
 				}
 			}
 			else
 			{
 				foreach (XNARenderEffect aEffect in mStateMgr.mActiveEffects)
 				{
-					aEffect.MG_ApplyPass();
-					DoCommitEffectRenderState(aEffect);
-					aEffect.GetDefinition().mEffect.GraphicsDevice.DrawUserPrimitives(primitiveType, inVertData, 0, inPrimCount);
-				}
+                    DoCommitEffectRenderState(aEffect);
+                    aEffect.MG_ApplyPass();
+                    mDevice.GraphicsDevice.DrawUserPrimitives(primitiveType, inVertData, 0, inPrimCount);
+                }
+				//XNARenderEffect aEffect = mStateMgr.mActiveEffects[mStateMgr.mActiveEffects.Count - 1];
+				//DoCommitEffectRenderState(aEffect);
+				//aEffect.MG_ApplyPass();
+				//mDevice.GraphicsDevice.DrawUserPrimitives(primitiveType, inVertData, 0, inPrimCount);
 			}
 		}
 
@@ -1863,28 +2228,33 @@ namespace SexyFramework.Drivers.Graphics
 				break;
 			}
 
-			foreach (EffectPass pass in mBasicEffect.CurrentTechnique.Passes)
+			Effect baseFx2 = (Effect)mSexy2DEffect ?? mBasicEffect;
+			foreach (EffectPass pass in baseFx2.CurrentTechnique.Passes)
 			{
 				pass.Apply();
 			}
 			if (mStateMgr.mActiveEffects.Count == 0)
 			{
-				foreach (EffectPass pass in mBasicEffect.CurrentTechnique.Passes)
+				foreach (EffectPass pass in baseFx2.CurrentTechnique.Passes)
 				{
 					pass.Apply();
-					mBasicEffect.GraphicsDevice.DrawUserIndexedPrimitives(primitiveType, inVertData, 0,
+					mDevice.GraphicsDevice.DrawUserIndexedPrimitives(primitiveType, inVertData, 0,
 						mBatchedTriangleIndex, mBatchedIndexBuffer, 0, inPrimCount);
 				}
 			}
 			else
 			{
-				foreach (XNARenderEffect aEffect in mStateMgr.mActiveEffects)
-				{
-					aEffect.MG_ApplyPass();
-					DoCommitEffectRenderState(aEffect);
-					aEffect.GetDefinition().mEffect.GraphicsDevice.DrawUserIndexedPrimitives(primitiveType, inVertData, 0, mBatchedTriangleIndex, mBatchedIndexBuffer, 0, inPrimCount);
-				}
-			}
+                foreach (XNARenderEffect aEffect in mStateMgr.mActiveEffects)
+                {
+                    DoCommitEffectRenderState(aEffect);
+                    aEffect.MG_ApplyPass();
+                    mDevice.GraphicsDevice.DrawUserIndexedPrimitives(primitiveType, inVertData, 0, mBatchedTriangleIndex, mBatchedIndexBuffer, 0, inPrimCount);
+                }
+                //XNARenderEffect aEffect = mStateMgr.mActiveEffects[mStateMgr.mActiveEffects.Count - 1];
+                //DoCommitEffectRenderState(aEffect);
+                //aEffect.MG_ApplyPass();
+                //mDevice.GraphicsDevice.DrawUserIndexedPrimitives(primitiveType, inVertData, 0, mBatchedTriangleIndex, mBatchedIndexBuffer, 0, inPrimCount);
+            }
 		}
 
 		public VertexBuffer InternalCreateVertexBuffer(int inCount, VertexDeclaration vDec, BufferUsage usage)
@@ -1899,18 +2269,29 @@ namespace SexyFramework.Drivers.Graphics
 
 		public override Image SwapScreenImage(ref DeviceImage ioSrcImage, ref RenderSurface ioSrcSurface, uint flags)
 		{
-			RenderTarget2D aTarget =
-				new RenderTarget2D(mDevice.GraphicsDevice, mScreenTarget.Width, mScreenTarget.Height, false, 0, 0, 0, RenderTargetUsage.PreserveContents);
-			mScreenTarget.GetData(mScreenImageData);
-			mDevice.GraphicsDevice.SetRenderTarget(aTarget);
-			
-			Texture2D screenSurface = new Texture2D(mDevice.GraphicsDevice, mScreenTarget.Width, mScreenTarget.Height);
-			screenSurface.SetData(mScreenImageData);
-			(ioSrcImage.GetRenderData() as XNATextureData).mTextures[0].mTexture = screenSurface;
+			if (mBatchedTriangleIndex > 0)
+			{
+				DoCommitAllRenderState();
+				FlushBufferedTriangles();
+			}
+
+			RenderTarget2D oldTarget = mScreenTarget;
+			RenderTarget2D newTarget = new RenderTarget2D(mDevice.GraphicsDevice, oldTarget.Width, oldTarget.Height,
+				false, 0, DepthFormat.Depth24, 0, RenderTargetUsage.PreserveContents);
+
+			XNATextureData srcData = ioSrcImage.GetRenderData() as XNATextureData;
+			Texture2D prevSrcTex = (srcData != null && srcData.mTextures != null && srcData.mTextures[0] != null)
+				? srcData.mTextures[0].mTexture : null;
+			if (srcData != null) srcData.mTextures[0].mTexture = oldTarget;
+			if (prevSrcTex != null && prevSrcTex != oldTarget)
+			{
+				prevSrcTex.Dispose();
+			}
+
+			mDevice.GraphicsDevice.SetRenderTarget(newTarget);
 			mDevice.GraphicsDevice.Clear(Microsoft.Xna.Framework.Color.Black);
-			
-			mScreenTarget.Dispose();
-			mScreenTarget = aTarget;
+
+			mScreenTarget = newTarget;
 			return ioSrcImage;
 		}
 
@@ -1933,17 +2314,22 @@ namespace SexyFramework.Drivers.Graphics
 			if (mCurrentContex == null || mCurrentContex.GetPointer() == null)
 			{
 				mDevice.GraphicsDevice.SetRenderTarget(mScreenTarget);
-				mDevice.GraphicsDevice.Clear(Microsoft.Xna.Framework.Color.Black);
-				Array.Clear(mScreenImageData);
+				mDevice.GraphicsDevice.Clear(ClearOptions.Target | ClearOptions.DepthBuffer, Microsoft.Xna.Framework.Color.Black, 1f, 0);
 			}
 		}
 
 		public void PresentScreenImage()
 		{
+			if (mBatchedTriangleIndex > 0)
+			{
+				DoCommitAllRenderState();
+				FlushBufferedTriangles();
+			}
+
 			if (mCurrentContex == null || mCurrentContex.GetPointer() == null)
 			{
 				mDevice.GraphicsDevice.SetRenderTarget(null);
-				
+
 				Rectangle aRenderRect = new Rectangle(0, 0, mDevice.GraphicsDevice.Viewport.Width, mDevice.GraphicsDevice.Viewport.Height);
 				// We render with the predetermined ratio and center it for mobile
 				if (PlatformInfo.MonoGamePlatform == MonoGamePlatform.iOS ||

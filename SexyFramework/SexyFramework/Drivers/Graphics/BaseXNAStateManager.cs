@@ -524,10 +524,13 @@ namespace SexyFramework.Drivers.Graphics
 			mSamplerStates[(int)inSS][(int)inSampler].SetValue(inValue);
 		}
 
+		public BaseXNARenderDevice mRenderDevice;
+
 		public void SetSamplerState(int theStage, SamplerState state)
 		{
 			if (mXNASamplerStateSlots[theStage] != state)
 			{
+				if (mRenderDevice != null) mRenderDevice.FlushBatchBeforeStateChange();
 				mStateDirty = true;
 			}
 			mXNALastSamplerStateSlots[theStage] = mXNASamplerStateSlots[theStage];
@@ -538,6 +541,7 @@ namespace SexyFramework.Drivers.Graphics
 		{
 			if (mXNARasterizerState != state)
 			{
+				if (mRenderDevice != null) mRenderDevice.FlushBatchBeforeStateChange();
 				mStateDirty = true;
 			}
 			mXNARasterizerState = state;
@@ -547,6 +551,7 @@ namespace SexyFramework.Drivers.Graphics
 		{
 			if (mXNABlendState.AlphaSourceBlend != state.AlphaSourceBlend || mXNABlendState.AlphaDestinationBlend != state.AlphaDestinationBlend || mXNABlendState.ColorDestinationBlend != state.ColorDestinationBlend || mXNABlendState.ColorSourceBlend != state.ColorSourceBlend)
 			{
+				if (mRenderDevice != null) mRenderDevice.FlushBatchBeforeStateChange();
 				mStateDirty = true;
 			}
 			mXNALastBlendState = mXNABlendState;
@@ -557,16 +562,42 @@ namespace SexyFramework.Drivers.Graphics
 		{
 			if (mSrcBlendMode != src || mDestBlendMode != dest)
 			{
+				if (mRenderDevice != null) mRenderDevice.FlushBatchBeforeStateChange();
 				mStateDirty = true;
 			}
 			mSrcBlendMode = src;
 			mDestBlendMode = dest;
+
+			if (src != Graphics3D.EBlendMode.BLEND_DEFAULT || dest != Graphics3D.EBlendMode.BLEND_DEFAULT)
+			{
+				Blend xsrc = TranslateBlend(src);
+				Blend xdest = TranslateBlend(dest);
+				mXNABlendState = StateCache.GetBlend(xsrc, xdest, xsrc, xdest);
+			}
+		}
+
+		private static Blend TranslateBlend(Graphics3D.EBlendMode mode)
+		{
+			switch (mode)
+			{
+			case Graphics3D.EBlendMode.BLEND_ZERO:           return Blend.Zero;
+			case Graphics3D.EBlendMode.BLEND_ONE:            return Blend.One;
+			case Graphics3D.EBlendMode.BLEND_SRCCOLOR:       return Blend.SourceColor;
+			case Graphics3D.EBlendMode.BLEND_INVSRCCOLOR:    return Blend.InverseSourceColor;
+			case Graphics3D.EBlendMode.BLEND_SRCALPHA:       return Blend.SourceAlpha;
+			case Graphics3D.EBlendMode.BLEND_INVSRCALPHA:    return Blend.InverseSourceAlpha;
+			case Graphics3D.EBlendMode.BLEND_DESTCOLOR:      return Blend.DestinationColor;
+			case Graphics3D.EBlendMode.BLEND_INVDESTCOLOR:   return Blend.InverseDestinationColor;
+			case Graphics3D.EBlendMode.BLEND_SRCALPHASAT:    return Blend.SourceAlphaSaturation;
+			default:                                          return Blend.SourceAlpha;
+			}
 		}
 
 		public void SetDepthStencilState(DepthStencilState state)
 		{
 			if (mXNADepthStencilState != state)
 			{
+				if (mRenderDevice != null) mRenderDevice.FlushBatchBeforeStateChange();
 				mStateDirty = true;
 			}
 			mXNADepthStencilState = state;
@@ -576,6 +607,7 @@ namespace SexyFramework.Drivers.Graphics
 		{
 			if (mXNAProjectionMatrix != mat)
 			{
+				if (mRenderDevice != null) mRenderDevice.FlushBatchBeforeStateChange();
 				mProjectMatrixDirty = true;
 			}
 			mXNALastProjectionMatrix = mXNAProjectionMatrix;
@@ -584,18 +616,30 @@ namespace SexyFramework.Drivers.Graphics
 
 		public void SetViewTransform(Matrix mat)
 		{
+			if (mXNAViewMatrix != mat)
+			{
+				if (mRenderDevice != null) mRenderDevice.FlushBatchBeforeStateChange();
+			}
 			mXNAViewMatrix = mat;
 		}
 
 		public void SetWorldTransform(Matrix mat)
 		{
+			if (mXNAWorldMatrix != mat)
+			{
+				if (mRenderDevice != null) mRenderDevice.FlushBatchBeforeStateChange();
+			}
 			mXNALastWorldMatrix = mXNAWorldMatrix;
 			mXNAWorldMatrix = mat;
 		}
 
 		public void SetTexture(int theStage, Texture2D texture)
 		{
-			mTextureStateDirty = true;
+			if (mXNATextureSlots[theStage] != texture)
+			{
+				if (mRenderDevice != null) mRenderDevice.FlushBatchBeforeStateChange();
+				mTextureStateDirty = true;
+			}
 			mLastXNATextureSlots[theStage] = mXNATextureSlots[theStage];
 			mXNATextureSlots[theStage] = texture;
 		}
@@ -717,10 +761,12 @@ namespace SexyFramework.Drivers.Graphics
 
 		public void PushActiveEffect(XNARenderEffect theEffect)
 		{
+			if (mRenderDevice != null) mRenderDevice.FlushBatchBeforeStateChange();
 			mActiveEffects.Add(theEffect);
 		}
 		public void RemoveActiveEffect(XNARenderEffect theEffect)
 		{
+			if (mRenderDevice != null) mRenderDevice.FlushBatchBeforeStateChange();
 			mActiveEffects.Remove(theEffect);
 		}
 	}

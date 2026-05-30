@@ -66,12 +66,6 @@ namespace SexyFramework.Graphics
 
 		public List<PILayer> mLayerVector = new List<PILayer>();
 
-		public List<PIParticleInstance> mNormalList;
-
-		public List<PIParticleInstance> mAdditiveList;
-
-		public bool mDarken;
-
 		public List<float> mTimes = new List<float>();
 
 		public List<Vector2> mPoints = new List<Vector2>();
@@ -277,10 +271,10 @@ namespace SexyFramework.Graphics
 					int num3 = mReadBuffer.ReadInt32();
 					flag = flag || (num3 & 1) == 0;
 				}
-				PIValuePoint2D pIValuePoint2D = new PIValuePoint2D();
-				pIValuePoint2D.mValue = vector;
-				pIValuePoint2D.mTime = num2;
-				theValue2D.mValuePoint2DVector.Add(pIValuePoint2D);
+				PIValuePoint2D aValuePoint2D = new PIValuePoint2D();
+				aValuePoint2D.mValue = vector;
+				aValuePoint2D.mTime = num2;
+				theValue2D.mValuePoint2DVector.Add(aValuePoint2D);
 			}
 			if (num > 1 && flag)
 			{
@@ -297,11 +291,11 @@ namespace SexyFramework.Graphics
 			for (int i = 0; i < num; i++)
 			{
 				ExpectCmd("CPointKey");
-				PIValuePoint2D pIValuePoint2D = new PIValuePoint2D();
-				pIValuePoint2D.mTime = mReadBuffer.ReadInt32();
-				pIValuePoint2D.mValue.X = mReadBuffer.ReadFloat();
-				pIValuePoint2D.mValue.Y = mReadBuffer.ReadFloat();
-				theValue2D.mValuePoint2DVector.Add(pIValuePoint2D);
+				PIValuePoint2D aValuePoint2D = new PIValuePoint2D();
+				aValuePoint2D.mTime = mReadBuffer.ReadInt32();
+				aValuePoint2D.mValue.X = mReadBuffer.ReadFloat();
+				aValuePoint2D.mValue.Y = mReadBuffer.ReadFloat();
+				theValue2D.mValuePoint2DVector.Add(aValuePoint2D);
 			}
 		}
 
@@ -360,9 +354,9 @@ namespace SexyFramework.Graphics
 						int num4 = mReadBuffer.ReadInt32();
 						flag = flag || (num4 & 1) == 0;
 					}
-					PIValuePoint pIValuePoint = theValue.mValuePointVector[i];
-					pIValuePoint.mValue = vector.Y;
-					pIValuePoint.mTime = num3;
+					PIValuePoint aValuePoint = theValue.mValuePointVector[i];
+					aValuePoint.mValue = vector.Y;
+					aValuePoint.mTime = num3;
 				}
 				else
 				{
@@ -392,7 +386,7 @@ namespace SexyFramework.Graphics
 			short num = mReadBuffer.ReadShort();
 			for (int i = 0; i < num; i++)
 			{
-				PIParticleDef pIParticleDef = new PIParticleDef();
+				PIParticleDef aParticleDef = new PIParticleDef();
 				ExpectCmd("CEmParticleType");
 				mReadBuffer.ReadInt32();
 				mReadBuffer.ReadInt32();
@@ -410,27 +404,27 @@ namespace SexyFramework.Graphics
 				mReadBuffer.ReadInt32();
 				mReadBuffer.ReadInt32();
 				mReadBuffer.ReadInt32();
-				pIParticleDef.mIntense = mReadBuffer.ReadBoolean();
-				pIParticleDef.mSingleParticle = mReadBuffer.ReadBoolean();
-				pIParticleDef.mPreserveColor = mReadBuffer.ReadBoolean();
-				pIParticleDef.mAttachToEmitter = mReadBuffer.ReadBoolean();
-				pIParticleDef.mAttachVal = mReadBuffer.ReadFloat();
-				pIParticleDef.mFlipHorz = mReadBuffer.ReadBoolean();
-				pIParticleDef.mFlipVert = mReadBuffer.ReadBoolean();
-				pIParticleDef.mAnimStartOnRandomFrame = mReadBuffer.ReadBoolean();
-				pIParticleDef.mRepeatColor = mReadBuffer.ReadInt32();
-				pIParticleDef.mRepeatAlpha = mReadBuffer.ReadInt32();
-				pIParticleDef.mLinkTransparencyToColor = mReadBuffer.ReadBoolean();
-				pIParticleDef.mName = ReadString();
-				pIParticleDef.mAngleAlignToMotion = mReadBuffer.ReadBoolean();
-				pIParticleDef.mAngleRandomAlign = mReadBuffer.ReadBoolean();
-				pIParticleDef.mAngleKeepAlignedToMotion = mReadBuffer.ReadBoolean();
-				pIParticleDef.mAngleValue = mReadBuffer.ReadInt32();
-				pIParticleDef.mAngleAlignOffset = mReadBuffer.ReadInt32();
-				pIParticleDef.mAnimSpeed = mReadBuffer.ReadInt32();
-				pIParticleDef.mRandomGradientColor = mReadBuffer.ReadBoolean();
+				aParticleDef.mIntense = mReadBuffer.ReadBoolean();
+				aParticleDef.mSingleParticle = mReadBuffer.ReadBoolean();
+				aParticleDef.mPreserveColor = mReadBuffer.ReadBoolean();
+				aParticleDef.mAttachToEmitter = mReadBuffer.ReadBoolean();
+				aParticleDef.mAttachVal = mReadBuffer.ReadFloat();
+				aParticleDef.mFlipHorz = mReadBuffer.ReadBoolean();
+				aParticleDef.mFlipVert = mReadBuffer.ReadBoolean();
+				aParticleDef.mAnimStartOnRandomFrame = mReadBuffer.ReadBoolean();
+				aParticleDef.mRepeatColor = mReadBuffer.ReadInt32();
+				aParticleDef.mRepeatAlpha = mReadBuffer.ReadInt32();
+				aParticleDef.mLinkTransparencyToColor = mReadBuffer.ReadBoolean();
+				aParticleDef.mName = ReadString();
+				aParticleDef.mAngleAlignToMotion = mReadBuffer.ReadBoolean();
+				aParticleDef.mAngleRandomAlign = mReadBuffer.ReadBoolean();
+				aParticleDef.mAngleKeepAlignedToMotion = mReadBuffer.ReadBoolean();
+				aParticleDef.mAngleValue = mReadBuffer.ReadInt32();
+				aParticleDef.mAngleAlignOffset = mReadBuffer.ReadInt32();
+				aParticleDef.mAnimSpeed = mReadBuffer.ReadInt32();
+				aParticleDef.mRandomGradientColor = mReadBuffer.ReadBoolean();
 				mReadBuffer.ReadInt32();
-				pIParticleDef.mTextureIdx = mReadBuffer.ReadInt32();
+				aParticleDef.mTextureIdx = mReadBuffer.ReadInt32();
 				int num2 = mReadBuffer.ReadShort();
 				for (int j = 0; j < num2; j++)
 				{
@@ -440,10 +434,10 @@ namespace SexyFramework.Graphics
 					byte b3 = mReadBuffer.ReadByte();
 					ulong num3 = 0xFF000000u | ((ulong)b << 16) | ((ulong)b2 << 8) | b3;
 					float mTime = mReadBuffer.ReadFloat();
-					PIInterpolatorPoint pIInterpolatorPoint = new PIInterpolatorPoint();
-					pIInterpolatorPoint.mValue = (int)num3;
-					pIInterpolatorPoint.mTime = mTime;
-					pIParticleDef.mColor.mInterpolatorPointVector.Add(pIInterpolatorPoint);
+					PIInterpolatorPoint aColorPoint = new PIInterpolatorPoint();
+					aColorPoint.mValue = (int)num3;
+					aColorPoint.mTime = mTime;
+					aParticleDef.mColor.mInterpolatorPointVector.Add(aColorPoint);
 				}
 				int num4 = mReadBuffer.ReadShort();
 				for (int k = 0; k < num4; k++)
@@ -451,57 +445,57 @@ namespace SexyFramework.Graphics
 					ExpectCmd("CAlphaPoint");
 					byte mValue = mReadBuffer.ReadByte();
 					float mTime2 = mReadBuffer.ReadFloat();
-					PIInterpolatorPoint pIInterpolatorPoint2 = new PIInterpolatorPoint();
-					pIInterpolatorPoint2.mValue = mValue;
-					pIInterpolatorPoint2.mTime = mTime2;
-					pIParticleDef.mAlpha.mInterpolatorPointVector.Add(pIInterpolatorPoint2);
+					PIInterpolatorPoint anAlphaPoint = new PIInterpolatorPoint();
+					anAlphaPoint.mValue = mValue;
+					anAlphaPoint.mTime = mTime2;
+					aParticleDef.mAlpha.mInterpolatorPointVector.Add(anAlphaPoint);
 				}
-				for (int l = 0; l < 23; l++)
+				for (int l = 0; l < (int)PIParticleDef.PIParticleDefValue.VALUE_VISIBILITY + 1; l++)
 				{
-					ReadValue(ref pIParticleDef.mValues[l]);
+					ReadValue(ref aParticleDef.mValues[l]);
 				}
-				pIParticleDef.mRefPointOfs.X = mReadBuffer.ReadFloat();
-				pIParticleDef.mRefPointOfs.Y = mReadBuffer.ReadFloat();
+				aParticleDef.mRefPointOfs.X = mReadBuffer.ReadFloat();
+				aParticleDef.mRefPointOfs.Y = mReadBuffer.ReadFloat();
 				if (!mIsPPF)
 				{
-					Image image = mDef.mTextureVector[pIParticleDef.mTextureIdx].mImageVector[0].GetImage();
-					pIParticleDef.mRefPointOfs.X /= image.mWidth;
-					pIParticleDef.mRefPointOfs.Y /= image.mHeight;
+					Image image = mDef.mTextureVector[aParticleDef.mTextureIdx].mImageVector[0].GetImage();
+					aParticleDef.mRefPointOfs.X /= image.mWidth;
+					aParticleDef.mRefPointOfs.Y /= image.mHeight;
 				}
 				mReadBuffer.ReadInt32();
 				mReadBuffer.ReadInt32();
-				pIParticleDef.mLockAspect = mReadBuffer.ReadBoolean();
-				ReadValue(ref pIParticleDef.mValues[25]);
-				ReadValue(ref pIParticleDef.mValues[26]);
-				ReadValue(ref pIParticleDef.mValues[27]);
-				pIParticleDef.mAngleRange = mReadBuffer.ReadInt32();
-				pIParticleDef.mAngleOffset = mReadBuffer.ReadInt32();
-				pIParticleDef.mGetColorFromLayer = mReadBuffer.ReadBoolean();
-				pIParticleDef.mUpdateColorFromLayer = mReadBuffer.ReadBoolean();
-				pIParticleDef.mUseEmitterAngleAndRange = mReadBuffer.ReadBoolean();
-				ReadValue(ref pIParticleDef.mValues[23]);
-				ReadValue(ref pIParticleDef.mValues[24]);
+				aParticleDef.mLockAspect = mReadBuffer.ReadBoolean();
+				ReadValue(ref aParticleDef.mValues[(int)PIParticleDef.PIParticleDefValue.VALUE_SIZE_Y]);
+				ReadValue(ref aParticleDef.mValues[(int)PIParticleDef.PIParticleDefValue.VALUE_SIZE_Y_VARIATION]);
+				ReadValue(ref aParticleDef.mValues[(int)PIParticleDef.PIParticleDefValue.VALUE_SIZE_Y_OVER_LIFE]);
+				aParticleDef.mAngleRange = mReadBuffer.ReadInt32();
+				aParticleDef.mAngleOffset = mReadBuffer.ReadInt32();
+				aParticleDef.mGetColorFromLayer = mReadBuffer.ReadBoolean();
+				aParticleDef.mUpdateColorFromLayer = mReadBuffer.ReadBoolean();
+				aParticleDef.mUseEmitterAngleAndRange = mReadBuffer.ReadBoolean();
+				ReadValue(ref aParticleDef.mValues[(int)PIParticleDef.PIParticleDefValue.VALUE_EMISSION_ANGLE]);
+				ReadValue(ref aParticleDef.mValues[(int)PIParticleDef.PIParticleDefValue.VALUE_EMISSION_RANGE]);
 				mReadBuffer.ReadInt32();
-				PIValue theValue = new PIValue();
-				ReadValue(ref theValue);
-				pIParticleDef.mUseKeyColorsOnly = mReadBuffer.ReadBoolean();
-				pIParticleDef.mUpdateTransparencyFromLayer = mReadBuffer.ReadBoolean();
-				pIParticleDef.mUseNextColorKey = mReadBuffer.ReadBoolean();
-				pIParticleDef.mNumberOfEachColor = mReadBuffer.ReadInt32();
-				pIParticleDef.mGetTransparencyFromLayer = mReadBuffer.ReadBoolean();
+				PIValue aDiscardValue = new PIValue();
+				ReadValue(ref aDiscardValue);
+				aParticleDef.mUseKeyColorsOnly = mReadBuffer.ReadBoolean();
+				aParticleDef.mUpdateTransparencyFromLayer = mReadBuffer.ReadBoolean();
+				aParticleDef.mUseNextColorKey = mReadBuffer.ReadBoolean();
+				aParticleDef.mNumberOfEachColor = mReadBuffer.ReadInt32();
+				aParticleDef.mGetTransparencyFromLayer = mReadBuffer.ReadBoolean();
 				if (theEmitter.mOldestInFront)
 				{
-					theEmitter.mParticleDefVector.Insert(0, pIParticleDef);
+					theEmitter.mParticleDefVector.Insert(0, aParticleDef);
 				}
 				else
 				{
-					theEmitter.mParticleDefVector.Add(pIParticleDef);
+					theEmitter.mParticleDefVector.Add(aParticleDef);
 				}
 			}
 			mReadBuffer.ReadInt32();
-			for (int m = 0; m < 42; m++)
+			for (int aValueIdx = 0; aValueIdx < (int)PIEmitter.PIEmitterValue.NUM_VALUES; aValueIdx++)
 			{
-				ReadValue(ref theEmitter.mValues[m]);
+				ReadValue(ref theEmitter.mValues[aValueIdx]);
 			}
 			theEmitter.mIsSuperEmitter = theEmitter.mValues[0].mValuePointVector.Count != 0;
 			mReadBuffer.ReadInt32();
@@ -622,6 +616,27 @@ namespace SexyFramework.Graphics
 			theParticle.mLife = theBuffer.ReadFloat();
 			theParticle.mLifePct = theBuffer.ReadFloat();
 			theParticle.mZoom = theBuffer.ReadFloat();
+			float anUpdateRate = 100f / mAnimSpeed;
+			float aLifeTicks = theParticle.mLife * anUpdateRate;
+			theParticle.mLifePctInt = (int)(unchecked((long)((double)theParticle.mLifePct * int.MaxValue)) & 0xFFFFFFFFL);
+			if (aLifeTicks > 0f)
+			{
+				theParticle.mLifePctIntInc = (int)(unchecked((long)((double)int.MaxValue / aLifeTicks)) & 0xFFFFFFFFL);
+			}
+			else
+			{
+				theParticle.mLifePctIntInc = 0;
+			}
+			if (theParticle.mLifePctInt < 0)
+			{
+				theParticle.mLifePctInt = int.MaxValue;
+			}
+			if (theParticle.mParticleDef != null && theParticle.mParticleDef.mSingleParticle)
+			{
+				theParticle.mLifePctInt = 1;
+				theParticle.mLifePctIntInc = 0;
+				theParticle.mLifePctInc = 0f;
+			}
 			theParticle.mPos = theBuffer.ReadVector2();
 			theParticle.mVel = theBuffer.ReadVector2();
 			theParticle.mEmittedPos = theBuffer.ReadVector2();
@@ -683,154 +698,166 @@ namespace SexyFramework.Graphics
 		public Vector2 GetGeomPos(PIEmitterInstance theEmitterInstance, PIParticleInstance theParticleInstance, ref float theTravelAngle, ref bool isMaskedOut)
 		{
 			Vector2 thePoint = default(Vector2);
-			PIEmitterInstanceDef mEmitterInstanceDef = theEmitterInstance.mEmitterInstanceDef;
-			switch ((PIEmitterInstanceDef.PIEmitterGEOM)mEmitterInstanceDef.mEmitterGeom)
+			PIEmitterInstanceDef anEmitterInstanceDef = theEmitterInstance.mEmitterInstanceDef;
+			switch ((PIEmitterInstanceDef.PIEmitterGEOM)anEmitterInstanceDef.mEmitterGeom)
 			{
 			case PIEmitterInstanceDef.PIEmitterGEOM.GEOM_LINE:
 			{
-				if (mEmitterInstanceDef.mPoints.Count < 2)
+				if (anEmitterInstanceDef.mPoints.Count < 2)
 				{
 					break;
 				}
-				int num10 = 0;
-				float num11 = 0f;
-				int num12 = 0;
-				for (int i = 0; i < mEmitterInstanceDef.mPoints.Count - 1; i++)
+				int aSegmentIdx = 0;
+				float aSegmentT = 0f;
+				int aTotalLength = 0;
+				for (int aPtIdx = 0; aPtIdx < anEmitterInstanceDef.mPoints.Count - 1; aPtIdx++)
 				{
-					Vector2 valueAt3 = mEmitterInstanceDef.mPoints[i].GetValueAt(mFrameNum);
-					Vector2 valueAt4 = mEmitterInstanceDef.mPoints[i + 1].GetValueAt(mFrameNum);
-					Vector2 vector = valueAt4 - valueAt3;
-					float num13 = vector.X * vector.X + vector.Y * vector.Y;
-					num12 += (int)num13;
+					Vector2 aPt1 = anEmitterInstanceDef.mPoints[aPtIdx].GetValueAt(mFrameNum);
+					Vector2 aPt2 = anEmitterInstanceDef.mPoints[aPtIdx + 1].GetValueAt(mFrameNum);
+					Vector2 aDelta = aPt2 - aPt1;
+					float aLenSq = aDelta.X * aDelta.X + aDelta.Y * aDelta.Y;
+					aTotalLength += (int)aLenSq;
 				}
-				float num15;
-				if (mEmitterInstanceDef.mEmitAtPointsNum != 0)
+				float aPos;
+				if (anEmitterInstanceDef.mEmitAtPointsNum != 0)
 				{
-					int num14 = theParticleInstance.mNum % mEmitterInstanceDef.mEmitAtPointsNum;
-					num15 = (float)(num14 * num12) / (float)(mEmitterInstanceDef.mEmitAtPointsNum - 1);
+					int aPtIdx = theParticleInstance.mNum % anEmitterInstanceDef.mEmitAtPointsNum;
+					aPos = (float)(aPtIdx * aTotalLength) / (float)(anEmitterInstanceDef.mEmitAtPointsNum - 1);
 				}
 				else
 				{
-					num15 = GetRandFloatU() * (float)num12;
+					aPos = GetRandFloatU() * (float)aTotalLength;
 				}
-				num12 = 0;
-				for (int j = 0; j < mEmitterInstanceDef.mPoints.Count - 1; j++)
+				aTotalLength = 0;
+				for (int aPtIdx = 0; aPtIdx < anEmitterInstanceDef.mPoints.Count - 1; aPtIdx++)
 				{
-					Vector2 valueAt5 = mEmitterInstanceDef.mPoints[j].GetValueAt(mFrameNum);
-					Vector2 valueAt6 = mEmitterInstanceDef.mPoints[j + 1].GetValueAt(mFrameNum);
-					Vector2 vector2 = valueAt6 - valueAt5;
-					float num16 = vector2.X * vector2.X + vector2.Y * vector2.Y;
-					if (num15 >= (float)num12 && num15 <= (float)num12 + num16)
+					Vector2 aPt1 = anEmitterInstanceDef.mPoints[aPtIdx].GetValueAt(mFrameNum);
+					Vector2 aPt2 = anEmitterInstanceDef.mPoints[aPtIdx + 1].GetValueAt(mFrameNum);
+					Vector2 aDelta = aPt2 - aPt1;
+					float aLenSq = aDelta.X * aDelta.X + aDelta.Y * aDelta.Y;
+					if (aPos >= (float)aTotalLength && aPos <= (float)aTotalLength + aLenSq)
 					{
-						num11 = (num15 - (float)num12) / num16;
-						num10 = j;
+						aSegmentT = (aPos - (float)aTotalLength) / aLenSq;
+						aSegmentIdx = aPtIdx;
 						break;
 					}
-					num12 += (int)num16;
+					aTotalLength += (int)aLenSq;
 				}
-				Vector2 valueAt7 = mEmitterInstanceDef.mPoints[num10].GetValueAt(mFrameNum);
-				Vector2 valueAt8 = mEmitterInstanceDef.mPoints[num10 + 1].GetValueAt(mFrameNum);
-				Vector2 vector3 = valueAt8 - valueAt7;
-				thePoint = valueAt7 * (1f - num11) + valueAt8 * num11;
-				float num17 = ((!mEmitterInstanceDef.mEmitIn) ? 1f : (mEmitterInstanceDef.mEmitOut ? GetRandSign() : (-1f)));
+				Vector2 aSegStart = anEmitterInstanceDef.mPoints[aSegmentIdx].GetValueAt(mFrameNum);
+				Vector2 aSegEnd = anEmitterInstanceDef.mPoints[aSegmentIdx + 1].GetValueAt(mFrameNum);
+				Vector2 aSegDir = aSegEnd - aSegStart;
+				thePoint = aSegStart * (1f - aSegmentT) + aSegEnd * aSegmentT;
+				float aSign = ((!anEmitterInstanceDef.mEmitIn) ? 1f : (anEmitterInstanceDef.mEmitOut ? GetRandSign() : (-1f)));
 				if (theTravelAngle != 0f)
 				{
-					float num18 = (float)Math.Atan2(vector3.Y, vector3.X) + GlobalPIEffect.M_PI / 2f + num17 * GlobalPIEffect.M_PI / 2f;
-					theTravelAngle += num18;
+					float aLineAngle = (float)Math.Atan2(aSegDir.Y, aSegDir.X) + GlobalPIEffect.M_PI / 2f + aSign * GlobalPIEffect.M_PI / 2f;
+					theTravelAngle += aLineAngle;
 				}
 				break;
 			}
 			case PIEmitterInstanceDef.PIEmitterGEOM.GEOM_ECLIPSE:
 			{
-				float valueAt9 = theEmitterInstance.mEmitterInstanceDef.mValues[15].GetValueAt(mFrameNum);
-				float valueAt10 = theEmitterInstance.mEmitterInstanceDef.mValues[16].GetValueAt(mFrameNum);
-				float num20;
-				if (mEmitterInstanceDef.mEmitAtPointsNum != 0)
+				float anXRadius = theEmitterInstance.mEmitterInstanceDef.mValues[(int)PIEmitterInstanceDef.PIEmitterValue.VALUE_XRADIUS].GetValueAt(mFrameNum);
+				float aYRadius = theEmitterInstance.mEmitterInstanceDef.mValues[(int)PIEmitterInstanceDef.PIEmitterValue.VALUE_YRADIUS].GetValueAt(mFrameNum);
+				float anAngle;
+				if (anEmitterInstanceDef.mEmitAtPointsNum != 0)
 				{
-					int num19 = theParticleInstance.mNum % mEmitterInstanceDef.mEmitAtPointsNum;
-					num20 = (float)num19 * GlobalPIEffect.M_PI * 2f / (float)mEmitterInstanceDef.mEmitAtPointsNum;
-					if (num20 > GlobalPIEffect.M_PI)
+					int aPtIdx = theParticleInstance.mNum % anEmitterInstanceDef.mEmitAtPointsNum;
+					anAngle = (float)aPtIdx * GlobalPIEffect.M_PI * 2f / (float)anEmitterInstanceDef.mEmitAtPointsNum;
+					if (anAngle > GlobalPIEffect.M_PI)
 					{
-						num20 -= GlobalPIEffect.M_PI * 2f;
+						anAngle -= GlobalPIEffect.M_PI * 2f;
 					}
 				}
 				else
 				{
-					num20 = GetRandFloat() * GlobalPIEffect.M_PI;
+					anAngle = GetRandFloat() * GlobalPIEffect.M_PI;
 				}
-				if (valueAt9 > valueAt10)
+				if (anXRadius > aYRadius)
 				{
-					float num21 = 1f + (valueAt9 / valueAt10 - 1f) * 0.3f;
-					num20 = ((num20 < (0f - GlobalPIEffect.M_PI) / 2f) ? ((float)((double)GlobalPIEffect.M_PI + Math.Pow((num20 + GlobalPIEffect.M_PI) / (GlobalPIEffect.M_PI / 2f), num21) * (double)GlobalPIEffect.M_PI / 2.0)) : ((num20 < 0f) ? ((float)((0.0 - Math.Pow((0f - num20) / (GlobalPIEffect.M_PI / 2f), num21)) * (double)GlobalPIEffect.M_PI / 2.0)) : ((!(num20 < GlobalPIEffect.M_PI / 2f)) ? ((float)((double)GlobalPIEffect.M_PI - Math.Pow((GlobalPIEffect.M_PI - num20) / (GlobalPIEffect.M_PI / 2f), num21) * (double)GlobalPIEffect.M_PI / 2.0)) : ((float)(Math.Pow(num20 / (GlobalPIEffect.M_PI / 2f), num21) * (double)GlobalPIEffect.M_PI / 2.0)))));
+					float aPower = 1f + (anXRadius / aYRadius - 1f) * 0.3f;
+					anAngle = ((anAngle < (0f - GlobalPIEffect.M_PI) / 2f)
+						? ((float)((double)GlobalPIEffect.M_PI + Math.Pow((anAngle + GlobalPIEffect.M_PI) / (GlobalPIEffect.M_PI / 2f), aPower) * (double)GlobalPIEffect.M_PI / 2.0))
+						: ((anAngle < 0f)
+							? ((float)((0.0 - Math.Pow((0f - anAngle) / (GlobalPIEffect.M_PI / 2f), aPower)) * (double)GlobalPIEffect.M_PI / 2.0))
+							: ((!(anAngle < GlobalPIEffect.M_PI / 2f))
+								? ((float)((double)GlobalPIEffect.M_PI - Math.Pow((GlobalPIEffect.M_PI - anAngle) / (GlobalPIEffect.M_PI / 2f), aPower) * (double)GlobalPIEffect.M_PI / 2.0))
+								: ((float)(Math.Pow(anAngle / (GlobalPIEffect.M_PI / 2f), aPower) * (double)GlobalPIEffect.M_PI / 2.0)))));
 				}
-				else if (valueAt10 > valueAt9)
+				else if (aYRadius > anXRadius)
 				{
-					float num22 = 1f + (valueAt10 / valueAt9 - 1f) * 0.3f;
-					num20 = ((num20 < (0f - GlobalPIEffect.M_PI) / 2f) ? ((float)((double)((0f - GlobalPIEffect.M_PI) / 2f) - Math.Pow(((0f - GlobalPIEffect.M_PI) / 2f - num20) / (GlobalPIEffect.M_PI / 2f), num22) * (double)GlobalPIEffect.M_PI / 2.0)) : ((num20 < 0f) ? ((float)((double)((0f - GlobalPIEffect.M_PI) / 2f) + Math.Pow((num20 + GlobalPIEffect.M_PI / 2f) / (GlobalPIEffect.M_PI / 2f), num22) * (double)GlobalPIEffect.M_PI / 2.0)) : ((!(num20 < GlobalPIEffect.M_PI / 2f)) ? ((float)((double)(GlobalPIEffect.M_PI / 2f) + Math.Pow((num20 - GlobalPIEffect.M_PI / 2f) / (GlobalPIEffect.M_PI / 2f), num22) * (double)GlobalPIEffect.M_PI / 2.0)) : ((float)((double)(GlobalPIEffect.M_PI / 2f) - Math.Pow((GlobalPIEffect.M_PI / 2f - num20) / (GlobalPIEffect.M_PI / 2f), num22) * (double)GlobalPIEffect.M_PI / 2.0)))));
+					float aPower = 1f + (aYRadius / anXRadius - 1f) * 0.3f;
+					anAngle = ((anAngle < (0f - GlobalPIEffect.M_PI) / 2f)
+						? ((float)((double)((0f - GlobalPIEffect.M_PI) / 2f) - Math.Pow(((0f - GlobalPIEffect.M_PI) / 2f - anAngle) / (GlobalPIEffect.M_PI / 2f), aPower) * (double)GlobalPIEffect.M_PI / 2.0))
+						: ((anAngle < 0f)
+							? ((float)((double)((0f - GlobalPIEffect.M_PI) / 2f) + Math.Pow((anAngle + GlobalPIEffect.M_PI / 2f) / (GlobalPIEffect.M_PI / 2f), aPower) * (double)GlobalPIEffect.M_PI / 2.0))
+							: ((!(anAngle < GlobalPIEffect.M_PI / 2f))
+								? ((float)((double)(GlobalPIEffect.M_PI / 2f) + Math.Pow((anAngle - GlobalPIEffect.M_PI / 2f) / (GlobalPIEffect.M_PI / 2f), aPower) * (double)GlobalPIEffect.M_PI / 2.0))
+								: ((float)((double)(GlobalPIEffect.M_PI / 2f) - Math.Pow((GlobalPIEffect.M_PI / 2f - anAngle) / (GlobalPIEffect.M_PI / 2f), aPower) * (double)GlobalPIEffect.M_PI / 2.0)))));
 				}
-				thePoint = new Vector2((float)(Math.Cos(num20) * (double)valueAt9), (float)(Math.Sin(num20) * (double)valueAt10));
+				thePoint = new Vector2((float)(Math.Cos(anAngle) * (double)anXRadius), (float)(Math.Sin(anAngle) * (double)aYRadius));
 				if (theTravelAngle != 0f)
 				{
-					float num23 = ((!mEmitterInstanceDef.mEmitIn) ? 1f : (mEmitterInstanceDef.mEmitOut ? GetRandSign() : (-1f)));
-					float num24 = num20 + num23 * GlobalPIEffect.M_PI / 2f;
-					theTravelAngle += num24;
+					float aSign = ((!anEmitterInstanceDef.mEmitIn) ? 1f : (anEmitterInstanceDef.mEmitOut ? GetRandSign() : (-1f)));
+					float aTravelDir = anAngle + aSign * GlobalPIEffect.M_PI / 2f;
+					theTravelAngle += aTravelDir;
 				}
 				break;
 			}
 			case PIEmitterInstanceDef.PIEmitterGEOM.GEOM_CIRCLE:
 			{
-				float valueAt11 = theEmitterInstance.mEmitterInstanceDef.mValues[15].GetValueAt(mFrameNum);
-				float num26;
-				if (mEmitterInstanceDef.mEmitAtPointsNum != 0)
+				float aRadius = theEmitterInstance.mEmitterInstanceDef.mValues[(int)PIEmitterInstanceDef.PIEmitterValue.VALUE_XRADIUS].GetValueAt(mFrameNum);
+				float anAngle;
+				if (anEmitterInstanceDef.mEmitAtPointsNum != 0)
 				{
-					int num25 = theParticleInstance.mNum % mEmitterInstanceDef.mEmitAtPointsNum;
-					num26 = (float)num25 * GlobalPIEffect.M_PI * 2f / (float)mEmitterInstanceDef.mEmitAtPointsNum;
+					int aPtIdx = theParticleInstance.mNum % anEmitterInstanceDef.mEmitAtPointsNum;
+					anAngle = (float)aPtIdx * GlobalPIEffect.M_PI * 2f / (float)anEmitterInstanceDef.mEmitAtPointsNum;
 				}
 				else
 				{
-					num26 = GetRandFloat() * GlobalPIEffect.M_PI;
+					anAngle = GetRandFloat() * GlobalPIEffect.M_PI;
 				}
-				thePoint = new Vector2((float)Math.Cos(num26) * valueAt11, (float)Math.Sin(num26) * valueAt11);
+				thePoint = new Vector2((float)Math.Cos(anAngle) * aRadius, (float)Math.Sin(anAngle) * aRadius);
 				if (theTravelAngle != 0f)
 				{
-					float num27 = ((!mEmitterInstanceDef.mEmitIn) ? 1f : (mEmitterInstanceDef.mEmitOut ? GetRandSign() : (-1f)));
-					float num28 = num26 + num27 * GlobalPIEffect.M_PI / 2f;
-					theTravelAngle += num28;
+					float aSign = ((!anEmitterInstanceDef.mEmitIn) ? 1f : (anEmitterInstanceDef.mEmitOut ? GetRandSign() : (-1f)));
+					float aTravelDir = anAngle + aSign * GlobalPIEffect.M_PI / 2f;
+					theTravelAngle += aTravelDir;
 				}
 				break;
 			}
 			case PIEmitterInstanceDef.PIEmitterGEOM.GEOM_AREA:
 			{
-				float valueAt = theEmitterInstance.mEmitterInstanceDef.mValues[15].GetValueAt(mFrameNum);
-				float valueAt2 = theEmitterInstance.mEmitterInstanceDef.mValues[16].GetValueAt(mFrameNum);
-				if (mEmitterInstanceDef.mEmitAtPointsNum != 0)
+				float aWidth = theEmitterInstance.mEmitterInstanceDef.mValues[(int)PIEmitterInstanceDef.PIEmitterValue.VALUE_XRADIUS].GetValueAt(mFrameNum);
+				float aHeight = theEmitterInstance.mEmitterInstanceDef.mValues[(int)PIEmitterInstanceDef.PIEmitterValue.VALUE_YRADIUS].GetValueAt(mFrameNum);
+				if (anEmitterInstanceDef.mEmitAtPointsNum != 0)
 				{
-					float num = theParticleInstance.mNum % mEmitterInstanceDef.mEmitAtPointsNum;
-					float num2 = theParticleInstance.mNum / mEmitterInstanceDef.mEmitAtPointsNum % mEmitterInstanceDef.mEmitAtPointsNum2;
-					if (mEmitterInstanceDef.mEmitAtPointsNum > 1)
+					float aXIdx = theParticleInstance.mNum % anEmitterInstanceDef.mEmitAtPointsNum;
+					float aYIdx = theParticleInstance.mNum / anEmitterInstanceDef.mEmitAtPointsNum % anEmitterInstanceDef.mEmitAtPointsNum2;
+					if (anEmitterInstanceDef.mEmitAtPointsNum > 1)
 					{
-						thePoint.X = (float)((double)(num / (float)(mEmitterInstanceDef.mEmitAtPointsNum - 1)) - 0.5) * valueAt;
+						thePoint.X = (float)((double)(aXIdx / (float)(anEmitterInstanceDef.mEmitAtPointsNum - 1)) - 0.5) * aWidth;
 					}
-					if (mEmitterInstanceDef.mEmitAtPointsNum2 > 1)
+					if (anEmitterInstanceDef.mEmitAtPointsNum2 > 1)
 					{
-						thePoint.Y = (float)((double)(num2 / (float)(mEmitterInstanceDef.mEmitAtPointsNum2 - 1)) - 0.5) * valueAt2;
+						thePoint.Y = (float)((double)(aYIdx / (float)(anEmitterInstanceDef.mEmitAtPointsNum2 - 1)) - 0.5) * aHeight;
 					}
 				}
 				else
 				{
-					thePoint = new Vector2(GetRandFloat() * valueAt / 2f, GetRandFloat() * valueAt2 / 2f);
+					thePoint = new Vector2(GetRandFloat() * aWidth / 2f, GetRandFloat() * aHeight / 2f);
 				}
 				if (theEmitterInstance.mMaskImage.GetDeviceImage() != null && isMaskedOut)
 				{
-					float num3 = thePoint.X / valueAt + 0.5f;
-					float num4 = thePoint.Y / valueAt2 + 0.5f;
-					int num5 = theEmitterInstance.mMaskImage.mWidth;
-					int num6 = theEmitterInstance.mMaskImage.mHeight;
-					int num7 = Math.Min((int)(num3 * (float)num5), num5 - 1);
-					int num8 = Math.Min((int)(num4 * (float)num6), num6 - 1);
+					float aNormX = thePoint.X / aWidth + 0.5f;
+					float aNormY = thePoint.Y / aHeight + 0.5f;
+					int aMaskW = theEmitterInstance.mMaskImage.mWidth;
+					int aMaskH = theEmitterInstance.mMaskImage.mHeight;
+					int aMaskX = Math.Min((int)(aNormX * (float)aMaskW), aMaskW - 1);
+					int aMaskY = Math.Min((int)(aNormY * (float)aMaskH), aMaskH - 1);
 					uint[] bits = theEmitterInstance.mMaskImage.GetDeviceImage().GetBits();
-					uint num9 = bits[num7 + num8 * num5];
-					if (((num9 & 0x80000000u) == 0) ^ mEmitterInstanceDef.mInvertMask)
+					uint aPixel = bits[aMaskX + aMaskY * aMaskW];
+					if (((aPixel & 0x80000000u) == 0) ^ anEmitterInstanceDef.mInvertMask)
 					{
 						isMaskedOut = true;
 					}
@@ -847,758 +874,917 @@ namespace SexyFramework.Graphics
 
 		public Vector2 GetEmitterPos(PIEmitterInstance theEmitterInstance, bool doTransform)
 		{
-			Vector2 vector = theEmitterInstance.mEmitterInstanceDef.mPosition.GetValueAt(mFrameNum);
+			Vector2 aPos = theEmitterInstance.mEmitterInstanceDef.mPosition.GetValueAt(mFrameNum);
 			if (doTransform)
 			{
-				vector = GlobalPIEffect.TransformFPoint(theEmitterInstance.mTransform, vector);
-				vector = GlobalPIEffect.TransformFPoint(mEmitterTransform, vector);
-				vector += theEmitterInstance.mOffset;
+				aPos = GlobalPIEffect.TransformFPoint(theEmitterInstance.mTransform, aPos);
+				aPos = GlobalPIEffect.TransformFPoint(mEmitterTransform, aPos);
+				aPos += theEmitterInstance.mOffset;
 			}
-			return vector;
+			return aPos;
 		}
 
 		public int CountParticles(PIParticleInstance theStart)
 		{
-			int num = 0;
+			int aCount = 0;
 			while (theStart != null)
 			{
-				num++;
+				aCount++;
 				theStart = theStart.mNext;
 			}
-			return num;
+			return aCount;
 		}
 
 		public void CalcParticleTransform(PILayer theLayer, PIEmitterInstance theEmitterInstance, PIEmitter theEmitter, PIParticleDef theParticleDef, PIParticleGroup theParticleGroup, PIParticleInstance theParticleInstance)
 		{
-			float mLifePct = theParticleInstance.mLifePct;
-			float num = 1f;
-			float num2 = 1f;
-			float num3 = 1f;
-			float num4 = 1f;
-			Rect rect = Rect.ZERO_RECT;
+			float aLifePct = theParticleInstance.mLifePct;
+			float aScaleX = 1f;
+			float aScaleY = 1f;
+			float aRefXScale = 1f;
+			float aRefYScale = 1f;
+			Rect aSrcRect = Rect.ZERO_RECT;
 			if (theParticleDef != null)
 			{
-				PITexture pITexture = mDef.mTextureVector[theParticleDef.mTextureIdx];
-				if (pITexture.mImageVector.Count != 0)
+				PITexture aTexture = mDef.mTextureVector[theParticleDef.mTextureIdx];
+				if (aTexture.mImageVector.Count != 0)
 				{
-					DeviceImage deviceImage = pITexture.mImageVector[theParticleInstance.mImgIdx].GetDeviceImage();
-					rect = new Rect(0, 0, deviceImage.mWidth, deviceImage.mHeight);
+					DeviceImage anImage = aTexture.mImageVector[theParticleInstance.mImgIdx].GetDeviceImage();
+					aSrcRect = new Rect(0, 0, anImage.mWidth, anImage.mHeight);
 				}
 				else
 				{
-					DeviceImage deviceImage = pITexture.mImageStrip.GetDeviceImage();
-					if (deviceImage == null)
+					DeviceImage anImage = aTexture.mImageStrip.GetDeviceImage();
+					if (anImage == null)
 					{
-						pITexture.mImageStrip = GetImage(pITexture.mName, pITexture.mFileName);
-						deviceImage = pITexture.mImageStrip.GetDeviceImage();
+						aTexture.mImageStrip = GetImage(aTexture.mName, aTexture.mFileName);
+						anImage = aTexture.mImageStrip.GetDeviceImage();
 					}
-					rect = deviceImage.GetCelRect(theParticleInstance.mImgIdx);
-					if (pITexture.mPadded)
+					aSrcRect = anImage.GetCelRect(theParticleInstance.mImgIdx);
+					if (aTexture.mPadded)
 					{
-						rect.mX++;
-						rect.mWidth -= 2;
-						rect.mY++;
-						rect.mHeight -= 2;
+						aSrcRect.mX++;
+						aSrcRect.mWidth -= 2;
+						aSrcRect.mY++;
+						aSrcRect.mHeight -= 2;
 					}
 				}
 				if (theParticleDef.mSingleParticle)
 				{
-					theParticleInstance.mSrcSizeXMult = (theParticleGroup.mWasEmitted ? theEmitter.mValues[10].GetValueAt(mFrameNum) : theEmitterInstance.mEmitterInstanceDef.mValues[2].GetValueAt(mFrameNum)) * (theParticleDef.mValues[2].GetValueAt(mFrameNum) + theParticleInstance.mVariationValues[1]);
-					theParticleInstance.mSrcSizeYMult = (theParticleGroup.mWasEmitted ? theEmitter.mValues[11].GetValueAt(mFrameNum) : theEmitterInstance.mEmitterInstanceDef.mValues[2].GetValueAt(mFrameNum)) * (theParticleDef.mValues[2].GetValueAt(mFrameNum) + theParticleInstance.mVariationValues[1]);
+					theParticleInstance.mSrcSizeXMult = (theParticleGroup.mWasEmitted
+							? theEmitter.mValues[(int)PIEmitter.PIEmitterValue.VALUE_SIZE_X].GetValueAt(mFrameNum)
+							: theEmitterInstance.mEmitterInstanceDef.mValues[(int)PIEmitterInstanceDef.PIEmitterValue.VALUE_SIZE_X].GetValueAt(mFrameNum))
+						* (theParticleDef.mValues[(int)PIParticleDef.PIParticleDefValue.VALUE_SIZE_X].GetValueAt(mFrameNum) + theParticleInstance.mVariationValues[(int)PIParticleInstance.PIParticleVariation.VARIATION_SIZE_X]);
+					theParticleInstance.mSrcSizeYMult = (theParticleGroup.mWasEmitted
+							? theEmitter.mValues[(int)PIEmitter.PIEmitterValue.VALUE_SIZE_Y].GetValueAt(mFrameNum)
+							: theEmitterInstance.mEmitterInstanceDef.mValues[(int)PIEmitterInstanceDef.PIEmitterValue.VALUE_SIZE_X].GetValueAt(mFrameNum))
+						* (theParticleDef.mValues[(int)PIParticleDef.PIParticleDefValue.VALUE_SIZE_X].GetValueAt(mFrameNum) + theParticleInstance.mVariationValues[(int)PIParticleInstance.PIParticleVariation.VARIATION_SIZE_X]);
 				}
-				float num5 = Math.Max(theParticleDef.mValues[16].GetValueAt(mLifePct) * theParticleInstance.mSrcSizeXMult, 0.1f);
-				float num6 = Math.Max(theParticleDef.mValues[27].GetValueAt(mLifePct) * theParticleInstance.mSrcSizeYMult, 0.1f);
-				int num7 = Math.Max(rect.mWidth, rect.mHeight);
-				num3 = (float)num7 / (float)rect.mWidth;
-				num4 = (float)num7 / (float)rect.mHeight;
-				num = num5 / (float)num7 * 2f;
-				num2 = num6 / (float)num7 * 2f;
+				float aSizeX = Math.Max(theParticleDef.mValues[(int)PIParticleDef.PIParticleDefValue.VALUE_SIZE_X_OVER_LIFE].GetValueAt(aLifePct) * theParticleInstance.mSrcSizeXMult, 0.1f);
+				float aSizeY = Math.Max(theParticleDef.mValues[(int)PIParticleDef.PIParticleDefValue.VALUE_SIZE_Y_OVER_LIFE].GetValueAt(aLifePct) * theParticleInstance.mSrcSizeYMult, 0.1f);
+				int aScaleRef = Math.Max(aSrcRect.mWidth, aSrcRect.mHeight);
+				aRefXScale = (float)aScaleRef / (float)aSrcRect.mWidth;
+				aRefYScale = (float)aScaleRef / (float)aSrcRect.mHeight;
+				aScaleX = aSizeX / (float)aScaleRef * 2f;
+				aScaleY = aSizeY / (float)aScaleRef * 2f;
 			}
-			else
+			SexyTransform2D aBaseRotTrans = new SexyTransform2D(false);
+			float anEmitterRot = theEmitterInstance.mEmitterInstanceDef.mValues[(int)PIEmitterInstanceDef.PIEmitterValue.VALUE_ANGLE].GetValueAt(mFrameNum);
+			if (anEmitterRot != 0f)
 			{
-				num = 1f;
-				num2 = 1f;
-			}
-			SexyTransform2D sexyTransform2D = new SexyTransform2D(false);
-			float valueAt = theEmitterInstance.mEmitterInstanceDef.mValues[14].GetValueAt(mFrameNum);
-			if (valueAt != 0f)
-			{
-				sexyTransform2D.RotateDeg(valueAt);
+				aBaseRotTrans.RotateDeg(anEmitterRot);
 			}
 			if (theParticleInstance.mParentFreeEmitter != null && theParticleInstance.mParentFreeEmitter.mImgAngle != 0f)
 			{
-				sexyTransform2D.RotateRad(0f - theParticleInstance.mParentFreeEmitter.mImgAngle);
+				aBaseRotTrans.RotateRad(0f - theParticleInstance.mParentFreeEmitter.mImgAngle);
 			}
-			SexyTransform2D mTransform = new SexyTransform2D(false);
-			float num8 = 1f;
+			SexyTransform2D aTransform = new SexyTransform2D(false);
+			float aScaleFactor = 1f;
 			if (theParticleDef != null)
 			{
-				mTransform.Translate((0f - theParticleDef.mRefPointOfs.X) * num3 * (float)rect.mWidth, (0f - theParticleDef.mRefPointOfs.Y) * num4 * (float)rect.mHeight);
+				aTransform.Translate((0f - theParticleDef.mRefPointOfs.X) * aRefXScale * (float)aSrcRect.mWidth, (0f - theParticleDef.mRefPointOfs.Y) * aRefYScale * (float)aSrcRect.mHeight);
 				if (theParticleDef.mFlipHorz)
 				{
-					mTransform.Scale(-1f, 1f);
+					aTransform.Scale(-1f, 1f);
 				}
 				if (theParticleDef.mFlipVert)
 				{
-					mTransform.Scale(1f, -1f);
+					aTransform.Scale(1f, -1f);
 				}
 			}
-			float num9 = 0f;
-			num8 *= num * num2;
-			if (num != 1f || num2 != 1f)
+			float aRot = 0f;
+			aScaleFactor *= aScaleX * aScaleY;
+			if (aScaleX != 1f || aScaleY != 1f)
 			{
-				mTransform.Scale(num, num2);
+				aTransform.Scale(aScaleX, aScaleY);
 			}
 			if (theParticleInstance.mImgAngle != 0f)
 			{
-				num9 += theParticleInstance.mImgAngle;
+				aRot += theParticleInstance.mImgAngle;
 			}
 			if (theParticleDef != null && theParticleDef.mAttachToEmitter)
 			{
-				float num10 = 0f;
-				num10 = ((theParticleInstance.mParentFreeEmitter == null) ? (MathHelper.ToRadians(theEmitterInstance.mEmitterInstanceDef.mValues[14].GetValueAt(mFrameNum)) * theParticleDef.mAttachVal) : ((theParticleInstance.mParentFreeEmitter.mImgAngle - theParticleInstance.mOrigEmitterAng) * theParticleDef.mAttachVal));
-				if (num10 != 0f)
+				float anAttachRot = ((theParticleInstance.mParentFreeEmitter == null)
+					? (MathHelper.ToRadians(theEmitterInstance.mEmitterInstanceDef.mValues[(int)PIEmitterInstanceDef.PIEmitterValue.VALUE_ANGLE].GetValueAt(mFrameNum)) * theParticleDef.mAttachVal)
+					: ((theParticleInstance.mParentFreeEmitter.mImgAngle - theParticleInstance.mOrigEmitterAng) * theParticleDef.mAttachVal));
+				if (anAttachRot != 0f)
 				{
-					num9 += num10;
+					aRot += anAttachRot;
 				}
 			}
 			if (theParticleDef != null && theParticleDef.mSingleParticle && (!theParticleDef.mAngleKeepAlignedToMotion || theParticleDef.mAttachToEmitter))
 			{
-				num9 += MathHelper.ToRadians(theEmitterInstance.mEmitterInstanceDef.mValues[14].GetValueAt(mFrameNum));
+				aRot += MathHelper.ToRadians(theEmitterInstance.mEmitterInstanceDef.mValues[(int)PIEmitterInstanceDef.PIEmitterValue.VALUE_ANGLE].GetValueAt(mFrameNum));
 			}
-			mTransform.RotateRad(num9);
-			Vector2 vector = theParticleInstance.mPos;
+			aTransform.RotateRad(aRot);
+			Vector2 aParticlePos = theParticleInstance.mPos;
 			if (theParticleDef != null && theParticleDef.mAttachToEmitter)
 			{
-				SexyTransform2D sexyTransform2D2 = new SexyTransform2D(false);
-				sexyTransform2D2.RotateRad(theParticleInstance.mOrigEmitterAng);
-				Vector2 vector2 = sexyTransform2D2 * vector;
-				Vector2 vector3 = sexyTransform2D * vector2;
-				vector = vector * (1f - theParticleDef.mAttachVal) + vector3 * theParticleDef.mAttachVal;
+				SexyTransform2D aBackTrans = new SexyTransform2D(false);
+				aBackTrans.RotateRad(theParticleInstance.mOrigEmitterAng);
+				Vector2 aBackPoint = aBackTrans * aParticlePos;
+				Vector2 aCurRotPos = aBaseRotTrans * aBackPoint;
+				aParticlePos = aParticlePos * (1f - theParticleDef.mAttachVal) + aCurRotPos * theParticleDef.mAttachVal;
 			}
-			mTransform.Translate(vector.X, vector.Y);
+			aTransform.Translate(aParticlePos.X, aParticlePos.Y);
 			if (theParticleDef != null && theParticleDef.mSingleParticle)
 			{
-				theParticleInstance.mZoom = (theParticleGroup.mWasEmitted ? theEmitter.mValues[17].GetValueAt(mFrameNum) : theEmitterInstance.mEmitterInstanceDef.mValues[8].GetValueAt(mFrameNum)) * theEmitter.mValues[17].GetValueAt(mFrameNum, 1f);
+				theParticleInstance.mZoom = (theParticleGroup.mWasEmitted
+						? theEmitter.mValues[(int)PIEmitter.PIEmitterValue.VALUE_ZOOM].GetValueAt(mFrameNum)
+						: theEmitterInstance.mEmitterInstanceDef.mValues[(int)PIEmitterInstanceDef.PIEmitterValue.VALUE_ZOOM].GetValueAt(mFrameNum))
+					* theEmitter.mValues[(int)PIEmitter.PIEmitterValue.VALUE_ZOOM].GetValueAt(mFrameNum, 1f);
 			}
-			num8 *= theParticleInstance.mZoom * theParticleInstance.mZoom;
+			aScaleFactor *= theParticleInstance.mZoom * theParticleInstance.mZoom;
 			if (theParticleInstance.mZoom != 1f)
 			{
-				mTransform.Scale(theParticleInstance.mZoom, theParticleInstance.mZoom);
+				aTransform.Scale(theParticleInstance.mZoom, theParticleInstance.mZoom);
 			}
-			Vector2 vector4 = theParticleInstance.mEmittedPos;
+			Vector2 anEmitterPos = theParticleInstance.mEmittedPos;
 			if (theParticleDef != null && theParticleDef.mSingleParticle)
 			{
-				Vector2 vector5 = sexyTransform2D * theParticleInstance.mOrigPos;
-				vector5 += GetEmitterPos(theEmitterInstance, !theParticleGroup.mWasEmitted);
-				vector4 = vector5;
+				Vector2 aCurEmitPos = aBaseRotTrans * theParticleInstance.mOrigPos;
+				aCurEmitPos += GetEmitterPos(theEmitterInstance, !theParticleGroup.mWasEmitted);
+				anEmitterPos = aCurEmitPos;
 			}
 			else if (theParticleDef != null && theParticleDef.mAttachToEmitter && !theParticleGroup.mIsSuperEmitter)
 			{
-				Vector2 vector6;
+				Vector2 aCurEmitPos;
 				if (theParticleInstance.mParentFreeEmitter != null)
 				{
-					vector6 = theParticleInstance.mParentFreeEmitter.mLastEmitterPos + theParticleInstance.mParentFreeEmitter.mOrigPos + theParticleInstance.mParentFreeEmitter.mPos;
+					aCurEmitPos = theParticleInstance.mParentFreeEmitter.mLastEmitterPos + theParticleInstance.mParentFreeEmitter.mOrigPos + theParticleInstance.mParentFreeEmitter.mPos;
 				}
 				else
 				{
-					vector6 = GlobalPIEffect.TransformFPoint(sexyTransform2D, theParticleInstance.mOrigPos);
-					vector6 += GetEmitterPos(theEmitterInstance, !theParticleGroup.mWasEmitted);
+					aCurEmitPos = GlobalPIEffect.TransformFPoint(aBaseRotTrans, theParticleInstance.mOrigPos);
+					aCurEmitPos += GetEmitterPos(theEmitterInstance, !theParticleGroup.mWasEmitted);
 				}
-				vector4 = vector4 * (1f - theParticleDef.mAttachVal) + vector6 * theParticleDef.mAttachVal;
+				anEmitterPos = anEmitterPos * (1f - theParticleDef.mAttachVal) + aCurEmitPos * theParticleDef.mAttachVal;
 			}
-			theParticleInstance.mLastEmitterPos = vector4;
-			mTransform.Translate(vector4.X, vector4.Y);
-			Vector2 vector7 = theLayer.mLayerDef.mOffset.GetValueAt(mFrameNum) - theLayer.mLayerDef.mOrigOffset;
-			mTransform.Translate(vector7.X, vector7.Y);
-			float valueAt2 = theLayer.mLayerDef.mAngle.GetValueAt(mFrameNum);
-			if (valueAt2 != 0f)
+			theParticleInstance.mLastEmitterPos = anEmitterPos;
+			aTransform.Translate(anEmitterPos.X, anEmitterPos.Y);
+			Vector2 anOffset = theLayer.mLayerDef.mOffset.GetValueAt(mFrameNum) - theLayer.mLayerDef.mOrigOffset;
+			aTransform.Translate(anOffset.X, anOffset.Y);
+			float aLayerAngle = theLayer.mLayerDef.mAngle.GetValueAt(mFrameNum);
+			if (aLayerAngle != 0f)
 			{
-				mTransform.RotateDeg(valueAt2);
+				aTransform.RotateDeg(aLayerAngle);
 			}
-			theParticleInstance.mTransform = mTransform;
-			theParticleInstance.mTransformScaleFactor = num8;
+			theParticleInstance.mTransform = aTransform;
+			theParticleInstance.mTransformScaleFactor = aScaleFactor;
 		}
 
 		public void UpdateParticleDef(PILayer theLayer, PIEmitter theEmitter, PIEmitterInstance theEmitterInstance, PIParticleDef theParticleDef, PIParticleDefInstance theParticleDefInstance, PIParticleGroup theParticleGroup, PIFreeEmitterInstance theFreeEmitter)
 		{
-			PIEmitterInstanceDef mEmitterInstanceDef = theEmitterInstance.mEmitterInstanceDef;
-			float num = 100f / mAnimSpeed;
-			float num2 = 0f;
+			PIEmitterInstanceDef anEmitterInstanceDef = theEmitterInstance.mEmitterInstanceDef;
+			float anUpdateRate = 100f / mAnimSpeed;
+			float anEmitterLifePct = 0f;
 			if (theFreeEmitter != null)
 			{
-				num2 = theFreeEmitter.mLifePct;
+				anEmitterLifePct = theFreeEmitter.mLifePct;
 			}
 			if (theParticleDefInstance.mTicks % 25 == 0 && !theParticleGroup.mIsSuperEmitter)
 			{
 				if (theParticleDefInstance.mTicks == 0)
 				{
-					theParticleDefInstance.mCurNumberVariation = GetRandFloat() * 0.5f * theParticleDef.mValues[9].GetValueAt(mFrameNum) / 2f;
+					theParticleDefInstance.mCurNumberVariation = GetRandFloat() * 0.5f * theParticleDef.mValues[(int)PIParticleDef.PIParticleDefValue.VALUE_NUMBER_VARIATION].GetValueAt(mFrameNum) / 2f;
 				}
 				else
 				{
-					theParticleDefInstance.mCurNumberVariation = GetRandFloat() * 0.75f * theParticleDef.mValues[9].GetValueAt(mFrameNum) / 2f;
+					theParticleDefInstance.mCurNumberVariation = GetRandFloat() * 0.75f * theParticleDef.mValues[(int)PIParticleDef.PIParticleDefValue.VALUE_NUMBER_VARIATION].GetValueAt(mFrameNum) / 2f;
 				}
 			}
 			theParticleDefInstance.mTicks++;
-			float num3 = 0f;
+			float aNumber;
 			if (theParticleGroup.mIsSuperEmitter)
 			{
-				num3 = theEmitter.mValues[1].GetValueAt(mFrameNum) * (theParticleGroup.mWasEmitted ? theEmitter.mValues[9].GetValueAt(mFrameNum) : theEmitterInstance.mEmitterInstanceDef.mValues[1].GetValueAt(mFrameNum));
+				aNumber = theEmitter.mValues[(int)PIEmitter.PIEmitterValue.VALUE_F_NUMBER].GetValueAt(mFrameNum)
+					* (theParticleGroup.mWasEmitted
+						? theEmitter.mValues[(int)PIEmitter.PIEmitterValue.VALUE_NUMBER].GetValueAt(mFrameNum)
+						: theEmitterInstance.mEmitterInstanceDef.mValues[(int)PIEmitterInstanceDef.PIEmitterValue.VALUE_NUMBER].GetValueAt(mFrameNum));
 			}
 			else
 			{
-				num3 = (theParticleGroup.mWasEmitted ? theEmitter.mValues[9].GetValueAt(mFrameNum) : theEmitterInstance.mEmitterInstanceDef.mValues[1].GetValueAt(mFrameNum)) * (theParticleDef.mValues[1].GetValueAt(mFrameNum) + theParticleDefInstance.mCurNumberVariation) * theEmitter.mValues[33].GetValueAt(num2, 1f);
-				num3 = Math.Max(0f, num3);
-				if (theParticleGroup.mWasEmitted && num2 >= 1f)
+				aNumber = (theParticleGroup.mWasEmitted
+						? theEmitter.mValues[(int)PIEmitter.PIEmitterValue.VALUE_NUMBER].GetValueAt(mFrameNum)
+						: theEmitterInstance.mEmitterInstanceDef.mValues[(int)PIEmitterInstanceDef.PIEmitterValue.VALUE_NUMBER].GetValueAt(mFrameNum))
+					* (theParticleDef.mValues[(int)PIParticleDef.PIParticleDefValue.VALUE_NUMBER].GetValueAt(mFrameNum) + theParticleDefInstance.mCurNumberVariation)
+					* theEmitter.mValues[(int)PIEmitter.PIEmitterValue.VALUE_F_NUMBER_OVER_LIFE].GetValueAt(anEmitterLifePct, 1f);
+				aNumber = Math.Max(0f, aNumber);
+				if (theParticleGroup.mWasEmitted && anEmitterLifePct >= 1f)
 				{
-					num3 = 0f;
+					aNumber = 0f;
 				}
 			}
-			num3 *= theEmitterInstance.mNumberScale;
+			aNumber *= theEmitterInstance.mNumberScale;
 			if (theParticleGroup.mIsSuperEmitter)
 			{
-				num3 *= 30f;
+				aNumber *= 30f;
 			}
 			else if (!theParticleGroup.mWasEmitted)
 			{
-				switch ((PIEmitterInstanceDef.PIEmitterGEOM)mEmitterInstanceDef.mEmitterGeom)
+				switch ((PIEmitterInstanceDef.PIEmitterGEOM)anEmitterInstanceDef.mEmitterGeom)
 				{
 				case PIEmitterInstanceDef.PIEmitterGEOM.GEOM_LINE:
 				{
-					if (mEmitterInstanceDef.mEmitAtPointsNum != 0)
+					if (anEmitterInstanceDef.mEmitAtPointsNum != 0)
 					{
-						num3 *= (float)mEmitterInstanceDef.mEmitAtPointsNum;
+						aNumber *= (float)anEmitterInstanceDef.mEmitAtPointsNum;
 						break;
 					}
-					int num5 = 0;
-					for (int i = 0; i < mEmitterInstanceDef.mPoints.Count - 1; i++)
+					int aTotalLength = 0;
+					for (int aPtIdx = 0; aPtIdx < anEmitterInstanceDef.mPoints.Count - 1; aPtIdx++)
 					{
-						Vector2 valueAt5 = mEmitterInstanceDef.mPoints[i].GetValueAt(mFrameNum);
-						Vector2 valueAt6 = mEmitterInstanceDef.mPoints[i + 1].GetValueAt(mFrameNum);
-						Vector2 vector = valueAt6 - valueAt5;
-						float num6 = (float)Math.Sqrt(vector.X * vector.X + vector.Y * vector.Y);
-						num5 += (int)num6;
+						Vector2 aPt1 = anEmitterInstanceDef.mPoints[aPtIdx].GetValueAt(mFrameNum);
+						Vector2 aPt2 = anEmitterInstanceDef.mPoints[aPtIdx + 1].GetValueAt(mFrameNum);
+						Vector2 aDelta = aPt2 - aPt1;
+						float aLen = (float)Math.Sqrt(aDelta.X * aDelta.X + aDelta.Y * aDelta.Y);
+						aTotalLength += (int)aLen;
 					}
-					num3 *= (float)num5 / 35f;
+					aNumber *= (float)aTotalLength / 35f;
 					break;
 				}
 				case PIEmitterInstanceDef.PIEmitterGEOM.GEOM_ECLIPSE:
 				{
-					float valueAt3 = theEmitterInstance.mEmitterInstanceDef.mValues[15].GetValueAt(mFrameNum);
-					float valueAt4 = theEmitterInstance.mEmitterInstanceDef.mValues[16].GetValueAt(mFrameNum);
-					if (mEmitterInstanceDef.mEmitAtPointsNum != 0)
+					float anXRadius = theEmitterInstance.mEmitterInstanceDef.mValues[(int)PIEmitterInstanceDef.PIEmitterValue.VALUE_XRADIUS].GetValueAt(mFrameNum);
+					float aYRadius = theEmitterInstance.mEmitterInstanceDef.mValues[(int)PIEmitterInstanceDef.PIEmitterValue.VALUE_YRADIUS].GetValueAt(mFrameNum);
+					if (anEmitterInstanceDef.mEmitAtPointsNum != 0)
 					{
-						num3 *= (float)mEmitterInstanceDef.mEmitAtPointsNum;
+						aNumber *= (float)anEmitterInstanceDef.mEmitAtPointsNum;
 						break;
 					}
-					float num4 = 6.28318f * (float)Math.Sqrt((valueAt3 * valueAt3 + valueAt4 * valueAt4) / 2f);
-					num3 *= num4 / 35f;
+					float aCircumference = 6.28318f * (float)Math.Sqrt((anXRadius * anXRadius + aYRadius * aYRadius) / 2f);
+					aNumber *= aCircumference / 35f;
 					break;
 				}
 				case PIEmitterInstanceDef.PIEmitterGEOM.GEOM_CIRCLE:
 				{
-					float valueAt7 = theEmitterInstance.mEmitterInstanceDef.mValues[15].GetValueAt(mFrameNum);
-					if (mEmitterInstanceDef.mEmitAtPointsNum != 0)
+					float aRadius = theEmitterInstance.mEmitterInstanceDef.mValues[(int)PIEmitterInstanceDef.PIEmitterValue.VALUE_XRADIUS].GetValueAt(mFrameNum);
+					if (anEmitterInstanceDef.mEmitAtPointsNum != 0)
 					{
-						num3 *= (float)mEmitterInstanceDef.mEmitAtPointsNum;
+						aNumber *= (float)anEmitterInstanceDef.mEmitAtPointsNum;
 						break;
 					}
-					float num7 = 6.28318f * (float)Math.Sqrt(valueAt7 * valueAt7);
-					num3 *= num7 / 35f;
+					float aCircumference = 6.28318f * (float)Math.Sqrt(aRadius * aRadius);
+					aNumber *= aCircumference / 35f;
 					break;
 				}
 				case PIEmitterInstanceDef.PIEmitterGEOM.GEOM_AREA:
 				{
-					if (mEmitterInstanceDef.mEmitAtPointsNum != 0)
+					if (anEmitterInstanceDef.mEmitAtPointsNum != 0)
 					{
-						num3 *= (float)(mEmitterInstanceDef.mEmitAtPointsNum * mEmitterInstanceDef.mEmitAtPointsNum2);
+						aNumber *= (float)(anEmitterInstanceDef.mEmitAtPointsNum * anEmitterInstanceDef.mEmitAtPointsNum2);
 						break;
 					}
-					float valueAt = theEmitterInstance.mEmitterInstanceDef.mValues[15].GetValueAt(mFrameNum);
-					float valueAt2 = theEmitterInstance.mEmitterInstanceDef.mValues[16].GetValueAt(mFrameNum);
-					num3 *= 1f + valueAt * valueAt2 / 900f / 4f;
+					float anXRadius = theEmitterInstance.mEmitterInstanceDef.mValues[(int)PIEmitterInstanceDef.PIEmitterValue.VALUE_XRADIUS].GetValueAt(mFrameNum);
+					float aYRadius = theEmitterInstance.mEmitterInstanceDef.mValues[(int)PIEmitterInstanceDef.PIEmitterValue.VALUE_YRADIUS].GetValueAt(mFrameNum);
+					aNumber *= 1f + anXRadius * aYRadius / 900f / 4f;
 					break;
 				}
 				}
 			}
 
-			theParticleDefInstance.mNumberAcc += num3 / num;// * 0.16f * 5f;
-			if ((!mEmitterInstanceDef.mIsSuperEmitter && !theEmitterInstance.mWasActive) || !theEmitterInstance.mWithinLifeFrame)
+			theParticleDefInstance.mNumberAcc += aNumber / anUpdateRate;
+			if ((!anEmitterInstanceDef.mIsSuperEmitter && !theEmitterInstance.mWasActive) || !theEmitterInstance.mWithinLifeFrame)
 			{
 				theParticleDefInstance.mNumberAcc = 0f;
 			}
-			bool flag = true;
+			bool wantsGeomPos = true;
 			if (!theParticleGroup.mIsSuperEmitter && theParticleDef.mSingleParticle)
 			{
-				int num8 = ((mEmitterInstanceDef.mEmitterGeom == 1 || mEmitterInstanceDef.mEmitterGeom == 4) ? mEmitterInstanceDef.mEmitAtPointsNum : ((mEmitterInstanceDef.mEmitterGeom != 3) ? 1 : (mEmitterInstanceDef.mEmitAtPointsNum * mEmitterInstanceDef.mEmitAtPointsNum2)));
-				if (num8 == 0)
+				int aTargetCount = ((anEmitterInstanceDef.mEmitterGeom == 1 || anEmitterInstanceDef.mEmitterGeom == 4)
+					? anEmitterInstanceDef.mEmitAtPointsNum
+					: ((anEmitterInstanceDef.mEmitterGeom != 3) ? 1 : (anEmitterInstanceDef.mEmitAtPointsNum * anEmitterInstanceDef.mEmitAtPointsNum2)));
+				if (aTargetCount == 0)
 				{
-					flag = false;
-					num8 = 1;
+					wantsGeomPos = false;
+					aTargetCount = 1;
 				}
-				int num9 = 0;
-				for (PIParticleInstance pIParticleInstance = theParticleGroup.mHead; pIParticleInstance != null; pIParticleInstance = pIParticleInstance.mNext)
+				int aCurrentCount = 0;
+				for (PIParticleInstance aPI = theParticleGroup.mHead; aPI != null; aPI = aPI.mNext)
 				{
-					if (pIParticleInstance.mParticleDef == theParticleDef)
+					if (aPI.mParticleDef == theParticleDef)
 					{
-						num9++;
+						aCurrentCount++;
 					}
 				}
-				theParticleDefInstance.mNumberAcc = num8 - num9;
+				theParticleDefInstance.mNumberAcc = aTargetCount - aCurrentCount;
 			}
 			while (theParticleDefInstance.mNumberAcc >= 1f)
 			{
 				theParticleDefInstance.mNumberAcc -= 1f;
-				PIParticleInstance pIParticleInstance2 = null;
+				PIParticleInstance aParticleInstance;
 				if (theParticleGroup.mIsSuperEmitter)
 				{
-					PIFreeEmitterInstance pIFreeEmitterInstance = mFreeEmitterPool.Alloc();
-					pIFreeEmitterInstance.Reset();
-					Common.Resize(pIFreeEmitterInstance.mEmitter.mParticleDefInstanceVector, theEmitter.mParticleDefVector.Count);
-					pIParticleInstance2 = pIFreeEmitterInstance;
+					PIFreeEmitterInstance aFreeEmitterInstance = mFreeEmitterPool.Alloc();
+					aFreeEmitterInstance.Reset();
+					Common.Resize(aFreeEmitterInstance.mEmitter.mParticleDefInstanceVector, theEmitter.mParticleDefVector.Count);
+					aParticleInstance = aFreeEmitterInstance;
 				}
 				else
 				{
-					pIParticleInstance2 = mParticlePool.Alloc();
-					pIParticleInstance2.Reset();
+					aParticleInstance = mParticlePool.Alloc();
+					aParticleInstance.Reset();
 				}
-				pIParticleInstance2.mParticleDef = theParticleDef;
-				pIParticleInstance2.mEmitterSrc = theEmitter;
-				pIParticleInstance2.mParentFreeEmitter = theFreeEmitter;
-				pIParticleInstance2.mNum = theParticleDefInstance.mParticlesEmitted++;
-				float num10 = 0f;
-				num10 = (theParticleGroup.mIsSuperEmitter ? ((theParticleGroup.mWasEmitted ? theEmitter.mValues[21].GetValueAt(mFrameNum) : theEmitterInstance.mEmitterInstanceDef.mValues[11].GetValueAt(mFrameNum)) + (theParticleGroup.mWasEmitted ? theEmitter.mValues[22].GetValueAt(mFrameNum) : theEmitterInstance.mEmitterInstanceDef.mValues[12].GetValueAt(mFrameNum)) * GetRandFloat() / 2f) : ((!theParticleDef.mUseEmitterAngleAndRange) ? (theParticleDef.mValues[23].GetValueAt(mFrameNum) + theParticleDef.mValues[24].GetValueAt(mFrameNum) * GetRandFloat() / 2f) : ((!theParticleGroup.mWasEmitted) ? ((theParticleGroup.mWasEmitted ? theEmitter.mValues[21].GetValueAt(mFrameNum) : theEmitterInstance.mEmitterInstanceDef.mValues[11].GetValueAt(mFrameNum)) + (theParticleGroup.mWasEmitted ? theEmitter.mValues[22].GetValueAt(mFrameNum) : theEmitterInstance.mEmitterInstanceDef.mValues[12].GetValueAt(mFrameNum)) * GetRandFloat() / 2f) : (theEmitter.mValues[21].GetValueAt(mFrameNum) + theEmitter.mValues[22].GetValueAt(mFrameNum) * GetRandFloat() / 2f))));
-				num10 = MathHelper.ToRadians(0f - num10);
-				float num11 = 0f;
-				num11 = theFreeEmitter?.mImgAngle ?? MathHelper.ToRadians(0f - theEmitterInstance.mEmitterInstanceDef.mValues[14].GetValueAt(mFrameNum));
-				num10 += num11;
-				pIParticleInstance2.mOrigEmitterAng = num11;
+				aParticleInstance.mParticleDef = theParticleDef;
+				aParticleInstance.mEmitterSrc = theEmitter;
+				aParticleInstance.mParentFreeEmitter = theFreeEmitter;
+				aParticleInstance.mNum = theParticleDefInstance.mParticlesEmitted++;
+				float aTravelAngle;
+				if (theParticleGroup.mIsSuperEmitter)
+				{
+					aTravelAngle = (theParticleGroup.mWasEmitted
+						? theEmitter.mValues[(int)PIEmitter.PIEmitterValue.VALUE_EMISSION_ANGLE].GetValueAt(mFrameNum)
+						: theEmitterInstance.mEmitterInstanceDef.mValues[(int)PIEmitterInstanceDef.PIEmitterValue.VALUE_EMISSION_ANGLE].GetValueAt(mFrameNum))
+						+ (theParticleGroup.mWasEmitted
+							? theEmitter.mValues[(int)PIEmitter.PIEmitterValue.VALUE_EMISSION_RANGE].GetValueAt(mFrameNum)
+							: theEmitterInstance.mEmitterInstanceDef.mValues[(int)PIEmitterInstanceDef.PIEmitterValue.VALUE_EMISSION_RANGE].GetValueAt(mFrameNum)) * GetRandFloat() / 2f;
+				}
+				else if (!theParticleDef.mUseEmitterAngleAndRange)
+				{
+					aTravelAngle = theParticleDef.mValues[(int)PIParticleDef.PIParticleDefValue.VALUE_EMISSION_ANGLE].GetValueAt(mFrameNum)
+						+ theParticleDef.mValues[(int)PIParticleDef.PIParticleDefValue.VALUE_EMISSION_RANGE].GetValueAt(mFrameNum) * GetRandFloat() / 2f;
+				}
+				else if (!theParticleGroup.mWasEmitted)
+				{
+					aTravelAngle = (theParticleGroup.mWasEmitted
+						? theEmitter.mValues[(int)PIEmitter.PIEmitterValue.VALUE_EMISSION_ANGLE].GetValueAt(mFrameNum)
+						: theEmitterInstance.mEmitterInstanceDef.mValues[(int)PIEmitterInstanceDef.PIEmitterValue.VALUE_EMISSION_ANGLE].GetValueAt(mFrameNum))
+						+ (theParticleGroup.mWasEmitted
+							? theEmitter.mValues[(int)PIEmitter.PIEmitterValue.VALUE_EMISSION_RANGE].GetValueAt(mFrameNum)
+							: theEmitterInstance.mEmitterInstanceDef.mValues[(int)PIEmitterInstanceDef.PIEmitterValue.VALUE_EMISSION_RANGE].GetValueAt(mFrameNum)) * GetRandFloat() / 2f;
+				}
+				else
+				{
+					aTravelAngle = theEmitter.mValues[(int)PIEmitter.PIEmitterValue.VALUE_EMISSION_ANGLE].GetValueAt(mFrameNum)
+						+ theEmitter.mValues[(int)PIEmitter.PIEmitterValue.VALUE_EMISSION_RANGE].GetValueAt(mFrameNum) * GetRandFloat() / 2f;
+				}
+				aTravelAngle = MathHelper.ToRadians(0f - aTravelAngle);
+				float anEmitterAngle = theFreeEmitter?.mImgAngle ?? MathHelper.ToRadians(0f - theEmitterInstance.mEmitterInstanceDef.mValues[(int)PIEmitterInstanceDef.PIEmitterValue.VALUE_ANGLE].GetValueAt(mFrameNum));
+				aTravelAngle += anEmitterAngle;
+				aParticleInstance.mOrigEmitterAng = anEmitterAngle;
 				if (theParticleDef != null && theParticleDef.mAnimStartOnRandomFrame)
 				{
-					pIParticleInstance2.mAnimFrameRand = (int)(mRand.Next() & 0x7FFF);
+					aParticleInstance.mAnimFrameRand = (int)(mRand.Next() & 0x7FFF);
 				}
 				else
 				{
-					pIParticleInstance2.mAnimFrameRand = 0;
+					aParticleInstance.mAnimFrameRand = 0;
 				}
-				pIParticleInstance2.mZoom = (theParticleGroup.mWasEmitted ? theEmitter.mValues[17].GetValueAt(mFrameNum) : theEmitterInstance.mEmitterInstanceDef.mValues[8].GetValueAt(mFrameNum)) * theEmitter.mValues[17].GetValueAt(mFrameNum, 1f);
+				aParticleInstance.mZoom = (theParticleGroup.mWasEmitted
+						? theEmitter.mValues[(int)PIEmitter.PIEmitterValue.VALUE_ZOOM].GetValueAt(mFrameNum)
+						: theEmitterInstance.mEmitterInstanceDef.mValues[(int)PIEmitterInstanceDef.PIEmitterValue.VALUE_ZOOM].GetValueAt(mFrameNum))
+					* theEmitter.mValues[(int)PIEmitter.PIEmitterValue.VALUE_ZOOM].GetValueAt(mFrameNum, 1f);
 				if (!theParticleGroup.mIsSuperEmitter)
 				{
-					pIParticleInstance2.mVariationValues[0] = GetVariationScalar() * theParticleDef.mValues[8].GetValueAt(mFrameNum);
-					pIParticleInstance2.mVariationValues[1] = GetVariationScalar() * theParticleDef.mValues[10].GetValueAt(mFrameNum);
+					aParticleInstance.mVariationValues[(int)PIParticleInstance.PIParticleVariation.VARIATION_LIFE] = GetVariationScalar() * theParticleDef.mValues[(int)PIParticleDef.PIParticleDefValue.VALUE_LIFE_VARIATION].GetValueAt(mFrameNum);
+					aParticleInstance.mVariationValues[(int)PIParticleInstance.PIParticleVariation.VARIATION_SIZE_X] = GetVariationScalar() * theParticleDef.mValues[(int)PIParticleDef.PIParticleDefValue.VALUE_SIZE_X_VARIATION].GetValueAt(mFrameNum);
 					if (theParticleDef == null || theParticleDef.mLockAspect)
 					{
-						pIParticleInstance2.mVariationValues[2] = pIParticleInstance2.mVariationValues[1];
+						aParticleInstance.mVariationValues[(int)PIParticleInstance.PIParticleVariation.VARIATION_SIZE_Y] = aParticleInstance.mVariationValues[(int)PIParticleInstance.PIParticleVariation.VARIATION_SIZE_X];
 					}
 					else
 					{
-						pIParticleInstance2.mVariationValues[2] = GetVariationScalar() * theParticleDef.mValues[26].GetValueAt(mFrameNum);
+						aParticleInstance.mVariationValues[(int)PIParticleInstance.PIParticleVariation.VARIATION_SIZE_Y] = GetVariationScalar() * theParticleDef.mValues[(int)PIParticleDef.PIParticleDefValue.VALUE_SIZE_Y_VARIATION].GetValueAt(mFrameNum);
 					}
-					pIParticleInstance2.mVariationValues[3] = GetVariationScalar() * theParticleDef.mValues[11].GetValueAt(mFrameNum);
-					pIParticleInstance2.mVariationValues[4] = GetVariationScalar() * theParticleDef.mValues[12].GetValueAt(mFrameNum);
-					pIParticleInstance2.mVariationValues[5] = GetVariationScalar() * theParticleDef.mValues[13].GetValueAt(mFrameNum);
-					pIParticleInstance2.mVariationValues[6] = GetVariationScalar() * theParticleDef.mValues[14].GetValueAt(mFrameNum);
-					pIParticleInstance2.mVariationValues[7] = GetVariationScalar() * theParticleDef.mValues[15].GetValueAt(mFrameNum);
-					pIParticleInstance2.mSrcSizeXMult = (theParticleGroup.mWasEmitted ? theEmitter.mValues[10].GetValueAt(mFrameNum) : theEmitterInstance.mEmitterInstanceDef.mValues[2].GetValueAt(mFrameNum)) * (theParticleDef.mValues[2].GetValueAt(mFrameNum) + pIParticleInstance2.mVariationValues[1]);
-					pIParticleInstance2.mSrcSizeYMult = (theParticleGroup.mWasEmitted ? theEmitter.mValues[11].GetValueAt(mFrameNum) : theEmitterInstance.mEmitterInstanceDef.mValues[17].GetValueAt(mFrameNum)) * (theParticleDef.mValues[25].GetValueAt(mFrameNum) + pIParticleInstance2.mVariationValues[2]);
+					aParticleInstance.mVariationValues[(int)PIParticleInstance.PIParticleVariation.VARIATION_VELOCITY] = GetVariationScalar() * theParticleDef.mValues[(int)PIParticleDef.PIParticleDefValue.VALUE_VELOCITY_VARIATION].GetValueAt(mFrameNum);
+					aParticleInstance.mVariationValues[(int)PIParticleInstance.PIParticleVariation.VARIATION_WEIGHT] = GetVariationScalar() * theParticleDef.mValues[(int)PIParticleDef.PIParticleDefValue.VALUE_WEIGHT_VARIATION].GetValueAt(mFrameNum);
+					aParticleInstance.mVariationValues[(int)PIParticleInstance.PIParticleVariation.VARIATION_SPIN] = GetVariationScalar() * theParticleDef.mValues[(int)PIParticleDef.PIParticleDefValue.VALUE_SPIN_VARIATION].GetValueAt(mFrameNum);
+					aParticleInstance.mVariationValues[(int)PIParticleInstance.PIParticleVariation.VARIATION_MOTION_RAND] = GetVariationScalar() * theParticleDef.mValues[(int)PIParticleDef.PIParticleDefValue.VALUE_MOTION_RAND_VARIATION].GetValueAt(mFrameNum);
+					aParticleInstance.mVariationValues[(int)PIParticleInstance.PIParticleVariation.VARIATION_BOUNCE] = GetVariationScalar() * theParticleDef.mValues[(int)PIParticleDef.PIParticleDefValue.VALUE_BOUNCE_VARIATION].GetValueAt(mFrameNum);
+					aParticleInstance.mSrcSizeXMult = (theParticleGroup.mWasEmitted
+							? theEmitter.mValues[(int)PIEmitter.PIEmitterValue.VALUE_SIZE_X].GetValueAt(mFrameNum)
+							: theEmitterInstance.mEmitterInstanceDef.mValues[(int)PIEmitterInstanceDef.PIEmitterValue.VALUE_SIZE_X].GetValueAt(mFrameNum))
+						* (theParticleDef.mValues[(int)PIParticleDef.PIParticleDefValue.VALUE_SIZE_X].GetValueAt(mFrameNum) + aParticleInstance.mVariationValues[(int)PIParticleInstance.PIParticleVariation.VARIATION_SIZE_X]);
+					aParticleInstance.mSrcSizeYMult = (theParticleGroup.mWasEmitted
+							? theEmitter.mValues[(int)PIEmitter.PIEmitterValue.VALUE_SIZE_Y].GetValueAt(mFrameNum)
+							: theEmitterInstance.mEmitterInstanceDef.mValues[(int)PIEmitterInstanceDef.PIEmitterValue.VALUE_SIZE_Y].GetValueAt(mFrameNum))
+						* (theParticleDef.mValues[(int)PIParticleDef.PIParticleDefValue.VALUE_SIZE_Y].GetValueAt(mFrameNum) + aParticleInstance.mVariationValues[(int)PIParticleInstance.PIParticleVariation.VARIATION_SIZE_Y]);
 					if (theParticleGroup.mWasEmitted)
 					{
-						pIParticleInstance2.mSrcSizeXMult *= (1f + theFreeEmitter.mVariationValues[1]) * theEmitter.mValues[34].GetValueAt(num2, 1f);
-						pIParticleInstance2.mSrcSizeYMult *= (1f + theFreeEmitter.mVariationValues[2]) * theEmitter.mValues[34].GetValueAt(num2, 1f);
-						pIParticleInstance2.mZoom *= (1f + theFreeEmitter.mVariationValues[8]) * theEmitter.mValues[41].GetValueAt(num2, 1f);
+						aParticleInstance.mSrcSizeXMult *= (1f + theFreeEmitter.mVariationValues[(int)PIParticleInstance.PIParticleVariation.VARIATION_SIZE_X]) * theEmitter.mValues[(int)PIEmitter.PIEmitterValue.VALUE_F_SIZE_X_OVER_LIFE].GetValueAt(anEmitterLifePct, 1f);
+						aParticleInstance.mSrcSizeYMult *= (1f + theFreeEmitter.mVariationValues[(int)PIParticleInstance.PIParticleVariation.VARIATION_SIZE_Y]) * theEmitter.mValues[(int)PIEmitter.PIEmitterValue.VALUE_F_SIZE_X_OVER_LIFE].GetValueAt(anEmitterLifePct, 1f);
+						aParticleInstance.mZoom *= (1f + theFreeEmitter.mVariationValues[(int)PIParticleInstance.PIParticleVariation.VARIATION_ZOOM]) * theEmitter.mValues[(int)PIEmitter.PIEmitterValue.VALUE_F_ZOOM_OVER_LIFE].GetValueAt(anEmitterLifePct, 1f);
 					}
 				}
 				else
 				{
-					pIParticleInstance2.mVariationValues[0] = GetVariationScalar() * theEmitter.mValues[23].GetValueAt(mFrameNum);
-					pIParticleInstance2.mVariationValues[1] = GetRandFloat() * theEmitter.mValues[25].GetValueAt(mFrameNum);
+					aParticleInstance.mVariationValues[(int)PIParticleInstance.PIParticleVariation.VARIATION_LIFE] = GetVariationScalar() * theEmitter.mValues[(int)PIEmitter.PIEmitterValue.VALUE_F_LIFE_VARIATION].GetValueAt(mFrameNum);
+					aParticleInstance.mVariationValues[(int)PIParticleInstance.PIParticleVariation.VARIATION_SIZE_X] = GetRandFloat() * theEmitter.mValues[(int)PIEmitter.PIEmitterValue.VALUE_F_SIZE_X_VARIATION].GetValueAt(mFrameNum);
 					if (theParticleDef == null || theParticleDef.mLockAspect)
 					{
-						pIParticleInstance2.mVariationValues[2] = pIParticleInstance2.mVariationValues[1];
+						aParticleInstance.mVariationValues[(int)PIParticleInstance.PIParticleVariation.VARIATION_SIZE_Y] = aParticleInstance.mVariationValues[(int)PIParticleInstance.PIParticleVariation.VARIATION_SIZE_X];
 					}
 					else
 					{
-						pIParticleInstance2.mVariationValues[2] = GetRandFloat() * theEmitter.mValues[26].GetValueAt(mFrameNum);
+						aParticleInstance.mVariationValues[(int)PIParticleInstance.PIParticleVariation.VARIATION_SIZE_Y] = GetRandFloat() * theEmitter.mValues[(int)PIEmitter.PIEmitterValue.VALUE_F_SIZE_Y_VARIATION].GetValueAt(mFrameNum);
 					}
-					pIParticleInstance2.mVariationValues[3] = GetVariationScalar() * theEmitter.mValues[27].GetValueAt(mFrameNum);
-					pIParticleInstance2.mVariationValues[4] = GetVariationScalar() * theEmitter.mValues[28].GetValueAt(mFrameNum);
-					pIParticleInstance2.mVariationValues[5] = GetVariationScalar() * theEmitter.mValues[29].GetValueAt(mFrameNum);
-					pIParticleInstance2.mVariationValues[6] = GetVariationScalar() * theEmitter.mValues[30].GetValueAt(mFrameNum);
-					pIParticleInstance2.mVariationValues[7] = GetVariationScalar() * theEmitter.mValues[31].GetValueAt(mFrameNum);
-					pIParticleInstance2.mVariationValues[8] = GetVariationScalar() * theEmitter.mValues[32].GetValueAt(mFrameNum);
+					aParticleInstance.mVariationValues[(int)PIParticleInstance.PIParticleVariation.VARIATION_VELOCITY] = GetVariationScalar() * theEmitter.mValues[(int)PIEmitter.PIEmitterValue.VALUE_F_VELOCITY_VARIATION].GetValueAt(mFrameNum);
+					aParticleInstance.mVariationValues[(int)PIParticleInstance.PIParticleVariation.VARIATION_WEIGHT] = GetVariationScalar() * theEmitter.mValues[(int)PIEmitter.PIEmitterValue.VALUE_F_WEIGHT_VARIATION].GetValueAt(mFrameNum);
+					aParticleInstance.mVariationValues[(int)PIParticleInstance.PIParticleVariation.VARIATION_SPIN] = GetVariationScalar() * theEmitter.mValues[(int)PIEmitter.PIEmitterValue.VALUE_F_SPIN_VARIATION].GetValueAt(mFrameNum);
+					aParticleInstance.mVariationValues[(int)PIParticleInstance.PIParticleVariation.VARIATION_MOTION_RAND] = GetVariationScalar() * theEmitter.mValues[(int)PIEmitter.PIEmitterValue.VALUE_F_MOTION_RAND_VARIATION].GetValueAt(mFrameNum);
+					aParticleInstance.mVariationValues[(int)PIParticleInstance.PIParticleVariation.VARIATION_BOUNCE] = GetVariationScalar() * theEmitter.mValues[(int)PIEmitter.PIEmitterValue.VALUE_F_BOUNCE_VARIATION].GetValueAt(mFrameNum);
+					aParticleInstance.mVariationValues[(int)PIParticleInstance.PIParticleVariation.VARIATION_ZOOM] = GetVariationScalar() * theEmitter.mValues[(int)PIEmitter.PIEmitterValue.VALUE_F_ZOOM_VARIATION].GetValueAt(mFrameNum);
 				}
-				float num12 = num10;
-				pIParticleInstance2.mGradientRand = GetRandFloatU();
-				pIParticleInstance2.mTicks = 0f;
-				pIParticleInstance2.mThicknessHitVariation = GetRandFloat();
-				pIParticleInstance2.mImgAngle = 0f;
+				float aBaseAngle = aTravelAngle;
+				aParticleInstance.mGradientRand = GetRandFloatU();
+				aParticleInstance.mTicks = 0f;
+				aParticleInstance.mThicknessHitVariation = GetRandFloat();
+				aParticleInstance.mImgAngle = 0f;
 				if (theParticleGroup.mIsSuperEmitter)
 				{
-					pIParticleInstance2.mLife = (theEmitter.mValues[0].GetValueAt(mFrameNum) + pIParticleInstance2.mVariationValues[0]) * 5f * (theParticleGroup.mWasEmitted ? theEmitter.mValues[8].GetValueAt(mFrameNum) : theEmitterInstance.mEmitterInstanceDef.mValues[0].GetValueAt(mFrameNum));
+					aParticleInstance.mLife = (theEmitter.mValues[(int)PIEmitter.PIEmitterValue.VALUE_F_LIFE].GetValueAt(mFrameNum) + aParticleInstance.mVariationValues[(int)PIParticleInstance.PIParticleVariation.VARIATION_LIFE]) * 5f
+						* (theParticleGroup.mWasEmitted
+							? theEmitter.mValues[(int)PIEmitter.PIEmitterValue.VALUE_LIFE].GetValueAt(mFrameNum)
+							: theEmitterInstance.mEmitterInstanceDef.mValues[(int)PIEmitterInstanceDef.PIEmitterValue.VALUE_LIFE].GetValueAt(mFrameNum));
 				}
 				else
 				{
-					pIParticleInstance2.mLife = (theParticleGroup.mWasEmitted ? theEmitter.mValues[8].GetValueAt(mFrameNum) : theEmitterInstance.mEmitterInstanceDef.mValues[0].GetValueAt(mFrameNum)) * (theParticleDef.mValues[0].GetValueAt(mFrameNum) + pIParticleInstance2.mVariationValues[0]);
+					aParticleInstance.mLife = (theParticleGroup.mWasEmitted
+							? theEmitter.mValues[(int)PIEmitter.PIEmitterValue.VALUE_LIFE].GetValueAt(mFrameNum)
+							: theEmitterInstance.mEmitterInstanceDef.mValues[(int)PIEmitterInstanceDef.PIEmitterValue.VALUE_LIFE].GetValueAt(mFrameNum))
+						* (theParticleDef.mValues[(int)PIParticleDef.PIParticleDefValue.VALUE_LIFE].GetValueAt(mFrameNum) + aParticleInstance.mVariationValues[(int)PIParticleInstance.PIParticleVariation.VARIATION_LIFE]);
 				}
-				Vector2 vector2 = default(Vector2);
+				if (aParticleInstance.mLife <= 1E-08f)
+				{
+					aParticleInstance.mLifePct = 1f;
+				}
+				float aLifeTicks = aParticleInstance.mLife * anUpdateRate;
+				if (aLifeTicks > 0f)
+				{
+					aParticleInstance.mLifePctInc = 1f / aLifeTicks;
+					aParticleInstance.mLifePctIntInc = (int)(unchecked((long)((double)int.MaxValue / aLifeTicks)) & 0xFFFFFFFFL);
+				}
+				else
+				{
+					aParticleInstance.mLifePctInc = 0f;
+					aParticleInstance.mLifePctIntInc = 0;
+				}
+				aParticleInstance.mLifePctInt = 0;
+				if (theParticleDef != null && theParticleDef.mSingleParticle)
+				{
+					aParticleInstance.mLifePctInt = 1;
+					aParticleInstance.mLifePctIntInc = 0;
+					aParticleInstance.mLifePctInc = 0f;
+				}
+				Vector2 aGeomOffset = default(Vector2);
 				if (theParticleGroup.mWasEmitted)
 				{
-					pIParticleInstance2.mEmittedPos = theFreeEmitter.mLastEmitterPos + theFreeEmitter.mPos;
-					pIParticleInstance2.mLastEmitterPos = pIParticleInstance2.mEmittedPos;
+					aParticleInstance.mEmittedPos = theFreeEmitter.mLastEmitterPos + theFreeEmitter.mPos;
+					aParticleInstance.mLastEmitterPos = aParticleInstance.mEmittedPos;
 				}
 				else
 				{
-					pIParticleInstance2.mEmittedPos = GetEmitterPos(theEmitterInstance, true);
-					pIParticleInstance2.mLastEmitterPos = pIParticleInstance2.mEmittedPos;
-					bool flag2 = false;
-					if (flag)
+					aParticleInstance.mEmittedPos = GetEmitterPos(theEmitterInstance, true);
+					aParticleInstance.mLastEmitterPos = aParticleInstance.mEmittedPos;
+					bool isMaskedOut = false;
+					if (wantsGeomPos)
 					{
-						vector2 = GetGeomPos(theEmitterInstance, pIParticleInstance2, ref num12, ref flag2) - pIParticleInstance2.mEmittedPos;
+						aGeomOffset = GetGeomPos(theEmitterInstance, aParticleInstance, ref aBaseAngle, ref isMaskedOut) - aParticleInstance.mEmittedPos;
 					}
-					if (flag2)
+					if (isMaskedOut)
 					{
 						continue;
 					}
 				}
-				pIParticleInstance2.mVel = new Vector2((float)Math.Cos(num12), (float)Math.Sin(num12));
+				aParticleInstance.mVel = new Vector2((float)Math.Cos(aBaseAngle), (float)Math.Sin(aBaseAngle));
 				if (theParticleGroup.mIsSuperEmitter)
 				{
-					pIParticleInstance2.mVel = pIParticleInstance2.mVel * ((theParticleGroup.mWasEmitted ? theEmitter.mValues[12].GetValueAt(mFrameNum) : theEmitterInstance.mEmitterInstanceDef.mValues[3].GetValueAt(mFrameNum)) * (theEmitter.mValues[2].GetValueAt(mFrameNum) + pIParticleInstance2.mVariationValues[3])) * 160f;
+					aParticleInstance.mVel = aParticleInstance.mVel
+						* ((theParticleGroup.mWasEmitted
+								? theEmitter.mValues[(int)PIEmitter.PIEmitterValue.VALUE_VELOCITY].GetValueAt(mFrameNum)
+								: theEmitterInstance.mEmitterInstanceDef.mValues[(int)PIEmitterInstanceDef.PIEmitterValue.VALUE_VELOCITY].GetValueAt(mFrameNum))
+							* (theEmitter.mValues[(int)PIEmitter.PIEmitterValue.VALUE_F_VELOCITY].GetValueAt(mFrameNum) + aParticleInstance.mVariationValues[(int)PIParticleInstance.PIParticleVariation.VARIATION_VELOCITY]))
+						* 160f;
 				}
 				else
 				{
-					pIParticleInstance2.mVel *= (theParticleGroup.mWasEmitted ? theEmitter.mValues[12].GetValueAt(mFrameNum) : theEmitterInstance.mEmitterInstanceDef.mValues[3].GetValueAt(mFrameNum)) * (theParticleDef.mValues[3].GetValueAt(mFrameNum) + pIParticleInstance2.mVariationValues[3]);
+					aParticleInstance.mVel *= (theParticleGroup.mWasEmitted
+							? theEmitter.mValues[(int)PIEmitter.PIEmitterValue.VALUE_VELOCITY].GetValueAt(mFrameNum)
+							: theEmitterInstance.mEmitterInstanceDef.mValues[(int)PIEmitterInstanceDef.PIEmitterValue.VALUE_VELOCITY].GetValueAt(mFrameNum))
+						* (theParticleDef.mValues[(int)PIParticleDef.PIParticleDefValue.VALUE_VELOCITY].GetValueAt(mFrameNum) + aParticleInstance.mVariationValues[(int)PIParticleInstance.PIParticleVariation.VARIATION_VELOCITY]);
 				}
 				if (!theParticleGroup.mIsSuperEmitter)
 				{
 					if (theParticleDef.mAngleAlignToMotion)
 					{
-						if (pIParticleInstance2.mVel.Length() == 0f)
+						if (aParticleInstance.mVel.Length() == 0f)
 						{
-							num12 = 0f;
-							if (Math.Cos(num12) > 0.0)
+							aBaseAngle = 0f;
+							if (Math.Cos(aBaseAngle) > 0.0)
 							{
-								pIParticleInstance2.mImgAngle = 0f;
+								aParticleInstance.mImgAngle = 0f;
 							}
 							else
 							{
-								pIParticleInstance2.mImgAngle = GlobalPIEffect.M_PI;
+								aParticleInstance.mImgAngle = GlobalPIEffect.M_PI;
 							}
 							if (theParticleDef.mSingleParticle && theParticleDef.mAngleKeepAlignedToMotion && !theParticleDef.mAttachToEmitter)
 							{
-								pIParticleInstance2.mImgAngle += MathHelper.ToRadians(theEmitterInstance.mEmitterInstanceDef.mValues[14].GetValueAt(mFrameNum));
+								aParticleInstance.mImgAngle += MathHelper.ToRadians(theEmitterInstance.mEmitterInstanceDef.mValues[(int)PIEmitterInstanceDef.PIEmitterValue.VALUE_ANGLE].GetValueAt(mFrameNum));
 							}
 						}
 						else
 						{
-							pIParticleInstance2.mImgAngle = 0f - num12;
+							aParticleInstance.mImgAngle = 0f - aBaseAngle;
 						}
-						pIParticleInstance2.mImgAngle += MathHelper.ToRadians(-theParticleDef.mAngleAlignOffset);
+						aParticleInstance.mImgAngle += MathHelper.ToRadians(-theParticleDef.mAngleAlignOffset);
 					}
 					else if (theParticleDef.mAngleRandomAlign)
 					{
-						pIParticleInstance2.mImgAngle = MathHelper.ToRadians(0f - ((float)theParticleDef.mAngleOffset + GetRandFloat() * (float)theParticleDef.mAngleRange / 2f));
+						aParticleInstance.mImgAngle = MathHelper.ToRadians(0f - ((float)theParticleDef.mAngleOffset + GetRandFloat() * (float)theParticleDef.mAngleRange / 2f));
 					}
 					else
 					{
-						pIParticleInstance2.mImgAngle = MathHelper.ToRadians(-theParticleDef.mAngleValue);
+						aParticleInstance.mImgAngle = MathHelper.ToRadians(-theParticleDef.mAngleValue);
 					}
 				}
-				pIParticleInstance2.mOrigPos = vector2;
-				SexyTransform2D theMatrix = new SexyTransform2D(false);
-				theMatrix.RotateDeg(theEmitterInstance.mEmitterInstanceDef.mValues[14].GetValueAt(mFrameNum));
-				pIParticleInstance2.mEmittedPos += GlobalPIEffect.TransformFPoint(theMatrix, vector2);
+				aParticleInstance.mOrigPos = aGeomOffset;
+				SexyTransform2D aTransform = new SexyTransform2D(false);
+				aTransform.RotateDeg(theEmitterInstance.mEmitterInstanceDef.mValues[(int)PIEmitterInstanceDef.PIEmitterValue.VALUE_ANGLE].GetValueAt(mFrameNum));
+				aParticleInstance.mEmittedPos += GlobalPIEffect.TransformFPoint(aTransform, aGeomOffset);
 				if (theEmitter.mOldestInFront)
 				{
 					if (theParticleGroup.mHead != null)
 					{
-						theParticleGroup.mHead.mPrev = pIParticleInstance2;
+						theParticleGroup.mHead.mPrev = aParticleInstance;
 					}
-					pIParticleInstance2.mNext = theParticleGroup.mHead;
+					aParticleInstance.mNext = theParticleGroup.mHead;
 					if (theParticleGroup.mTail == null)
 					{
-						theParticleGroup.mTail = pIParticleInstance2;
+						theParticleGroup.mTail = aParticleInstance;
 					}
-					theParticleGroup.mHead = pIParticleInstance2;
+					theParticleGroup.mHead = aParticleInstance;
 				}
 				else
 				{
 					if (theParticleGroup.mTail != null)
 					{
-						theParticleGroup.mTail.mNext = pIParticleInstance2;
+						theParticleGroup.mTail.mNext = aParticleInstance;
 					}
-					pIParticleInstance2.mPrev = theParticleGroup.mTail;
+					aParticleInstance.mPrev = theParticleGroup.mTail;
 					if (theParticleGroup.mHead == null)
 					{
-						theParticleGroup.mHead = pIParticleInstance2;
+						theParticleGroup.mHead = aParticleInstance;
 					}
-					theParticleGroup.mTail = pIParticleInstance2;
+					theParticleGroup.mTail = aParticleInstance;
 				}
 				theParticleGroup.mCount++;
 			}
 		}
 
+		public void FreeParticle(PIParticleInstance theParticleInstance, PIParticleGroup theParticleGroup)
+		{
+			if (theParticleGroup.mIsSuperEmitter)
+			{
+				mFreeEmitterPool.Free((PIFreeEmitterInstance)theParticleInstance);
+			}
+			else
+			{
+				mParticlePool.Free(theParticleInstance);
+			}
+			if (theParticleInstance.mPrev != null)
+			{
+				theParticleInstance.mPrev.mNext = theParticleInstance.mNext;
+			}
+			if (theParticleInstance.mNext != null)
+			{
+				theParticleInstance.mNext.mPrev = theParticleInstance.mPrev;
+			}
+			if (theParticleGroup.mHead == theParticleInstance)
+			{
+				theParticleGroup.mHead = theParticleInstance.mNext;
+			}
+			if (theParticleGroup.mTail == theParticleInstance)
+			{
+				theParticleGroup.mTail = theParticleInstance.mPrev;
+			}
+			theParticleGroup.mCount--;
+		}
+
 		public void UpdateParticleGroup(PILayer theLayer, PIEmitterInstance theEmitterInstance, PIParticleGroup theParticleGroup)
 		{
-			float num = 100f / mAnimSpeed;
-			PIParticleInstance pIParticleInstance = theParticleGroup.mHead;
-			PILayerDef mLayerDef = theLayer.mLayerDef;
-			PIEmitterInstanceDef mEmitterInstanceDef = theEmitterInstance.mEmitterInstanceDef;
-			while (pIParticleInstance != null)
+			float anUpdateRate = 100f / mAnimSpeed;
+			PIParticleInstance aParticleInstance = theParticleGroup.mHead;
+			PILayerDef aLayerDef = theLayer.mLayerDef;
+			PIEmitterInstanceDef anEmitterInstanceDef = theEmitterInstance.mEmitterInstanceDef;
+			while (aParticleInstance != null)
 			{
-				PIParticleInstance mNext = pIParticleInstance.mNext;
-				PIEmitter mEmitterSrc = pIParticleInstance.mEmitterSrc;
-				PIParticleDef mParticleDef = pIParticleInstance.mParticleDef;
-				if (pIParticleInstance.mParentFreeEmitter != null)
+				PIParticleInstance aNext = aParticleInstance.mNext;
+				PIEmitter anEmitter = aParticleInstance.mEmitterSrc;
+				PIParticleDef aParticleDef = aParticleInstance.mParticleDef;
+				float anEmitterLifePct = 0f;
+				if (aParticleInstance.mParentFreeEmitter != null)
 				{
-					float mLifePct = pIParticleInstance.mParentFreeEmitter.mLifePct;
+					anEmitterLifePct = aParticleInstance.mParentFreeEmitter.mLifePct;
 				}
-				bool flag = pIParticleInstance.mTicks == 0f;
-				pIParticleInstance.mTicks += 1f / num;
-				float num2 = 0f;
-				if (mParticleDef != null && mParticleDef.mSingleParticle)
+				bool isNew = aParticleInstance.mTicks == 0f;
+				aParticleInstance.mTicks += 1f / anUpdateRate;
+				float aLifePct;
+				if (aParticleDef != null && aParticleDef.mSingleParticle)
 				{
-					float nextKeyframeTime = theEmitterInstance.mEmitterInstanceDef.mValues[13].GetNextKeyframeTime(mFrameNum);
-					int nextKeyframeIdx = theEmitterInstance.mEmitterInstanceDef.mValues[13].GetNextKeyframeIdx(mFrameNum);
-					num2 = ((!(nextKeyframeTime >= mFrameNum) || nextKeyframeIdx != 1) ? 0.02f : Math.Min(1f, (mFrameNum + (float)mEmitterInstanceDef.mFramesToPreload) / Math.Max(1f, nextKeyframeTime)));
+					float aNextToggleTime = theEmitterInstance.mEmitterInstanceDef.mValues[(int)PIEmitterInstanceDef.PIEmitterValue.VALUE_ACTIVE].GetNextKeyframeTime(mFrameNum);
+					int aNextKeyIdx = theEmitterInstance.mEmitterInstanceDef.mValues[(int)PIEmitterInstanceDef.PIEmitterValue.VALUE_ACTIVE].GetNextKeyframeIdx(mFrameNum);
+					aLifePct = ((!(aNextToggleTime >= mFrameNum) || aNextKeyIdx != 1) ? 0.02f : Math.Min(1f, (mFrameNum + (float)anEmitterInstanceDef.mFramesToPreload) / Math.Max(1f, aNextToggleTime)));
 				}
 				else
 				{
-					num2 = pIParticleInstance.mTicks / pIParticleInstance.mLife;
+					aLifePct = aParticleInstance.mTicks / aParticleInstance.mLife;
 				}
-				pIParticleInstance.mLifePct = num2;
-				if (pIParticleInstance.mLifePct >= 0.9999999f || pIParticleInstance.mLife <= 1E-08f || (!theEmitterInstance.mWasActive && !mEmitterInstanceDef.mIsSuperEmitter))
+				aParticleInstance.mLifePct = aLifePct;
+				if (theParticleGroup.mIsSuperEmitter)
 				{
-					if (theParticleGroup.mIsSuperEmitter && ((PIFreeEmitterInstance)pIParticleInstance).mEmitter.mParticleGroup.mHead != null)
+					if (aParticleInstance.mLifePct >= 0.9999999f || aParticleInstance.mLife <= 1E-08f || (!theEmitterInstance.mWasActive && !anEmitterInstanceDef.mIsSuperEmitter))
 					{
-						pIParticleInstance = mNext;
-						continue;
-					}
-					if (theParticleGroup.mIsSuperEmitter || !mParticleDef.mSingleParticle || !theEmitterInstance.mWasActive)
-					{
-						if (theParticleGroup.mIsSuperEmitter)
+						if (((PIFreeEmitterInstance)aParticleInstance).mEmitter.mParticleGroup.mHead != null)
 						{
-							mFreeEmitterPool.Free((PIFreeEmitterInstance)pIParticleInstance);
+							aParticleInstance = aNext;
+							continue;
 						}
-						else
-						{
-							mParticlePool.Free(pIParticleInstance);
-						}
-						if (pIParticleInstance.mPrev != null)
-						{
-							pIParticleInstance.mPrev.mNext = pIParticleInstance.mNext;
-						}
-						if (pIParticleInstance.mNext != null)
-						{
-							pIParticleInstance.mNext.mPrev = pIParticleInstance.mPrev;
-						}
-						if (theParticleGroup.mHead == pIParticleInstance)
-						{
-							theParticleGroup.mHead = pIParticleInstance.mNext;
-						}
-						if (theParticleGroup.mTail == pIParticleInstance)
-						{
-							theParticleGroup.mTail = pIParticleInstance.mPrev;
-						}
-						theParticleGroup.mCount--;
-						pIParticleInstance = mNext;
+						FreeParticle(aParticleInstance, theParticleGroup);
+						aParticleInstance = aNext;
 						continue;
 					}
 				}
-				if (mParticleDef != null)
+				else
 				{
-					PITexture pITexture = mDef.mTextureVector[mParticleDef.mTextureIdx];
-					if (mParticleDef.mAnimSpeed == -1)
+					aParticleInstance.mLifePctInt += aParticleInstance.mLifePctIntInc;
+					if ((aParticleInstance.mLifePctInt & unchecked((int)0x80000000)) != 0)
 					{
-						pIParticleInstance.mImgIdx = pIParticleInstance.mAnimFrameRand % pITexture.mNumCels;
+						FreeParticle(aParticleInstance, theParticleGroup);
+						aParticleInstance = aNext;
+						continue;
+					}
+				}
+				if (aParticleDef != null)
+				{
+					PITexture aTexture = mDef.mTextureVector[aParticleDef.mTextureIdx];
+					if (aParticleDef.mAnimSpeed == -1)
+					{
+						aParticleInstance.mImgIdx = aParticleInstance.mAnimFrameRand % aTexture.mNumCels;
 					}
 					else
 					{
-						pIParticleInstance.mImgIdx = ((int)(pIParticleInstance.mTicks * (float)mFramerate / (float)(mParticleDef.mAnimSpeed + 1)) + pIParticleInstance.mAnimFrameRand) % pITexture.mNumCels;
+						aParticleInstance.mImgIdx = ((int)(aParticleInstance.mTicks * (float)mFramerate / (float)(aParticleDef.mAnimSpeed + 1)) + aParticleInstance.mAnimFrameRand) % aTexture.mNumCels;
 					}
 				}
-				if (theParticleGroup.mIsSuperEmitter || !mParticleDef.mSingleParticle)
+				if (theParticleGroup.mIsSuperEmitter || !aParticleDef.mSingleParticle)
 				{
 					if (mIsNewFrame)
 					{
-						float num3 = GetRandFloat() * GetRandFloat();
-						float num4 = GetRandFloat() * GetRandFloat();
-						float num5 = ((!theParticleGroup.mIsSuperEmitter) ? Math.Max(0f, (theParticleGroup.mWasEmitted ? mEmitterSrc.mValues[15].GetValueAt(mFrameNum) : theEmitterInstance.mEmitterInstanceDef.mValues[6].GetValueAt(mFrameNum)) * mParticleDef.mValues[20].GetValueAt(num2) * (mParticleDef.mValues[6].GetValueAt(mFrameNum) + pIParticleInstance.mVariationValues[6])) : (Math.Max(0f, (theParticleGroup.mWasEmitted ? mEmitterSrc.mValues[15].GetValueAt(mFrameNum) : theEmitterInstance.mEmitterInstanceDef.mValues[6].GetValueAt(mFrameNum)) * mEmitterSrc.mValues[39].GetValueAt(num2, 1f) * (mEmitterSrc.mValues[5].GetValueAt(mFrameNum) + pIParticleInstance.mVariationValues[6])) * 30f));
-						pIParticleInstance.mVel.X += num3 * num5;
-						pIParticleInstance.mVel.Y += num4 * num5;
+						float aRand1 = GetRandFloat() * GetRandFloat();
+						float aRand2 = GetRandFloat() * GetRandFloat();
+						float aMotionRand;
+						if (theParticleGroup.mIsSuperEmitter)
+						{
+							aMotionRand = Math.Max(0f,
+								(theParticleGroup.mWasEmitted
+									? anEmitter.mValues[(int)PIEmitter.PIEmitterValue.VALUE_MOTION_RAND].GetValueAt(mFrameNum)
+									: theEmitterInstance.mEmitterInstanceDef.mValues[(int)PIEmitterInstanceDef.PIEmitterValue.VALUE_MOTION_RAND].GetValueAt(mFrameNum))
+								* anEmitter.mValues[(int)PIEmitter.PIEmitterValue.VALUE_F_MOTION_RAND_OVER_LIFE].GetValueAt(aLifePct, 1f)
+								* (anEmitter.mValues[(int)PIEmitter.PIEmitterValue.VALUE_F_MOTION_RAND].GetValueAt(mFrameNum) + aParticleInstance.mVariationValues[(int)PIParticleInstance.PIParticleVariation.VARIATION_MOTION_RAND])
+								* 30f);
+						}
+						else
+						{
+							aMotionRand = Math.Max(0f,
+								(theParticleGroup.mWasEmitted
+									? anEmitter.mValues[(int)PIEmitter.PIEmitterValue.VALUE_MOTION_RAND].GetValueAt(mFrameNum)
+									: theEmitterInstance.mEmitterInstanceDef.mValues[(int)PIEmitterInstanceDef.PIEmitterValue.VALUE_MOTION_RAND].GetValueAt(mFrameNum))
+								* aParticleDef.mValues[(int)PIParticleDef.PIParticleDefValue.VALUE_MOTION_RAND_OVER_LIFE].GetValueAt(aLifePct)
+								* (aParticleDef.mValues[(int)PIParticleDef.PIParticleDefValue.VALUE_MOTION_RAND].GetValueAt(mFrameNum) + aParticleInstance.mVariationValues[(int)PIParticleInstance.PIParticleVariation.VARIATION_MOTION_RAND]));
+						}
+						aParticleInstance.mVel.X += aRand1 * aMotionRand;
+						aParticleInstance.mVel.Y += aRand2 * aMotionRand;
 					}
-					float num6 = ((!theParticleGroup.mIsSuperEmitter) ? ((theParticleGroup.mWasEmitted ? mEmitterSrc.mValues[13].GetValueAt(mFrameNum) : theEmitterInstance.mEmitterInstanceDef.mValues[4].GetValueAt(mFrameNum)) * (mParticleDef.mValues[18].GetValueAt(num2) - 1f) * (mParticleDef.mValues[4].GetValueAt(mFrameNum) + pIParticleInstance.mVariationValues[4]) * 100f) : ((theParticleGroup.mWasEmitted ? mEmitterSrc.mValues[13].GetValueAt(mFrameNum) : theEmitterInstance.mEmitterInstanceDef.mValues[4].GetValueAt(mFrameNum)) * (mEmitterSrc.mValues[37].GetValueAt(num2, 1f) - 1f) * (mEmitterSrc.mValues[3].GetValueAt(mFrameNum) + pIParticleInstance.mVariationValues[4]) / 2f * 100f));
-					num6 *= 1f + ((float)mFramerate - 100f) * 0.0005f;
-					pIParticleInstance.mVel.Y += num6 / num;
-					Vector2 vector = pIParticleInstance.mVel / num;
+					float aWeight;
 					if (theParticleGroup.mIsSuperEmitter)
 					{
-						vector *= mEmitterSrc.mValues[36].GetValueAt(num2, 1f);
+						aWeight = theEmitterInstance.mEmitterInstanceDef.mValues[(int)PIEmitterInstanceDef.PIEmitterValue.VALUE_WEIGHT].GetValueAt(mFrameNum)
+							* (anEmitter.mValues[(int)PIEmitter.PIEmitterValue.VALUE_F_WEIGHT_OVER_LIFE].GetValueAt(aLifePct, 1f) - 1f)
+							* (anEmitter.mValues[(int)PIEmitter.PIEmitterValue.VALUE_F_WEIGHT].GetValueAt(mFrameNum) + aParticleInstance.mVariationValues[(int)PIParticleInstance.PIParticleVariation.VARIATION_WEIGHT])
+							/ 2f * 100f;
 					}
 					else
 					{
-						vector *= mParticleDef.mValues[17].GetValueAt(num2);
+						aWeight = theEmitterInstance.mEmitterInstanceDef.mValues[(int)PIEmitterInstanceDef.PIEmitterValue.VALUE_WEIGHT].GetValueAt(mFrameNum)
+							* (aParticleDef.mValues[(int)PIParticleDef.PIParticleDefValue.VALUE_WEIGHT_OVER_LIFE].GetValueAt(aLifePct) - 1f)
+							* (aParticleDef.mValues[(int)PIParticleDef.PIParticleDefValue.VALUE_WEIGHT].GetValueAt(mFrameNum) + aParticleInstance.mVariationValues[(int)PIParticleInstance.PIParticleVariation.VARIATION_WEIGHT])
+							* 100f;
 					}
-					Vector2 aPtA = default(Vector2);
-					if (!flag && mLayerDef.mDeflectorVector.Count > 0)
+					aWeight *= 1f + ((float)mFramerate - 100f) * 0.0005f;
+					aParticleInstance.mVel.Y += aWeight / anUpdateRate;
+					Vector2 aCurVel = aParticleInstance.mVel / anUpdateRate;
+					if (theParticleGroup.mIsSuperEmitter)
 					{
-						Vector2 aPtA2 = GlobalPIEffect.TransformFPoint(pIParticleInstance.mTransform, new Vector2(0f, 0f));
-						Vector2 mPos = pIParticleInstance.mPos;
-						pIParticleInstance.mPos += vector;
-						CalcParticleTransform(theLayer, theEmitterInstance, mEmitterSrc, mParticleDef, theParticleGroup, pIParticleInstance);
-						aPtA = GlobalPIEffect.TransformFPoint(pIParticleInstance.mTransform, new Vector2(0f, 0f));
-						for (int i = 0; i < mLayerDef.mDeflectorVector.Count; i++)
+						aCurVel *= anEmitter.mValues[(int)PIEmitter.PIEmitterValue.VALUE_F_VELOCITY_OVER_LIFE].GetValueAt(aLifePct, 1f);
+					}
+					else
+					{
+						aCurVel *= aParticleDef.mValues[(int)PIParticleDef.PIParticleDefValue.VALUE_VELOCITY_OVER_LIFE].GetValueAt(aLifePct);
+					}
+					Vector2 aCurPhysPoint = default(Vector2);
+					if (!isNew && aLayerDef.mDeflectorVector.Count > 0)
+					{
+						Vector2 aPrevPhysPoint = GlobalPIEffect.TransformFPoint(aParticleInstance.mTransform, new Vector2(0f, 0f));
+						Vector2 aPrevPos = aParticleInstance.mPos;
+						aParticleInstance.mPos += aCurVel;
+						CalcParticleTransform(theLayer, theEmitterInstance, anEmitter, aParticleDef, theParticleGroup, aParticleInstance);
+						aCurPhysPoint = GlobalPIEffect.TransformFPoint(aParticleInstance.mTransform, new Vector2(0f, 0f));
+						for (int aDeflectorIdx = 0; aDeflectorIdx < aLayerDef.mDeflectorVector.Count; aDeflectorIdx++)
 						{
-							PIDeflector pIDeflector = mLayerDef.mDeflectorVector[i];
-							if (pIDeflector.mActive.GetLastKeyframe(mFrameNum) < 0.99f)
+							PIDeflector aDeflector = aLayerDef.mDeflectorVector[aDeflectorIdx];
+							if (aDeflector.mActive.GetLastKeyframe(mFrameNum) < 0.99f)
 							{
 								continue;
 							}
-							for (int j = 1; j < pIDeflector.mCurPoints.Count; j++)
+							for (int aPtIdx = 1; aPtIdx < aDeflector.mCurPoints.Count; aPtIdx++)
 							{
-								Vector2 vector2 = pIDeflector.mCurPoints[j - 1] - new Vector2(mDrawTransform.m02, mDrawTransform.m12);
-								Vector2 vector3 = pIDeflector.mCurPoints[j] - new Vector2(mDrawTransform.m02, mDrawTransform.m12);
-								SexyVector2 sexyVector = new SexyVector2(vector3.X - vector2.X, vector3.Y - vector2.Y).Normalize().Perp();
-								Vector2 vector4 = new Vector2(sexyVector.x, sexyVector.y);
-								vector4 = vector4 * pIDeflector.mThickness * pIParticleInstance.mThicknessHitVariation;
-								Vector2 theIntersectionPoint = default(Vector2);
-								float thePos = 0f;
-								if (GlobalPIEffect.LineSegmentIntersects(aPtA2, aPtA, vector2 + vector4, vector3 + vector4, ref thePos, theIntersectionPoint) && !(GetRandFloatU() > pIDeflector.mHits))
+								Vector2 aPt1 = aDeflector.mCurPoints[aPtIdx - 1] - new Vector2(mDrawTransform.m02, mDrawTransform.m12);
+								Vector2 aPt2 = aDeflector.mCurPoints[aPtIdx] - new Vector2(mDrawTransform.m02, mDrawTransform.m12);
+								SexyVector2 aLineNormal = new SexyVector2(aPt2.X - aPt1.X, aPt2.Y - aPt1.Y).Normalize().Perp();
+								Vector2 aLineTranslate = new Vector2(aLineNormal.x, aLineNormal.y);
+								aLineTranslate = aLineTranslate * aDeflector.mThickness * aParticleInstance.mThicknessHitVariation;
+								Vector2 aCollPoint = default(Vector2);
+								float aPos = 0f;
+								if (GlobalPIEffect.LineSegmentIntersects(aPrevPhysPoint, aCurPhysPoint, aPt1 + aLineTranslate, aPt2 + aLineTranslate, ref aPos, aCollPoint) && !(GetRandFloatU() > aDeflector.mHits))
 								{
-									float mBounce = pIDeflector.mBounce;
-									mBounce = ((!theParticleGroup.mIsSuperEmitter) ? (mBounce * 0.5f) : (mBounce * ((theParticleGroup.mWasEmitted ? mEmitterSrc.mValues[6].GetValueAt(mFrameNum) : theEmitterInstance.mEmitterInstanceDef.mValues[7].GetValueAt(mFrameNum)) * mEmitterSrc.mValues[40].GetValueAt(num2, 1f) * (mEmitterSrc.mValues[6].GetValueAt(mFrameNum) + pIParticleInstance.mVariationValues[9]))));
-									SexyVector2 sexyVector2 = new SexyVector2(vector.X, vector.Y);
-									float num7 = sexyVector2.Dot(sexyVector);
-									SexyVector2 sexyVector3 = sexyVector2 - sexyVector * 2f * num7;
-									float num8 = Math.Min(1f, Math.Abs(sexyVector3.y / sexyVector3.x));
-									sexyVector3.y *= 1f - num8 + num8 * (float)Math.Pow(mBounce, 0.5);
-									pIParticleInstance.mVel = new Vector2(sexyVector3.x, sexyVector3.y) * 100f;
-									if (mBounce > 0.001f)
+									float aBounce = aDeflector.mBounce;
+									if (theParticleGroup.mIsSuperEmitter)
 									{
-										pIParticleInstance.mPos = mPos;
+										aBounce *= (theParticleGroup.mWasEmitted
+											? anEmitter.mValues[(int)PIEmitter.PIEmitterValue.VALUE_BOUNCE].GetValueAt(mFrameNum)
+											: theEmitterInstance.mEmitterInstanceDef.mValues[(int)PIEmitterInstanceDef.PIEmitterValue.VALUE_BOUNCE].GetValueAt(mFrameNum))
+											* anEmitter.mValues[(int)PIEmitter.PIEmitterValue.VALUE_F_BOUNCE_OVER_LIFE].GetValueAt(aLifePct, 1f)
+											* (anEmitter.mValues[(int)PIEmitter.PIEmitterValue.VALUE_F_BOUNCE].GetValueAt(mFrameNum) + aParticleInstance.mVariationValues[(int)PIParticleInstance.PIParticleVariation.VARIATION_BOUNCE]);
 									}
-									CalcParticleTransform(theLayer, theEmitterInstance, mEmitterSrc, mParticleDef, theParticleGroup, pIParticleInstance);
-									aPtA = GlobalPIEffect.TransformFPoint(pIParticleInstance.mTransform, new Vector2(0f, 0f));
+									else
+									{
+										aBounce *= 0.5f;
+									}
+									SexyVector2 aCurVelVec = new SexyVector2(aCurVel.X, aCurVel.Y);
+									float aDot = aCurVelVec.Dot(aLineNormal);
+									SexyVector2 aNewVel = aCurVelVec - aLineNormal * 2f * aDot;
+									float aPctBounce = Math.Min(1f, Math.Abs(aNewVel.y / aNewVel.x));
+									aNewVel.y *= 1f - aPctBounce + aPctBounce * (float)Math.Pow(aBounce, 0.5);
+									aParticleInstance.mVel = new Vector2(aNewVel.x, aNewVel.y) * 100f;
+									if (aBounce > 0.001f)
+									{
+										aParticleInstance.mPos = aPrevPos;
+									}
+									CalcParticleTransform(theLayer, theEmitterInstance, anEmitter, aParticleDef, theParticleGroup, aParticleInstance);
+									aCurPhysPoint = GlobalPIEffect.TransformFPoint(aParticleInstance.mTransform, new Vector2(0f, 0f));
 								}
 							}
 						}
 					}
 					else
 					{
-						pIParticleInstance.mPos += vector;
-						if (mLayerDef.mForceVector.Count > 0)
+						aParticleInstance.mPos += aCurVel;
+						if (aLayerDef.mForceVector.Count > 0)
 						{
-							CalcParticleTransform(theLayer, theEmitterInstance, mEmitterSrc, mParticleDef, theParticleGroup, pIParticleInstance);
-							aPtA = GlobalPIEffect.TransformFPoint(pIParticleInstance.mTransform, new Vector2(0f, 0f));
+							CalcParticleTransform(theLayer, theEmitterInstance, anEmitter, aParticleDef, theParticleGroup, aParticleInstance);
+							aCurPhysPoint = GlobalPIEffect.TransformFPoint(aParticleInstance.mTransform, new Vector2(0f, 0f));
 						}
 					}
-					for (int k = 0; k < mLayerDef.mForceVector.Count; k++)
+					for (int aForceIdx = 0; aForceIdx < aLayerDef.mForceVector.Count; aForceIdx++)
 					{
-						PIForce pIForce = mLayerDef.mForceVector[k];
-						if (pIForce.mActive.GetLastKeyframe(mFrameNum) < 0.99f)
+						PIForce aForce = aLayerDef.mForceVector[aForceIdx];
+						if (aForce.mActive.GetLastKeyframe(mFrameNum) < 0.99f)
 						{
 							continue;
 						}
-						bool flag2 = false;
-						int num9 = 0;
-						int num10 = 3;
-						while (num9 < 4)
+						bool inside = false;
+						int i = 0;
+						int j = 3;
+						while (i < 4)
 						{
-							if (((pIForce.mCurPoints[num9].Y <= aPtA.Y && aPtA.Y < pIForce.mCurPoints[num10].Y) || (pIForce.mCurPoints[num10].Y <= aPtA.Y && aPtA.Y < pIForce.mCurPoints[num9].Y)) && aPtA.X < (pIForce.mCurPoints[num10].X - pIForce.mCurPoints[num9].X) * (aPtA.Y - pIForce.mCurPoints[num9].Y) / (pIForce.mCurPoints[num10].Y - pIForce.mCurPoints[num9].Y) + pIForce.mCurPoints[num9].X)
+							if (((aForce.mCurPoints[i].Y <= aCurPhysPoint.Y && aCurPhysPoint.Y < aForce.mCurPoints[j].Y)
+								|| (aForce.mCurPoints[j].Y <= aCurPhysPoint.Y && aCurPhysPoint.Y < aForce.mCurPoints[i].Y))
+								&& aCurPhysPoint.X < (aForce.mCurPoints[j].X - aForce.mCurPoints[i].X) * (aCurPhysPoint.Y - aForce.mCurPoints[i].Y) / (aForce.mCurPoints[j].Y - aForce.mCurPoints[i].Y) + aForce.mCurPoints[i].X)
 							{
-								flag2 = !flag2;
+								inside = !inside;
 							}
-							num10 = num9++;
+							j = i++;
 						}
-						if (flag2)
+						if (inside)
 						{
-							float num11 = MathHelper.ToRadians(0f - pIForce.mDirection.GetValueAt(mFrameNum)) + MathHelper.ToRadians(0f - pIForce.mAngle.GetValueAt(mFrameNum));
-							float num12 = 0.085f * (float)mFramerate / 100f;
-							num12 *= 1f + ((float)mFramerate - 100f) * 0.004f;
-							float num13 = pIForce.mStrength.GetValueAt(mFrameNum) * num12;
-							pIParticleInstance.mVel.X += (float)Math.Cos(num11) * num13 * 100f;
-							pIParticleInstance.mVel.Y += (float)Math.Sin(num11) * num13 * 100f;
+							float aDir = MathHelper.ToRadians(0f - aForce.mDirection.GetValueAt(mFrameNum)) + MathHelper.ToRadians(0f - aForce.mAngle.GetValueAt(mFrameNum));
+							float aFrameStrength = 0.085f * (float)mFramerate / 100f;
+							aFrameStrength *= 1f + ((float)mFramerate - 100f) * 0.004f;
+							float aStrength = aForce.mStrength.GetValueAt(mFrameNum) * aFrameStrength;
+							aParticleInstance.mVel.X += (float)Math.Cos(aDir) * aStrength * 100f;
+							aParticleInstance.mVel.Y += (float)Math.Sin(aDir) * aStrength * 100f;
 						}
 					}
-					if (!theParticleGroup.mIsSuperEmitter && mParticleDef.mAngleAlignToMotion && mParticleDef.mAngleKeepAlignedToMotion)
+					if (!theParticleGroup.mIsSuperEmitter && aParticleDef.mAngleAlignToMotion && aParticleDef.mAngleKeepAlignedToMotion)
 					{
-						pIParticleInstance.mImgAngle = (float)(0.0 - Math.Atan2(vector.Y, vector.X)) + MathHelper.ToRadians(-mParticleDef.mAngleAlignOffset);
+						aParticleInstance.mImgAngle = (float)(0.0 - Math.Atan2(aCurVel.Y, aCurVel.X)) + MathHelper.ToRadians(-aParticleDef.mAngleAlignOffset);
 					}
 				}
-				else if (mParticleDef.mSingleParticle)
+				else if (aParticleDef.mSingleParticle)
 				{
-					bool flag3 = false;
-					if (mEmitterInstanceDef.mEmitterGeom == 1 || mEmitterInstanceDef.mEmitterGeom == 4)
+					bool needsRefresh = false;
+					if (anEmitterInstanceDef.mEmitterGeom == 1 || anEmitterInstanceDef.mEmitterGeom == 4)
 					{
-						flag3 = mEmitterInstanceDef.mEmitAtPointsNum != 0;
+						needsRefresh = anEmitterInstanceDef.mEmitAtPointsNum != 0;
 					}
-					else if (mEmitterInstanceDef.mEmitterGeom == 3)
+					else if (anEmitterInstanceDef.mEmitterGeom == 3)
 					{
-						flag3 = mEmitterInstanceDef.mEmitAtPointsNum * mEmitterInstanceDef.mEmitAtPointsNum2 != 0;
+						needsRefresh = anEmitterInstanceDef.mEmitAtPointsNum * anEmitterInstanceDef.mEmitAtPointsNum2 != 0;
 					}
-					if (flag3)
+					if (needsRefresh)
 					{
-						Vector2 geomPos = GetGeomPos(theEmitterInstance, pIParticleInstance);
-						pIParticleInstance.mEmittedPos = GetEmitterPos(theEmitterInstance, true);
-						pIParticleInstance.mLastEmitterPos = pIParticleInstance.mEmittedPos;
-						pIParticleInstance.mOrigPos = geomPos - pIParticleInstance.mEmittedPos;
-						SexyTransform2D theMatrix = new SexyTransform2D(false);
-						theMatrix.RotateDeg(theEmitterInstance.mEmitterInstanceDef.mValues[14].GetValueAt(mFrameNum));
-						pIParticleInstance.mEmittedPos += GlobalPIEffect.TransformFPoint(theMatrix, geomPos);
+						Vector2 aGeomPos = GetGeomPos(theEmitterInstance, aParticleInstance);
+						aParticleInstance.mEmittedPos = GetEmitterPos(theEmitterInstance, true);
+						aParticleInstance.mLastEmitterPos = aParticleInstance.mEmittedPos;
+						aParticleInstance.mOrigPos = aGeomPos - aParticleInstance.mEmittedPos;
+						SexyTransform2D aTransform = new SexyTransform2D(false);
+						aTransform.RotateDeg(theEmitterInstance.mEmitterInstanceDef.mValues[(int)PIEmitterInstanceDef.PIEmitterValue.VALUE_ANGLE].GetValueAt(mFrameNum));
+						aParticleInstance.mEmittedPos += GlobalPIEffect.TransformFPoint(aTransform, aGeomPos);
 					}
-					if (mParticleDef.mAngleKeepAlignedToMotion && !mParticleDef.mAttachToEmitter)
+					if (aParticleDef.mAngleKeepAlignedToMotion && !aParticleDef.mAttachToEmitter)
 					{
-						Vector2 velocityAt = mEmitterInstanceDef.mPosition.GetVelocityAt(mFrameNum);
-						if (velocityAt.Length() != 0f)
+						Vector2 aVelocity = anEmitterInstanceDef.mPosition.GetVelocityAt(mFrameNum);
+						if (aVelocity.Length() != 0f)
 						{
-							pIParticleInstance.mImgAngle = (float)(0.0 - Math.Atan2(velocityAt.Y, velocityAt.X));
+							aParticleInstance.mImgAngle = (float)(0.0 - Math.Atan2(aVelocity.Y, aVelocity.X));
 						}
 						else
 						{
-							pIParticleInstance.mImgAngle = 0f;
+							aParticleInstance.mImgAngle = 0f;
 						}
-						pIParticleInstance.mImgAngle += MathHelper.ToRadians(-mParticleDef.mAngleAlignOffset);
+						aParticleInstance.mImgAngle += MathHelper.ToRadians(-aParticleDef.mAngleAlignOffset);
 					}
 				}
-				if (mParticleDef != null)
+				if (aParticleDef != null)
 				{
-					bool flag4 = (!pIParticleInstance.mHasDrawn && mParticleDef.mGetColorFromLayer) || mParticleDef.mUpdateColorFromLayer;
-					bool flag5 = (!pIParticleInstance.mHasDrawn && mParticleDef.mGetTransparencyFromLayer) || mParticleDef.mUpdateTransparencyFromLayer;
-					if (flag4 || flag5)
+					bool wantColor = (!aParticleInstance.mHasDrawn && aParticleDef.mGetColorFromLayer) || aParticleDef.mUpdateColorFromLayer;
+					bool wantTransparency = (!aParticleInstance.mHasDrawn && aParticleDef.mGetTransparencyFromLayer) || aParticleDef.mUpdateTransparencyFromLayer;
+					if (wantColor || wantTransparency)
 					{
-						Vector2 vector5 = GlobalPIEffect.TransformFPoint(pIParticleInstance.mTransform, new Vector2(0f, 0f));
-						int num14 = (int)vector5.X + (int)theLayer.mBkgImgDrawOfs.X;
-						int num15 = (int)vector5.Y + (int)theLayer.mBkgImgDrawOfs.Y;
-						uint num16;
-						if (theLayer.mBkgImage != null && num14 >= 0 && num15 >= 0 && num14 < theLayer.mBkgImage.mWidth && num15 < theLayer.mBkgImage.mHeight)
+						Vector2 aDrawPoint = GlobalPIEffect.TransformFPoint(aParticleInstance.mTransform, new Vector2(0f, 0f));
+						int aCheckX = (int)aDrawPoint.X + (int)theLayer.mBkgImgDrawOfs.X;
+						int aCheckY = (int)aDrawPoint.Y + (int)theLayer.mBkgImgDrawOfs.Y;
+						uint aColor;
+						if (theLayer.mBkgImage != null && aCheckX >= 0 && aCheckY >= 0 && aCheckX < theLayer.mBkgImage.mWidth && aCheckY < theLayer.mBkgImage.mHeight)
 						{
 							uint[] bits = theLayer.mBkgImage.GetBits();
-							num16 = bits[num14 + num15 * theLayer.mBkgImage.mWidth];
+							aColor = bits[aCheckX + aCheckY * theLayer.mBkgImage.mWidth];
 						}
 						else
 						{
-							num16 = 0u;
+							aColor = 0u;
 						}
-						if (flag4)
+						if (wantColor)
 						{
-							pIParticleInstance.mBkgColor = (pIParticleInstance.mBkgColor & 0xFF000000u) | (num16 & 0xFFFFFF);
+							aParticleInstance.mBkgColor = (aParticleInstance.mBkgColor & 0xFF000000u) | (aColor & 0xFFFFFF);
 						}
-						if (flag5)
+						if (wantTransparency)
 						{
-							pIParticleInstance.mBkgColor = (pIParticleInstance.mBkgColor & 0xFFFFFF) | (num16 & 0xFF000000u);
+							aParticleInstance.mBkgColor = (aParticleInstance.mBkgColor & 0xFFFFFF) | (aColor & 0xFF000000u);
 						}
 					}
 				}
 				if (theParticleGroup.mIsSuperEmitter)
 				{
-					pIParticleInstance.mImgAngle += MathHelper.ToRadians(0f - (theParticleGroup.mWasEmitted ? mEmitterSrc.mValues[4].GetValueAt(mFrameNum) : theEmitterInstance.mEmitterInstanceDef.mValues[5].GetValueAt(mFrameNum)) * (mEmitterSrc.mValues[38].GetValueAt(num2, 1f) - 1f) * (mEmitterSrc.mValues[4].GetValueAt(mFrameNum) + pIParticleInstance.mVariationValues[5])) / num * 160f;
+					aParticleInstance.mImgAngle += MathHelper.ToRadians(0f
+						- (theParticleGroup.mWasEmitted
+							? anEmitter.mValues[(int)PIEmitter.PIEmitterValue.VALUE_F_SPIN].GetValueAt(mFrameNum)
+							: theEmitterInstance.mEmitterInstanceDef.mValues[(int)PIEmitterInstanceDef.PIEmitterValue.VALUE_SPIN].GetValueAt(mFrameNum))
+						* (anEmitter.mValues[(int)PIEmitter.PIEmitterValue.VALUE_F_SPIN_OVER_LIFE].GetValueAt(aLifePct, 1f) - 1f)
+						* (anEmitter.mValues[(int)PIEmitter.PIEmitterValue.VALUE_F_SPIN].GetValueAt(mFrameNum) + aParticleInstance.mVariationValues[(int)PIParticleInstance.PIParticleVariation.VARIATION_SPIN]))
+						/ anUpdateRate * 160f;
 				}
-				else if (!mParticleDef.mAngleKeepAlignedToMotion)
+				else if (!aParticleDef.mAngleKeepAlignedToMotion)
 				{
-					pIParticleInstance.mImgAngle += MathHelper.ToRadians(0f - (theParticleGroup.mWasEmitted ? mEmitterSrc.mValues[14].GetValueAt(mFrameNum) : theEmitterInstance.mEmitterInstanceDef.mValues[5].GetValueAt(mFrameNum)) * (mParticleDef.mValues[19].GetValueAt(num2) - 1f) * (mParticleDef.mValues[5].GetValueAt(mFrameNum) + pIParticleInstance.mVariationValues[5])) / num;
+					aParticleInstance.mImgAngle += MathHelper.ToRadians(0f
+						- (theParticleGroup.mWasEmitted
+							? anEmitter.mValues[(int)PIEmitter.PIEmitterValue.VALUE_SPIN].GetValueAt(mFrameNum)
+							: theEmitterInstance.mEmitterInstanceDef.mValues[(int)PIEmitterInstanceDef.PIEmitterValue.VALUE_SPIN].GetValueAt(mFrameNum))
+						* (aParticleDef.mValues[(int)PIParticleDef.PIParticleDefValue.VALUE_SPIN_OVER_LIFE].GetValueAt(aLifePct) - 1f)
+						* (aParticleDef.mValues[(int)PIParticleDef.PIParticleDefValue.VALUE_SPIN].GetValueAt(mFrameNum) + aParticleInstance.mVariationValues[(int)PIParticleInstance.PIParticleVariation.VARIATION_SPIN]))
+						/ anUpdateRate;
 				}
-				pIParticleInstance = mNext;
+				aParticleInstance = aNext;
 			}
 		}
 
@@ -1608,259 +1794,128 @@ namespace SexyFramework.Graphics
 			{
 				return;
 			}
-			PIParticleInstance pIParticleInstance = theParticleGroup.mHead;
-			while (pIParticleInstance != null)
-			{
-				PIParticleInstance mNext = pIParticleInstance.mNext;
-				PIParticleDef mParticleDef = pIParticleInstance.mParticleDef;
-				if ((!mParticleDef.mIntense || !mParticleDef.mPreserveColor) && isDarkeningPass)
-				{
-					pIParticleInstance = mNext;
-					continue;
-				}
-				if (mParticleDef.mIntense && !isDarkeningPass)
-				{
-					mAdditiveList.Add(pIParticleInstance);
-				}
-				else
-				{
-					mNormalList.Add(pIParticleInstance);
-					if (isDarkeningPass)
-					{
-						mDarken = true;
-					}
-				}
-				pIParticleInstance = mNext;
-			}
-		}
+			Color aColorMult = new Color(theLayer.mColor.mRed * mColor.mRed / 255, theLayer.mColor.mGreen * mColor.mGreen / 255, theLayer.mColor.mBlue * mColor.mBlue / 255, theLayer.mColor.mAlpha * mColor.mAlpha / 255);
+			bool hasColor = aColorMult != Color.White;
 
-		public void DrawLayerNormal(Graphics g, PILayer theLayer)
-		{
-			g.PushState();
-			g.SetColorizeImages(true);
-			PILayerDef mLayerDef = theLayer.mLayerDef;
-			for (int i = 0; i < theLayer.mEmitterInstanceVector.Count; i++)
+			// Two sub-passes by drawMode so the blend state stays constant within a sub-pass
+			// and the framework's vertex batcher can coalesce many particles into one GPU
+			// draw call. Without this, interleaved intense/non-intense particles flush per
+			// particle (additive <-> normal blend toggle).
+			//
+			// Pass 0: drawMode 0 (normal/darkening) -- non-intense particles, or all
+			// particles when isDarkeningPass.
+			// Pass 1: drawMode 1 (additive) -- intense particles in normal pass only.
+			int subPassCount = isDarkeningPass ? 1 : 2;
+			for (int subPass = 0; subPass < subPassCount; subPass++)
 			{
-				PIEmitterInstanceDef pIEmitterInstanceDef = mLayerDef.mEmitterInstanceDefVector[i];
-				PIEmitterInstance pIEmitterInstance = theLayer.mEmitterInstanceVector[i];
-				if (!pIEmitterInstance.mVisible)
+				bool drawIntenseInThisSubPass = (subPass == 1);
+				PIParticleInstance aParticleInstance = theParticleGroup.mHead;
+				while (aParticleInstance != null)
 				{
-					continue;
-				}
-				if (pIEmitterInstanceDef.mIsSuperEmitter)
-				{
-					for (int j = 0; j < pIEmitterInstanceDef.mFreeEmitterIndices.Count; j++)
+					PIParticleInstance aNext = aParticleInstance.mNext;
+					float aLifePct = aParticleInstance.mLifePct;
+					PIParticleDef aParticleDef = aParticleInstance.mParticleDef;
+					bool isIntense = aParticleDef.mIntense;
+					if (!isDarkeningPass)
 					{
-						for (PIFreeEmitterInstance pIFreeEmitterInstance = (PIFreeEmitterInstance)pIEmitterInstance.mSuperEmitterGroup.mHead; pIFreeEmitterInstance != null; pIFreeEmitterInstance = (PIFreeEmitterInstance)pIFreeEmitterInstance.mNext)
+						// Skip particles that don't match this sub-pass's intensity.
+						if (drawIntenseInThisSubPass != isIntense)
 						{
-							DrawParticleGroupNomal(g, theLayer, pIEmitterInstance, pIFreeEmitterInstance.mEmitter.mParticleGroup, mDarken);
+							aParticleInstance = aNext;
+							continue;
 						}
 					}
-				}
-				else
-				{
-					DrawParticleGroupNomal(g, theLayer, pIEmitterInstance, pIEmitterInstance.mParticleGroup, mDarken);
-				}
-			}
-			g.PopState();
-		}
-
-		public void DrawLayerAdditive(Graphics g, PILayer theLayer)
-		{
-			g.PushState();
-			g.SetColorizeImages(true);
-			PILayerDef mLayerDef = theLayer.mLayerDef;
-			for (int i = 0; i < theLayer.mEmitterInstanceVector.Count; i++)
-			{
-				PIEmitterInstanceDef pIEmitterInstanceDef = mLayerDef.mEmitterInstanceDefVector[i];
-				PIEmitterInstance pIEmitterInstance = theLayer.mEmitterInstanceVector[i];
-				if (!pIEmitterInstance.mVisible)
-				{
-					continue;
-				}
-				if (pIEmitterInstanceDef.mIsSuperEmitter)
-				{
-					for (int j = 0; j < pIEmitterInstanceDef.mFreeEmitterIndices.Count; j++)
+					if ((isIntense && aParticleDef.mPreserveColor) || !isDarkeningPass)
 					{
-						for (PIFreeEmitterInstance pIFreeEmitterInstance = (PIFreeEmitterInstance)pIEmitterInstance.mSuperEmitterGroup.mHead; pIFreeEmitterInstance != null; pIFreeEmitterInstance = (PIFreeEmitterInstance)pIFreeEmitterInstance.mNext)
+						PIEmitter anEmitter = aParticleInstance.mEmitterSrc;
+						float anEmitterLifePct = 0f;
+						if (aParticleInstance.mParentFreeEmitter != null)
 						{
-							DrawParticleGroupAdditive(g, theLayer, pIEmitterInstance, pIFreeEmitterInstance.mEmitter.mParticleGroup, false);
+							anEmitterLifePct = aParticleInstance.mParentFreeEmitter.mLifePct;
+						}
+						if (!isIntense || isDarkeningPass)
+						{
+							g.SetDrawMode(0);
+						}
+						else
+						{
+							g.SetDrawMode(1);
+						}
+						PITexture aTexture = mDef.mTextureVector[aParticleDef.mTextureIdx];
+						DeviceImage anImage;
+						Rect aSrcRect;
+						if (aTexture.mImageVector.Count > 0)
+						{
+							anImage = aTexture.mImageVector[aParticleInstance.mImgIdx].GetDeviceImage();
+							aSrcRect = new Rect(0, 0, anImage.mWidth, anImage.mHeight);
+						}
+						else
+						{
+							anImage = aTexture.mImageStrip.GetDeviceImage();
+							aSrcRect = anImage.GetCelRect(aParticleInstance.mImgIdx);
+						}
+						int aColorI;
+						if (aParticleDef.mRandomGradientColor)
+						{
+							if (aParticleDef.mUseKeyColorsOnly)
+							{
+								int aKeyframe = (int)Math.Min(aParticleDef.mColor.mInterpolatorPointVector.Count * aParticleInstance.mGradientRand, aParticleDef.mColor.mInterpolatorPointVector.Count - 1);
+								aColorI = aParticleDef.mColor.GetKeyframeNum(aKeyframe);
+							}
+							else
+							{
+								aColorI = aParticleDef.mColor.GetValueAt(aParticleInstance.mGradientRand);
+							}
+						}
+						else if (aParticleDef.mUseNextColorKey)
+						{
+							int aKeyframe = aParticleInstance.mNum / aParticleDef.mNumberOfEachColor % aParticleDef.mColor.mInterpolatorPointVector.Count;
+							aColorI = aParticleDef.mColor.GetKeyframeNum(aKeyframe);
+						}
+						else
+						{
+							float aColorPosUsed = GlobalPIEffect.WrapFloat(aLifePct, aParticleDef.mRepeatColor + 1);
+							aColorI = aParticleDef.mColor.GetValueAt(aColorPosUsed);
+						}
+						if (aParticleDef.mGetColorFromLayer)
+						{
+							aColorI = (int)((uint)aColorI & 0xFF000000u) | (int)(aParticleInstance.mBkgColor & 0xFFFFFF);
+						}
+						if (aParticleDef.mGetTransparencyFromLayer)
+						{
+							aColorI = (aColorI & 0xFFFFFF) | (int)(aParticleInstance.mBkgColor & 0xFF000000u);
+						}
+						float aTintPct = theEmitterInstance.mEmitterInstanceDef.mValues[(int)PIEmitterInstanceDef.PIEmitterValue.VALUE_TINT_STRENGTH].GetValueAt(mFrameNum) * anEmitter.mValues[(int)PIEmitter.PIEmitterValue.VALUE_TINT_STRENGTH].GetValueAt(mFrameNum, 1f);
+						aColorI = (int)GlobalPIEffect.InterpColor(aColorI, theEmitterInstance.mTintColor.ToInt(), aTintPct);
+						int anAlpha = aParticleDef.mAlpha.GetValueAt(GlobalPIEffect.WrapFloat(aLifePct, aParticleDef.mRepeatAlpha + 1));
+						anAlpha = (int)((float)anAlpha *
+							(theEmitterInstance.mEmitterInstanceDef.mValues[(int)PIEmitterInstanceDef.PIEmitterValue.VALUE_VISIBILITY].GetValueAt(mFrameNum)
+							* aParticleDef.mValues[(int)PIParticleDef.PIParticleDefValue.VALUE_VISIBILITY].GetValueAt(mFrameNum)
+							* anEmitter.mValues[(int)PIEmitter.PIEmitterValue.VALUE_VISIBILITY].GetValueAt(mFrameNum, 1f)));
+						if (isDarkeningPass)
+						{
+							aColorI = (int)((uint)aColorI & 0xFF000000u);
+						}
+						Color aColor = new Color((anAlpha << 24) | (aColorI & 0xFFFFFF));
+						if (hasColor)
+						{
+							aColor = new Color(aColorMult.mRed * aColor.mRed / 255, aColorMult.mGreen * aColor.mGreen / 255, aColorMult.mBlue * aColor.mBlue / 255, aColorMult.mAlpha * aColor.mAlpha / 255);
+						}
+						if (aColor.mAlpha != 0)
+						{
+							g.SetColor(aColor);
+							CalcParticleTransform(theLayer, theEmitterInstance, anEmitter, aParticleDef, theParticleGroup, aParticleInstance);
+							SexyTransform2D aMatrix = mDrawTransform * aParticleInstance.mTransform;
+							g.DrawImageMatrix(anImage, aMatrix, aSrcRect);
+							mLastDrawnPixelCount = (int)Math.Abs(aParticleInstance.mTransformScaleFactor * anImage.mHeight * anImage.mWidth + mLastDrawnPixelCount);
+							aParticleInstance.mHasDrawn = true;
 						}
 					}
-				}
-				else
-				{
-					DrawParticleGroupAdditive(g, theLayer, pIEmitterInstance, pIEmitterInstance.mParticleGroup, false);
-				}
-			}
-			g.PopState();
-		}
-
-		public void DrawParticleGroupNomal(Graphics g, PILayer theLayer, PIEmitterInstance theEmitterInstance, PIParticleGroup theParticleGroup, bool isDarkeningPass)
-		{
-			Color color = new Color(mColor.mRed * theLayer.mColor.mRed / 255, mColor.mGreen * theLayer.mColor.mGreen / 255, mColor.mBlue * theLayer.mColor.mBlue / 255, mColor.mAlpha * theLayer.mColor.mAlpha / 255);
-			bool flag = color != Color.White;
-			int count = mNormalList.Count;
-			g.SetDrawMode(0);
-			for (int i = 0; i < count; i += mOptimizeValue)
-			{
-				PIParticleInstance pIParticleInstance = mNormalList[i];
-				PIParticleDef mParticleDef = pIParticleInstance.mParticleDef;
-				float mLifePct = pIParticleInstance.mLifePct;
-				PIEmitter mEmitterSrc = pIParticleInstance.mEmitterSrc;
-				PITexture pITexture = mDef.mTextureVector[mParticleDef.mTextureIdx];
-				DeviceImage deviceImage = null;
-				Rect theSrcRect;
-				if (pITexture.mImageVector.Count != 0)
-				{
-					deviceImage = pITexture.mImageVector[pIParticleInstance.mImgIdx].GetDeviceImage();
-					theSrcRect = new Rect(0, 0, deviceImage.mWidth, deviceImage.mHeight);
-				}
-				else
-				{
-					deviceImage = pITexture.mImageStrip.GetDeviceImage();
-					theSrcRect = deviceImage.GetCelRect(pIParticleInstance.mImgIdx);
-				}
-				int num = 0;
-				if (mParticleDef.mRandomGradientColor)
-				{
-					if (mParticleDef.mUseKeyColorsOnly)
-					{
-						int theIdx = (int)Math.Min(pIParticleInstance.mGradientRand * (float)mParticleDef.mColor.mInterpolatorPointVector.Count, mParticleDef.mColor.mInterpolatorPointVector.Count - 1);
-						num = mParticleDef.mColor.GetKeyframeNum(theIdx);
-					}
-					else
-					{
-						float mGradientRand = pIParticleInstance.mGradientRand;
-						num = mParticleDef.mColor.GetValueAt(mGradientRand);
-					}
-				}
-				else if (mParticleDef.mUseNextColorKey)
-				{
-					int theIdx2 = pIParticleInstance.mNum / mParticleDef.mNumberOfEachColor % mParticleDef.mColor.mInterpolatorPointVector.Count;
-					num = mParticleDef.mColor.GetKeyframeNum(theIdx2);
-				}
-				else
-				{
-					float theTime = GlobalPIEffect.WrapFloat(mLifePct, 1 + mParticleDef.mRepeatColor);
-					num = mParticleDef.mColor.GetValueAt(theTime);
-				}
-				if (mParticleDef.mGetColorFromLayer)
-				{
-					num = (num & -16777216) | (int)(pIParticleInstance.mBkgColor & 0xFFFFFF);
-				}
-				if (mParticleDef.mGetTransparencyFromLayer)
-				{
-					num = (num & 0xFFFFFF) | (int)(pIParticleInstance.mBkgColor & 0xFF000000u);
-				}
-				float thePct = theEmitterInstance.mEmitterInstanceDef.mValues[10].GetValueAt(mFrameNum) * mEmitterSrc.mValues[20].GetValueAt(mFrameNum, 1f);
-				num = (int)GlobalPIEffect.InterpColor(num, theEmitterInstance.mTintColor.ToInt(), thePct);
-				int valueAt = mParticleDef.mAlpha.GetValueAt(GlobalPIEffect.WrapFloat(mLifePct, 1 + mParticleDef.mRepeatAlpha));
-				valueAt = (int)((float)valueAt * (theEmitterInstance.mEmitterInstanceDef.mValues[9].GetValueAt(mFrameNum) * mParticleDef.mValues[22].GetValueAt(mFrameNum) * mEmitterSrc.mValues[18].GetValueAt(mFrameNum, 1f)));
-				if (isDarkeningPass)
-				{
-					num = (int)(num & 0xFF000000u);
-				}
-				num &= 0xFFFFFF;
-				num |= valueAt << 24;
-				Color color2 = new Color((num >> 16) & 0xFF, (num >> 8) & 0xFF, num & 0xFF, (num >> 24) & 0xFF);
-				if (flag)
-				{
-					color2 = new Color(color2.mRed * color.mRed / 255, color2.mGreen * color.mGreen / 255, color2.mBlue * color.mBlue / 255, color2.mAlpha * color.mAlpha / 255);
-				}
-				if (color2.mAlpha != 0)
-				{
-					g.SetColor(color2);
-					CalcParticleTransform(theLayer, theEmitterInstance, mEmitterSrc, mParticleDef, theParticleGroup, pIParticleInstance);
-					SexyTransform2D theMatrix = mDrawTransform * pIParticleInstance.mTransform;
-					g.DrawImageMatrix(deviceImage, theMatrix, theSrcRect);
-					pIParticleInstance.mHasDrawn = true;
+					aParticleInstance = aNext;
 				}
 			}
 		}
 
-		public void DrawParticleGroupAdditive(Graphics g, PILayer theLayer, PIEmitterInstance theEmitterInstance, PIParticleGroup theParticleGroup, bool isDarkeningPass)
-		{
-			Color color = new Color(mColor.mRed * theLayer.mColor.mRed / 255, mColor.mGreen * theLayer.mColor.mGreen / 255, mColor.mBlue * theLayer.mColor.mBlue / 255, mColor.mAlpha * theLayer.mColor.mAlpha / 255);
-			bool flag = color != Color.White;
-			g.SetDrawMode(1);
-			int count = mAdditiveList.Count;
-			for (int i = 0; i < count; i += mOptimizeValue)
-			{
-				PIParticleInstance pIParticleInstance = mAdditiveList[i];
-				PIParticleDef mParticleDef = pIParticleInstance.mParticleDef;
-				float mLifePct = pIParticleInstance.mLifePct;
-				PIEmitter mEmitterSrc = pIParticleInstance.mEmitterSrc;
-				PITexture pITexture = mDef.mTextureVector[mParticleDef.mTextureIdx];
-				DeviceImage deviceImage = null;
-				Rect theSrcRect;
-				if (pITexture.mImageVector.Count != 0)
-				{
-					deviceImage = pITexture.mImageVector[pIParticleInstance.mImgIdx].GetDeviceImage();
-					theSrcRect = new Rect(0, 0, deviceImage.mWidth, deviceImage.mHeight);
-				}
-				else
-				{
-					deviceImage = pITexture.mImageStrip.GetDeviceImage();
-					theSrcRect = deviceImage.GetCelRect(pIParticleInstance.mImgIdx);
-				}
-				int num = 0;
-				if (mParticleDef.mRandomGradientColor)
-				{
-					if (mParticleDef.mUseKeyColorsOnly)
-					{
-						int theIdx = (int)Math.Min(pIParticleInstance.mGradientRand * (float)mParticleDef.mColor.mInterpolatorPointVector.Count, mParticleDef.mColor.mInterpolatorPointVector.Count - 1);
-						num = mParticleDef.mColor.GetKeyframeNum(theIdx);
-					}
-					else
-					{
-						float mGradientRand = pIParticleInstance.mGradientRand;
-						num = mParticleDef.mColor.GetValueAt(mGradientRand);
-					}
-				}
-				else if (mParticleDef.mUseNextColorKey)
-				{
-					int theIdx2 = pIParticleInstance.mNum / mParticleDef.mNumberOfEachColor % mParticleDef.mColor.mInterpolatorPointVector.Count;
-					num = mParticleDef.mColor.GetKeyframeNum(theIdx2);
-				}
-				else
-				{
-					float theTime = GlobalPIEffect.WrapFloat(mLifePct, 1 + mParticleDef.mRepeatColor);
-					num = mParticleDef.mColor.GetValueAt(theTime);
-				}
-				if (mParticleDef.mGetColorFromLayer)
-				{
-					num = (num & -16777216) | (int)(pIParticleInstance.mBkgColor & 0xFFFFFF);
-				}
-				if (mParticleDef.mGetTransparencyFromLayer)
-				{
-					num = (num & 0xFFFFFF) | (int)(pIParticleInstance.mBkgColor & 0xFF000000u);
-				}
-				float thePct = theEmitterInstance.mEmitterInstanceDef.mValues[10].GetValueAt(mFrameNum) * mEmitterSrc.mValues[20].GetValueAt(mFrameNum, 1f);
-				num = (int)GlobalPIEffect.InterpColor(num, theEmitterInstance.mTintColor.ToInt(), thePct);
-				int valueAt = mParticleDef.mAlpha.GetValueAt(GlobalPIEffect.WrapFloat(mLifePct, 1 + mParticleDef.mRepeatAlpha));
-				valueAt = (int)((float)valueAt * (theEmitterInstance.mEmitterInstanceDef.mValues[9].GetValueAt(mFrameNum) * mParticleDef.mValues[22].GetValueAt(mFrameNum) * mEmitterSrc.mValues[18].GetValueAt(mFrameNum, 1f)));
-				if (isDarkeningPass)
-				{
-					num = (int)(num & 0xFF000000u);
-				}
-				num &= 0xFFFFFF;
-				num |= valueAt << 24;
-				Color color2 = new Color((num >> 16) & 0xFF, (num >> 8) & 0xFF, num & 0xFF, (num >> 24) & 0xFF);
-				if (flag)
-				{
-					color2 = new Color(color2.mRed * color.mRed / 255, color2.mGreen * color.mGreen / 255, color2.mBlue * color.mBlue / 255, color2.mAlpha * color.mAlpha / 255);
-				}
-				if (color2.mAlpha != 0)
-				{
-					g.SetColor(color2);
-					CalcParticleTransform(theLayer, theEmitterInstance, mEmitterSrc, mParticleDef, theParticleGroup, pIParticleInstance);
-					SexyTransform2D theMatrix = mDrawTransform * pIParticleInstance.mTransform;
-					g.DrawImageMatrix(deviceImage, theMatrix, theSrcRect);
-					pIParticleInstance.mHasDrawn = true;
-				}
-			}
-		}
 
 		public PIEffect()
 		{
@@ -1884,8 +1939,6 @@ namespace SexyFramework.Graphics
 			mPoolSize = 256;
 			mParticlePool = new ObjectPool<PIParticleInstance>(mPoolSize);
 			mFreeEmitterPool = new ObjectPool<PIFreeEmitterInstance>(mPoolSize);
-			mNormalList = new List<PIParticleInstance>();
-			mAdditiveList = new List<PIParticleInstance>();
 			mDef = new PIEffectDef();
 		}
 
@@ -1911,8 +1964,6 @@ namespace SexyFramework.Graphics
 			mPoolSize = poolSize;
 			mParticlePool = new ObjectPool<PIParticleInstance>(poolSize);
 			mFreeEmitterPool = new ObjectPool<PIFreeEmitterInstance>(poolSize);
-			mNormalList = new List<PIParticleInstance>();
-			mAdditiveList = new List<PIParticleInstance>();
 			mDef = new PIEffectDef();
 		}
 
@@ -1956,26 +2007,24 @@ namespace SexyFramework.Graphics
 			mPoolSize = rhs.mPoolSize;
 			mParticlePool = new ObjectPool<PIParticleInstance>(mPoolSize);
 			mFreeEmitterPool = new ObjectPool<PIFreeEmitterInstance>(mPoolSize);
-			mNormalList = new List<PIParticleInstance>();
-			mAdditiveList = new List<PIParticleInstance>();
 			Common.Resize(mLayerVector, rhs.mDef.mLayerDefVector.Count);
 			Common.Resize(mDef.mLayerDefVector, rhs.mDef.mLayerDefVector.Count);
 			for (int i = 0; i < mLayerVector.Count; i++)
 			{
-				PILayerDef pILayerDef = mDef.mLayerDefVector[i];
-				PILayer pILayer = mLayerVector[i];
-				pILayer.mLayerDef = pILayerDef;
-				Common.Resize(pILayer.mEmitterInstanceVector, pILayerDef.mEmitterInstanceDefVector.Count);
-				for (int j = 0; j < pILayerDef.mEmitterInstanceDefVector.Count; j++)
+				PILayerDef aLayerDef = mDef.mLayerDefVector[i];
+				PILayer aLayer = mLayerVector[i];
+				aLayer.mLayerDef = aLayerDef;
+				Common.Resize(aLayer.mEmitterInstanceVector, aLayerDef.mEmitterInstanceDefVector.Count);
+				for (int j = 0; j < aLayerDef.mEmitterInstanceDefVector.Count; j++)
 				{
-					PIEmitterInstance pIEmitterInstance = rhs.mLayerVector[i].mEmitterInstanceVector[j];
-					PIEmitterInstanceDef pIEmitterInstanceDef = pILayerDef.mEmitterInstanceDefVector[j];
-					PIEmitterInstance pIEmitterInstance2 = pILayer.mEmitterInstanceVector[j];
-					PIEmitter pIEmitter = mDef.mEmitterVector[pIEmitterInstanceDef.mEmitterDefIdx];
-					pIEmitterInstance2.mEmitterInstanceDef = pIEmitterInstanceDef;
-					pIEmitterInstance2.mTintColor = new Color(pIEmitterInstance.mTintColor);
-					Common.Resize(pIEmitterInstance2.mParticleDefInstanceVector, pIEmitter.mParticleDefVector.Count);
-					Common.Resize(pIEmitterInstance2.mSuperEmitterParticleDefInstanceVector, pIEmitterInstance.mSuperEmitterParticleDefInstanceVector.Count);
+					PIEmitterInstance anEmitterInstance = rhs.mLayerVector[i].mEmitterInstanceVector[j];
+					PIEmitterInstanceDef anEmitterInstanceDef = aLayerDef.mEmitterInstanceDefVector[j];
+					PIEmitterInstance aLocalEmitterInstance = aLayer.mEmitterInstanceVector[j];
+					PIEmitter anEmitter = mDef.mEmitterVector[anEmitterInstanceDef.mEmitterDefIdx];
+					aLocalEmitterInstance.mEmitterInstanceDef = anEmitterInstanceDef;
+					aLocalEmitterInstance.mTintColor = new Color(anEmitterInstance.mTintColor);
+					Common.Resize(aLocalEmitterInstance.mParticleDefInstanceVector, anEmitter.mParticleDefVector.Count);
+					Common.Resize(aLocalEmitterInstance.mSuperEmitterParticleDefInstanceVector, anEmitterInstance.mSuperEmitterParticleDefInstanceVector.Count);
 				}
 			}
 			ResetAnim();
@@ -2043,25 +2092,25 @@ namespace SexyFramework.Graphics
 			for (int i = 0; i < num; i++)
 			{
 				ExpectCmd("CMultiTexture");
-				PITexture pITexture = new PITexture();
-				pITexture.mName = ReadString();
-				short num2 = (short)(pITexture.mNumCels = mReadBuffer.ReadShort());
+				PITexture aTexture = new PITexture();
+				aTexture.mName = ReadString();
+				short num2 = (short)(aTexture.mNumCels = mReadBuffer.ReadShort());
 				if (mIsPPF)
 				{
 					short num3 = mReadBuffer.ReadShort();
-					pITexture.mPadded = (mIsPPF ? (mReadBuffer.ReadByte() != 0) : (mReadBuffer.ReadInt32() != 0));
-					string text = (pITexture.mFileName = ReadString());
-					pITexture.mImageStrip = GetImage(pITexture.mName, text);
-					if (pITexture.mImageStrip.GetDeviceImage() == null)
+					aTexture.mPadded = (mIsPPF ? (mReadBuffer.ReadByte() != 0) : (mReadBuffer.ReadInt32() != 0));
+					string text = (aTexture.mFileName = ReadString());
+					aTexture.mImageStrip = GetImage(aTexture.mName, text);
+					if (aTexture.mImageStrip.GetDeviceImage() == null)
 					{
 						Fail("Unable to load image: " + text);
 					}
-					else if (pITexture.mImageStrip.GetDeviceImage().mNumCols == 1 && pITexture.mImageStrip.GetDeviceImage().mNumRows == 1)
+					else if (aTexture.mImageStrip.GetDeviceImage().mNumCols == 1 && aTexture.mImageStrip.GetDeviceImage().mNumRows == 1)
 					{
-						pITexture.mImageStrip.GetDeviceImage().mNumCols = num2 / num3;
-						pITexture.mImageStrip.GetDeviceImage().mNumRows = num3;
+						aTexture.mImageStrip.GetDeviceImage().mNumCols = num2 / num3;
+						aTexture.mImageStrip.GetDeviceImage().mNumRows = num3;
 					}
-					mDef.mTextureVector.Add(pITexture);
+					mDef.mTextureVector.Add(aTexture);
 					continue;
 				}
 				throw new NotImplementedException();
@@ -2089,21 +2138,21 @@ namespace SexyFramework.Graphics
 			Common.Resize(mDef.mLayerDefVector, num5);
 			for (int k = 0; k < num5; k++)
 			{
-				PILayerDef pILayerDef = mDef.mLayerDefVector[k];
-				PILayer pILayer = mLayerVector[k];
-				pILayer.mLayerDef = pILayerDef;
+				PILayerDef aLayerDef = mDef.mLayerDefVector[k];
+				PILayer aLayer = mLayerVector[k];
+				aLayer.mLayerDef = aLayerDef;
 				ExpectCmd("CLayer");
-				pILayerDef.mName = ReadString();
+				aLayerDef.mName = ReadString();
 				num4 = mReadBuffer.ReadShort();
-				pILayer.mEmitterInstanceVector.Capacity = num4;
-				Common.Resize(pILayer.mEmitterInstanceVector, num4);
-				pILayerDef.mEmitterInstanceDefVector.Capacity = num4;
-				Common.Resize(pILayerDef.mEmitterInstanceDefVector, num4);
+				aLayer.mEmitterInstanceVector.Capacity = num4;
+				Common.Resize(aLayer.mEmitterInstanceVector, num4);
+				aLayerDef.mEmitterInstanceDefVector.Capacity = num4;
+				Common.Resize(aLayerDef.mEmitterInstanceDefVector, num4);
 				for (int l = 0; l < num4; l++)
 				{
-					PIEmitterInstanceDef pIEmitterInstanceDef = pILayerDef.mEmitterInstanceDefVector[l];
-					PIEmitterInstance pIEmitterInstance = pILayer.mEmitterInstanceVector[l];
-					pIEmitterInstance.mEmitterInstanceDef = pIEmitterInstanceDef;
+					PIEmitterInstanceDef anEmitterInstanceDef = aLayerDef.mEmitterInstanceDefVector[l];
+					PIEmitterInstance anEmitterInstance = aLayer.mEmitterInstanceVector[l];
+					anEmitterInstance.mEmitterInstanceDef = anEmitterInstanceDef;
 					ExpectCmd("CEmitter");
 					mReadBuffer.ReadFloat();
 					mReadBuffer.ReadFloat();
@@ -2119,18 +2168,18 @@ namespace SexyFramework.Graphics
 					mReadBuffer.ReadFloat();
 					mReadBuffer.ReadInt32();
 					mReadBuffer.ReadInt32();
-					pIEmitterInstanceDef.mFramesToPreload = mReadBuffer.ReadInt32();
+					anEmitterInstanceDef.mFramesToPreload = mReadBuffer.ReadInt32();
 					mReadBuffer.ReadInt32();
-					pIEmitterInstanceDef.mName = ReadString();
-					pIEmitterInstanceDef.mEmitterGeom = mReadBuffer.ReadInt32();
+					anEmitterInstanceDef.mName = ReadString();
+					anEmitterInstanceDef.mEmitterGeom = mReadBuffer.ReadInt32();
 					mReadBuffer.ReadFloat();
 					mReadBuffer.ReadFloat();
-					if ((mIsPPF ? mReadBuffer.ReadByte() : mReadBuffer.ReadInt32()) != 0 && pIEmitterInstanceDef.mEmitterGeom == 2)
+					if ((mIsPPF ? mReadBuffer.ReadByte() : mReadBuffer.ReadInt32()) != 0 && anEmitterInstanceDef.mEmitterGeom == 2)
 					{
-						pIEmitterInstanceDef.mEmitterGeom = 4;
+						anEmitterInstanceDef.mEmitterGeom = 4;
 					}
-					pIEmitterInstanceDef.mEmitIn = (mIsPPF ? (mReadBuffer.ReadByte() != 0) : (mReadBuffer.ReadInt32() != 0));
-					pIEmitterInstanceDef.mEmitOut = (mIsPPF ? (mReadBuffer.ReadByte() != 0) : (mReadBuffer.ReadInt32() != 0));
+					anEmitterInstanceDef.mEmitIn = (mIsPPF ? (mReadBuffer.ReadByte() != 0) : (mReadBuffer.ReadInt32() != 0));
+					anEmitterInstanceDef.mEmitOut = (mIsPPF ? (mReadBuffer.ReadByte() != 0) : (mReadBuffer.ReadInt32() != 0));
 					uint num6 = (uint)((mReadBuffer.ReadByte() << 16) | -16777216);
 					mReadBuffer.ReadByte();
 					mReadBuffer.ReadByte();
@@ -2143,18 +2192,18 @@ namespace SexyFramework.Graphics
 					mReadBuffer.ReadByte();
 					mReadBuffer.ReadByte();
 					mReadBuffer.ReadByte();
-					pIEmitterInstance.mTintColor = new Color((int)num6);
+					anEmitterInstance.mTintColor = new Color((int)num6);
 					mReadBuffer.ReadInt32();
-					pIEmitterInstanceDef.mEmitAtPointsNum = mReadBuffer.ReadInt32();
-					pIEmitterInstanceDef.mEmitterDefIdx = mReadBuffer.ReadInt32();
-					list[pIEmitterInstanceDef.mEmitterDefIdx] = true;
-					PIEmitter pIEmitter = mDef.mEmitterVector[pIEmitterInstanceDef.mEmitterDefIdx];
-					Common.Resize(pIEmitterInstance.mParticleDefInstanceVector, pIEmitter.mParticleDefVector.Count);
-					for (int m = 0; m < pIEmitter.mParticleDefVector.Count; m++)
+					anEmitterInstanceDef.mEmitAtPointsNum = mReadBuffer.ReadInt32();
+					anEmitterInstanceDef.mEmitterDefIdx = mReadBuffer.ReadInt32();
+					list[anEmitterInstanceDef.mEmitterDefIdx] = true;
+					PIEmitter anEmitter = mDef.mEmitterVector[anEmitterInstanceDef.mEmitterDefIdx];
+					Common.Resize(anEmitterInstance.mParticleDefInstanceVector, anEmitter.mParticleDefVector.Count);
+					for (int m = 0; m < anEmitter.mParticleDefVector.Count; m++)
 					{
-						list2[pIEmitter.mParticleDefVector[m].mTextureIdx] = true;
+						list2[anEmitter.mParticleDefVector[m].mTextureIdx] = true;
 					}
-					ReadValue2D(pIEmitterInstanceDef.mPosition);
+					ReadValue2D(anEmitterInstanceDef.mPosition);
 					int num7 = mReadBuffer.ReadShort();
 					for (int n = 0; n < num7; n++)
 					{
@@ -2163,17 +2212,17 @@ namespace SexyFramework.Graphics
 						mReadBuffer.ReadFloat();
 						PIValue2D pIValue2D = new PIValue2D();
 						ReadEPoint(pIValue2D);
-						pIEmitterInstanceDef.mPoints.Add(pIValue2D);
+						anEmitterInstanceDef.mPoints.Add(pIValue2D);
 					}
 					for (int num8 = 0; num8 < 17; num8++)
 					{
-						ReadValue(ref pIEmitterInstanceDef.mValues[num8]);
+						ReadValue(ref anEmitterInstanceDef.mValues[num8]);
 					}
-					pIEmitterInstanceDef.mEmitAtPointsNum2 = mReadBuffer.ReadInt32();
+					anEmitterInstanceDef.mEmitAtPointsNum2 = mReadBuffer.ReadInt32();
 					mReadBuffer.ReadInt32();
-					ReadValue(ref pIEmitterInstanceDef.mValues[17]);
+					ReadValue(ref anEmitterInstanceDef.mValues[17]);
 					mReadBuffer.ReadInt32();
-					ReadValue(ref pIEmitterInstanceDef.mValues[18]);
+					ReadValue(ref anEmitterInstanceDef.mValues[18]);
 					short num9 = mReadBuffer.ReadShort();
 					string theFilename = "";
 					for (int num10 = 0; num10 < num9; num10++)
@@ -2184,27 +2233,27 @@ namespace SexyFramework.Graphics
 					string theName = ReadString();
 					if (flag)
 					{
-						pIEmitterInstance.mMaskImage = GetImage(theName, theFilename);
+						anEmitterInstance.mMaskImage = GetImage(theName, theFilename);
 					}
 					mReadBuffer.ReadInt32();
 					mReadBuffer.ReadInt32();
-					pIEmitterInstanceDef.mInvertMask = (mIsPPF ? (mReadBuffer.ReadByte() != 0) : (mReadBuffer.ReadInt32() != 0));
+					anEmitterInstanceDef.mInvertMask = (mIsPPF ? (mReadBuffer.ReadByte() != 0) : (mReadBuffer.ReadInt32() != 0));
 					mReadBuffer.ReadInt32();
 					mReadBuffer.ReadInt32();
-					pIEmitterInstanceDef.mIsSuperEmitter = (mIsPPF ? (mReadBuffer.ReadByte() != 0) : (mReadBuffer.ReadInt32() != 0));
+					anEmitterInstanceDef.mIsSuperEmitter = (mIsPPF ? (mReadBuffer.ReadByte() != 0) : (mReadBuffer.ReadInt32() != 0));
 					int num11 = mReadBuffer.ReadShort();
 					for (int num12 = 0; num12 < num11; num12++)
 					{
 						if (mIsPPF)
 						{
 							int item = mReadBuffer.ReadShort();
-							pIEmitterInstanceDef.mFreeEmitterIndices.Add(item);
+							anEmitterInstanceDef.mFreeEmitterIndices.Add(item);
 							list[l] = true;
 							continue;
 						}
 						throw new NotImplementedException();
 					}
-					Common.Resize(pIEmitterInstance.mSuperEmitterParticleDefInstanceVector, num11);
+					Common.Resize(anEmitterInstance.mSuperEmitterParticleDefInstanceVector, num11);
 					mReadBuffer.ReadInt32();
 					mReadBuffer.ReadFloat();
 					mReadBuffer.ReadFloat();
@@ -2212,14 +2261,14 @@ namespace SexyFramework.Graphics
 				short num13 = mReadBuffer.ReadShort();
 				for (int num14 = 0; num14 < num13; num14++)
 				{
-					PIDeflector pIDeflector = new PIDeflector();
+					PIDeflector aDeflector = new PIDeflector();
 					ExpectCmd("CDeflector");
-					pIDeflector.mName = ReadString();
-					pIDeflector.mBounce = mReadBuffer.ReadInt32();
-					pIDeflector.mHits = mReadBuffer.ReadInt32();
-					pIDeflector.mThickness = mReadBuffer.ReadInt32();
-					pIDeflector.mVisible = (mIsPPF ? (mReadBuffer.ReadByte() != 0) : (mReadBuffer.ReadInt32() != 0));
-					ReadValue2D(pIDeflector.mPos);
+					aDeflector.mName = ReadString();
+					aDeflector.mBounce = mReadBuffer.ReadInt32();
+					aDeflector.mHits = mReadBuffer.ReadInt32();
+					aDeflector.mThickness = mReadBuffer.ReadInt32();
+					aDeflector.mVisible = (mIsPPF ? (mReadBuffer.ReadByte() != 0) : (mReadBuffer.ReadInt32() != 0));
+					ReadValue2D(aDeflector.mPos);
 					int num15 = mReadBuffer.ReadShort();
 					for (int num16 = 0; num16 < num15; num16++)
 					{
@@ -2228,25 +2277,25 @@ namespace SexyFramework.Graphics
 						mReadBuffer.ReadFloat();
 						PIValue2D pIValue2D2 = new PIValue2D();
 						ReadEPoint(pIValue2D2);
-						pIDeflector.mPoints.Add(pIValue2D2);
+						aDeflector.mPoints.Add(pIValue2D2);
 					}
-					Common.Resize(pIDeflector.mCurPoints, pIDeflector.mPoints.Count);
-					ReadValue(ref pIDeflector.mActive);
-					ReadValue(ref pIDeflector.mAngle);
-					pILayerDef.mDeflectorVector.Add(pIDeflector);
+					Common.Resize(aDeflector.mCurPoints, aDeflector.mPoints.Count);
+					ReadValue(ref aDeflector.mActive);
+					ReadValue(ref aDeflector.mAngle);
+					aLayerDef.mDeflectorVector.Add(aDeflector);
 				}
 				short num17 = mReadBuffer.ReadShort();
 				for (int num18 = 0; num18 < num17; num18++)
 				{
-					PIBlocker pIBlocker = new PIBlocker();
+					PIBlocker aBlocker = new PIBlocker();
 					ExpectCmd("CBlocker");
-					pIBlocker.mName = ReadString();
+					aBlocker.mName = ReadString();
 					mReadBuffer.ReadInt32();
 					mReadBuffer.ReadInt32();
 					mReadBuffer.ReadInt32();
 					mReadBuffer.ReadInt32();
 					mReadBuffer.ReadInt32();
-					ReadValue2D(pIBlocker.mPos);
+					ReadValue2D(aBlocker.mPos);
 					int num19 = mReadBuffer.ReadShort();
 					for (int num20 = 0; num20 < num19; num20++)
 					{
@@ -2255,15 +2304,15 @@ namespace SexyFramework.Graphics
 						mReadBuffer.ReadFloat();
 						PIValue2D pIValue2D3 = new PIValue2D();
 						ReadEPoint(pIValue2D3);
-						pIBlocker.mPoints.Add(pIValue2D3);
+						aBlocker.mPoints.Add(pIValue2D3);
 					}
-					ReadValue(ref pIBlocker.mActive);
-					ReadValue(ref pIBlocker.mAngle);
-					pILayerDef.mBlockerVector.Add(pIBlocker);
+					ReadValue(ref aBlocker.mActive);
+					ReadValue(ref aBlocker.mAngle);
+					aLayerDef.mBlockerVector.Add(aBlocker);
 				}
-				ReadValue2D(pILayerDef.mOffset);
-				pILayerDef.mOrigOffset = pILayerDef.mOffset.GetValueAt(0f);
-				ReadValue(ref pILayerDef.mAngle);
+				ReadValue2D(aLayerDef.mOffset);
+				aLayerDef.mOrigOffset = aLayerDef.mOffset.GetValueAt(0f);
+				ReadValue(ref aLayerDef.mAngle);
 				ReadString();
 				for (int num21 = 0; num21 < 32; num21++)
 				{
@@ -2282,19 +2331,19 @@ namespace SexyFramework.Graphics
 				for (int num26 = 0; num26 < num25; num26++)
 				{
 					ExpectCmd("CForce");
-					PIForce pIForce = new PIForce();
-					pIForce.mName = ReadString();
-					pIForce.mVisible = (mIsPPF ? (mReadBuffer.ReadByte() != 0) : (mReadBuffer.ReadInt32() != 0));
-					ReadValue2D(pIForce.mPos);
-					ReadValue(ref pIForce.mActive);
+					PIForce aForce = new PIForce();
+					aForce.mName = ReadString();
+					aForce.mVisible = (mIsPPF ? (mReadBuffer.ReadByte() != 0) : (mReadBuffer.ReadInt32() != 0));
+					ReadValue2D(aForce.mPos);
+					ReadValue(ref aForce.mActive);
 					PIValue theValue = new PIValue();
 					ReadValue(ref theValue);
-					ReadValue(ref pIForce.mStrength);
-					ReadValue(ref pIForce.mWidth);
-					ReadValue(ref pIForce.mHeight);
-					ReadValue(ref pIForce.mAngle);
-					ReadValue(ref pIForce.mDirection);
-					pILayerDef.mForceVector.Add(pIForce);
+					ReadValue(ref aForce.mStrength);
+					ReadValue(ref aForce.mWidth);
+					ReadValue(ref aForce.mHeight);
+					ReadValue(ref aForce.mAngle);
+					ReadValue(ref aForce.mDirection);
+					aLayerDef.mForceVector.Add(aForce);
 				}
 				for (int num27 = 0; num27 < 28; num27++)
 				{
@@ -2325,16 +2374,16 @@ namespace SexyFramework.Graphics
 				}
 				num30++;
 			}
-			for (int num33 = 0; num33 < mDef.mLayerDefVector.Count; num33++)
+			for (int aLayerIdx = 0; aLayerIdx < mDef.mLayerDefVector.Count; aLayerIdx++)
 			{
-				PILayerDef pILayerDef2 = mDef.mLayerDefVector[num33];
-				for (int num34 = 0; num34 < pILayerDef2.mEmitterInstanceDefVector.Count; num34++)
+				PILayerDef aLayerDef = mDef.mLayerDefVector[aLayerIdx];
+				for (int anEmitterInstanceIdx = 0; anEmitterInstanceIdx < aLayerDef.mEmitterInstanceDefVector.Count; anEmitterInstanceIdx++)
 				{
-					PIEmitterInstanceDef pIEmitterInstanceDef2 = pILayerDef2.mEmitterInstanceDefVector[num34];
-					pIEmitterInstanceDef2.mEmitterDefIdx = list3[pIEmitterInstanceDef2.mEmitterDefIdx];
-					for (int num35 = 0; num35 < pIEmitterInstanceDef2.mFreeEmitterIndices.Count; num35++)
+					PIEmitterInstanceDef anEmitterInstanceDef = aLayerDef.mEmitterInstanceDefVector[anEmitterInstanceIdx];
+					anEmitterInstanceDef.mEmitterDefIdx = list3[anEmitterInstanceDef.mEmitterDefIdx];
+					for (int aFreeEmitterIdx = 0; aFreeEmitterIdx < anEmitterInstanceDef.mFreeEmitterIndices.Count; aFreeEmitterIdx++)
 					{
-						pIEmitterInstanceDef2.mFreeEmitterIndices[num35] = list3[pIEmitterInstanceDef2.mFreeEmitterIndices[num35]];
+						anEmitterInstanceDef.mFreeEmitterIndices[aFreeEmitterIdx] = list3[anEmitterInstanceDef.mFreeEmitterIndices[aFreeEmitterIdx]];
 					}
 				}
 			}
@@ -2367,8 +2416,8 @@ namespace SexyFramework.Graphics
 				PIEmitter pIEmitter2 = mDef.mEmitterVector[num39];
 				for (int num40 = 0; num40 < pIEmitter2.mParticleDefVector.Count; num40++)
 				{
-					PIParticleDef pIParticleDef = pIEmitter2.mParticleDefVector[num40];
-					pIParticleDef.mTextureIdx = list4[pIParticleDef.mTextureIdx];
+					PIParticleDef aParticleDef = pIEmitter2.mParticleDefVector[num40];
+					aParticleDef.mTextureIdx = list4[aParticleDef.mTextureIdx];
 				}
 			}
 			uint num41 = (uint)((mReadBuffer.ReadByte() << 16) | -16777216);
@@ -2474,8 +2523,8 @@ namespace SexyFramework.Graphics
 		{
 			for (int i = 0; i < mDef.mTextureVector.Count; i++)
 			{
-				PITexture pITexture = mDef.mTextureVector[i];
-				pITexture.mImageStrip = (pITexture.mImageStrip = GetImage(pITexture.mName, pITexture.mFileName));
+				PITexture aTexture = mDef.mTextureVector[i];
+				aTexture.mImageStrip = (aTexture.mImageStrip = GetImage(aTexture.mName, aTexture.mFileName));
 			}
 		}
 
@@ -2541,106 +2590,106 @@ namespace SexyFramework.Graphics
 			{
 				for (int i = 0; i < mDef.mLayerDefVector.Count; i++)
 				{
-					PILayer pILayer = mLayerVector[i];
-					PILayerDef pILayerDef = mDef.mLayerDefVector[i];
-					for (int j = 0; j < pILayerDef.mEmitterInstanceDefVector.Count; j++)
+					PILayer aLayer = mLayerVector[i];
+					PILayerDef aLayerDef = mDef.mLayerDefVector[i];
+					for (int j = 0; j < aLayerDef.mEmitterInstanceDefVector.Count; j++)
 					{
-						PIEmitterInstance pIEmitterInstance = pILayer.mEmitterInstanceVector[j];
-						PIEmitterInstanceDef pIEmitterInstanceDef = pILayerDef.mEmitterInstanceDefVector[j];
+						PIEmitterInstance anEmitterInstance = aLayer.mEmitterInstanceVector[j];
+						PIEmitterInstanceDef anEmitterInstanceDef = aLayerDef.mEmitterInstanceDefVector[j];
 						if (theBuffer.ReadBoolean())
 						{
-							pIEmitterInstance.mTransform = theBuffer.ReadTransform2D();
+							anEmitterInstance.mTransform = theBuffer.ReadTransform2D();
 						}
-						pIEmitterInstance.mWasActive = theBuffer.ReadBoolean();
-						pIEmitterInstance.mWithinLifeFrame = theBuffer.ReadBoolean();
-						PIEmitter pIEmitter = mDef.mEmitterVector[pIEmitterInstanceDef.mEmitterDefIdx];
-						for (int k = 0; k < pIEmitter.mParticleDefVector.Count; k++)
+						anEmitterInstance.mWasActive = theBuffer.ReadBoolean();
+						anEmitterInstance.mWithinLifeFrame = theBuffer.ReadBoolean();
+						PIEmitter anEmitter = mDef.mEmitterVector[anEmitterInstanceDef.mEmitterDefIdx];
+						for (int k = 0; k < anEmitter.mParticleDefVector.Count; k++)
 						{
-							PIParticleDefInstance theParticleDefInstance = pIEmitterInstance.mParticleDefInstanceVector[k];
+							PIParticleDefInstance theParticleDefInstance = anEmitterInstance.mParticleDefInstanceVector[k];
 							LoadParticleDefInstance(theBuffer, theParticleDefInstance);
 						}
-						for (int l = 0; l < pIEmitterInstanceDef.mFreeEmitterIndices.Count; l++)
+						for (int l = 0; l < anEmitterInstanceDef.mFreeEmitterIndices.Count; l++)
 						{
-							PIParticleDefInstance theParticleDefInstance2 = pIEmitterInstance.mSuperEmitterParticleDefInstanceVector[l];
+							PIParticleDefInstance theParticleDefInstance2 = anEmitterInstance.mSuperEmitterParticleDefInstanceVector[l];
 							LoadParticleDefInstance(theBuffer, theParticleDefInstance2);
 						}
 						int num5 = (int)theBuffer.ReadLong();
 						for (int m = 0; m < num5; m++)
 						{
-							PIFreeEmitterInstance pIFreeEmitterInstance = mFreeEmitterPool.Alloc();
-							pIFreeEmitterInstance.Reset();
+							PIFreeEmitterInstance aChildEmitterInstance = mFreeEmitterPool.Alloc();
+							aChildEmitterInstance.Reset();
 							int index = theBuffer.ReadShort();
-							pIFreeEmitterInstance.mEmitterSrc = mDef.mEmitterVector[pIEmitterInstanceDef.mFreeEmitterIndices[index]];
-							pIFreeEmitterInstance.mParentFreeEmitter = null;
-							pIFreeEmitterInstance.mParticleDef = null;
-							pIFreeEmitterInstance.mNum = m;
-							LoadParticle(theBuffer, pILayer, pIFreeEmitterInstance);
-							PIEmitter mEmitterSrc = pIFreeEmitterInstance.mEmitterSrc;
-							Common.Resize(pIFreeEmitterInstance.mEmitter.mParticleDefInstanceVector, mEmitterSrc.mParticleDefVector.Count);
+							aChildEmitterInstance.mEmitterSrc = mDef.mEmitterVector[anEmitterInstanceDef.mFreeEmitterIndices[index]];
+							aChildEmitterInstance.mParentFreeEmitter = null;
+							aChildEmitterInstance.mParticleDef = null;
+							aChildEmitterInstance.mNum = m;
+							LoadParticle(theBuffer, aLayer, aChildEmitterInstance);
+							PIEmitter mEmitterSrc = aChildEmitterInstance.mEmitterSrc;
+							Common.Resize(aChildEmitterInstance.mEmitter.mParticleDefInstanceVector, mEmitterSrc.mParticleDefVector.Count);
 							for (int n = 0; n < mEmitterSrc.mParticleDefVector.Count; n++)
 							{
-								PIParticleDefInstance theParticleDefInstance3 = pIFreeEmitterInstance.mEmitter.mParticleDefInstanceVector[n];
+								PIParticleDefInstance theParticleDefInstance3 = aChildEmitterInstance.mEmitter.mParticleDefInstanceVector[n];
 								LoadParticleDefInstance(theBuffer, theParticleDefInstance3);
 							}
 							if (m > 0)
 							{
-								pIEmitterInstance.mSuperEmitterGroup.mTail.mNext = pIFreeEmitterInstance;
-								pIFreeEmitterInstance.mPrev = pIEmitterInstance.mSuperEmitterGroup.mTail;
+								anEmitterInstance.mSuperEmitterGroup.mTail.mNext = aChildEmitterInstance;
+								aChildEmitterInstance.mPrev = anEmitterInstance.mSuperEmitterGroup.mTail;
 							}
 							else
 							{
-								pIEmitterInstance.mSuperEmitterGroup.mHead = pIFreeEmitterInstance;
+								anEmitterInstance.mSuperEmitterGroup.mHead = aChildEmitterInstance;
 							}
-							pIEmitterInstance.mSuperEmitterGroup.mTail = pIFreeEmitterInstance;
-							pIEmitterInstance.mSuperEmitterGroup.mCount++;
+							anEmitterInstance.mSuperEmitterGroup.mTail = aChildEmitterInstance;
+							anEmitterInstance.mSuperEmitterGroup.mCount++;
 							int num6 = (int)theBuffer.ReadLong();
 							for (int num7 = 0; num7 < num6; num7++)
 							{
-								PIParticleInstance pIParticleInstance = mParticlePool.Alloc();
-								pIParticleInstance.Reset();
-								pIParticleInstance.mEmitterSrc = pIFreeEmitterInstance.mEmitterSrc;
-								pIParticleInstance.mParentFreeEmitter = pIFreeEmitterInstance;
+								PIParticleInstance aParticleInstance = mParticlePool.Alloc();
+								aParticleInstance.Reset();
+								aParticleInstance.mEmitterSrc = aChildEmitterInstance.mEmitterSrc;
+								aParticleInstance.mParentFreeEmitter = aChildEmitterInstance;
 								int index2 = theBuffer.ReadShort();
-								pIParticleInstance.mParticleDef = pIParticleInstance.mEmitterSrc.mParticleDefVector[index2];
-								pIParticleInstance.mNum = num7;
-								LoadParticle(theBuffer, pILayer, pIParticleInstance);
-								CalcParticleTransform(pILayer, pIEmitterInstance, pIParticleInstance.mEmitterSrc, pIParticleInstance.mParticleDef, pIFreeEmitterInstance.mEmitter.mParticleGroup, pIParticleInstance);
+								aParticleInstance.mParticleDef = aParticleInstance.mEmitterSrc.mParticleDefVector[index2];
+								aParticleInstance.mNum = num7;
+								LoadParticle(theBuffer, aLayer, aParticleInstance);
+								CalcParticleTransform(aLayer, anEmitterInstance, aParticleInstance.mEmitterSrc, aParticleInstance.mParticleDef, aChildEmitterInstance.mEmitter.mParticleGroup, aParticleInstance);
 								if (num7 > 0)
 								{
-									pIFreeEmitterInstance.mEmitter.mParticleGroup.mTail.mNext = pIParticleInstance;
-									pIParticleInstance.mPrev = pIFreeEmitterInstance.mEmitter.mParticleGroup.mTail;
+									aChildEmitterInstance.mEmitter.mParticleGroup.mTail.mNext = aParticleInstance;
+									aParticleInstance.mPrev = aChildEmitterInstance.mEmitter.mParticleGroup.mTail;
 								}
 								else
 								{
-									pIFreeEmitterInstance.mEmitter.mParticleGroup.mHead = pIParticleInstance;
+									aChildEmitterInstance.mEmitter.mParticleGroup.mHead = aParticleInstance;
 								}
-								pIFreeEmitterInstance.mEmitter.mParticleGroup.mTail = pIParticleInstance;
-								pIFreeEmitterInstance.mEmitter.mParticleGroup.mCount++;
+								aChildEmitterInstance.mEmitter.mParticleGroup.mTail = aParticleInstance;
+								aChildEmitterInstance.mEmitter.mParticleGroup.mCount++;
 							}
 						}
 						int num8 = (int)theBuffer.ReadLong();
 						for (int num9 = 0; num9 < num8; num9++)
 						{
-							PIParticleInstance pIParticleInstance2 = mParticlePool.Alloc();
-							pIParticleInstance2.Reset();
-							pIParticleInstance2.mEmitterSrc = pIEmitter;
-							pIParticleInstance2.mParentFreeEmitter = null;
+							PIParticleInstance aParticleInstance2 = mParticlePool.Alloc();
+							aParticleInstance2.Reset();
+							aParticleInstance2.mEmitterSrc = anEmitter;
+							aParticleInstance2.mParentFreeEmitter = null;
 							int index3 = theBuffer.ReadShort();
-							pIParticleInstance2.mParticleDef = pIParticleInstance2.mEmitterSrc.mParticleDefVector[index3];
-							pIParticleInstance2.mNum = num9;
-							LoadParticle(theBuffer, pILayer, pIParticleInstance2);
-							CalcParticleTransform(pILayer, pIEmitterInstance, pIParticleInstance2.mEmitterSrc, pIParticleInstance2.mParticleDef, pIEmitterInstance.mParticleGroup, pIParticleInstance2);
+							aParticleInstance2.mParticleDef = aParticleInstance2.mEmitterSrc.mParticleDefVector[index3];
+							aParticleInstance2.mNum = num9;
+							LoadParticle(theBuffer, aLayer, aParticleInstance2);
+							CalcParticleTransform(aLayer, anEmitterInstance, aParticleInstance2.mEmitterSrc, aParticleInstance2.mParticleDef, anEmitterInstance.mParticleGroup, aParticleInstance2);
 							if (num9 > 0)
 							{
-								pIEmitterInstance.mParticleGroup.mTail.mNext = pIParticleInstance2;
-								pIParticleInstance2.mPrev = pIEmitterInstance.mParticleGroup.mTail;
+								anEmitterInstance.mParticleGroup.mTail.mNext = aParticleInstance2;
+								aParticleInstance2.mPrev = anEmitterInstance.mParticleGroup.mTail;
 							}
 							else
 							{
-								pIEmitterInstance.mParticleGroup.mHead = pIParticleInstance2;
+								anEmitterInstance.mParticleGroup.mHead = aParticleInstance2;
 							}
-							pIEmitterInstance.mParticleGroup.mTail = pIParticleInstance2;
-							pIEmitterInstance.mParticleGroup.mCount++;
+							anEmitterInstance.mParticleGroup.mTail = aParticleInstance2;
+							anEmitterInstance.mParticleGroup.mCount++;
 						}
 					}
 				}
@@ -2684,47 +2733,47 @@ namespace SexyFramework.Graphics
 			{
 				for (int i = 0; i < mDef.mLayerDefVector.Count; i++)
 				{
-					PILayer pILayer = mLayerVector[i];
-					PILayerDef pILayerDef = mDef.mLayerDefVector[i];
-					for (int j = 0; j < pILayer.mEmitterInstanceVector.Count; j++)
+					PILayer aLayer = mLayerVector[i];
+					PILayerDef aLayerDef = mDef.mLayerDefVector[i];
+					for (int j = 0; j < aLayer.mEmitterInstanceVector.Count; j++)
 					{
-						PIEmitterInstance pIEmitterInstance = pILayer.mEmitterInstanceVector[j];
-						PIEmitterInstanceDef pIEmitterInstanceDef = pILayerDef.mEmitterInstanceDefVector[j];
-						if (!GlobalPIEffect.IsIdentityMatrix(pIEmitterInstance.mTransform))
+						PIEmitterInstance anEmitterInstance = aLayer.mEmitterInstanceVector[j];
+						PIEmitterInstanceDef anEmitterInstanceDef = aLayerDef.mEmitterInstanceDefVector[j];
+						if (!GlobalPIEffect.IsIdentityMatrix(anEmitterInstance.mTransform))
 						{
 							theBuffer.WriteBoolean(true);
-							theBuffer.WriteTransform2D(pIEmitterInstance.mTransform);
+							theBuffer.WriteTransform2D(anEmitterInstance.mTransform);
 						}
 						else
 						{
 							theBuffer.WriteBoolean(false);
 						}
-						theBuffer.WriteBoolean(pIEmitterInstance.mWasActive);
-						theBuffer.WriteBoolean(pIEmitterInstance.mWithinLifeFrame);
+						theBuffer.WriteBoolean(anEmitterInstance.mWasActive);
+						theBuffer.WriteBoolean(anEmitterInstance.mWithinLifeFrame);
 						Dictionary<PIEmitter, Dictionary<PIParticleDef, int>> dictionary = new Dictionary<PIEmitter, Dictionary<PIParticleDef, int>>();
-						PIEmitter pIEmitter = mDef.mEmitterVector[pIEmitterInstanceDef.mEmitterDefIdx];
-						for (int k = 0; k < pIEmitter.mParticleDefVector.Count; k++)
+						PIEmitter anEmitter = mDef.mEmitterVector[anEmitterInstanceDef.mEmitterDefIdx];
+						for (int k = 0; k < anEmitter.mParticleDefVector.Count; k++)
 						{
-							PIParticleDef key = pIEmitter.mParticleDefVector[k];
-							PIParticleDefInstance theParticleDefInstance = pIEmitterInstance.mParticleDefInstanceVector[k];
-							if (!dictionary.ContainsKey(pIEmitter))
+							PIParticleDef key = anEmitter.mParticleDefVector[k];
+							PIParticleDefInstance theParticleDefInstance = anEmitterInstance.mParticleDefInstanceVector[k];
+							if (!dictionary.ContainsKey(anEmitter))
 							{
-								dictionary.Add(pIEmitter, new Dictionary<PIParticleDef, int>());
+								dictionary.Add(anEmitter, new Dictionary<PIParticleDef, int>());
 							}
-							if (!dictionary[pIEmitter].ContainsKey(key))
+							if (!dictionary[anEmitter].ContainsKey(key))
 							{
-								dictionary[pIEmitter].Add(key, k);
+								dictionary[anEmitter].Add(key, k);
 							}
 							else
 							{
-								dictionary[pIEmitter][key] = k;
+								dictionary[anEmitter][key] = k;
 							}
 							SaveParticleDefInstance(theBuffer, theParticleDefInstance);
 						}
 						Dictionary<PIEmitter, int> dictionary2 = new Dictionary<PIEmitter, int>();
-						for (int l = 0; l < pIEmitterInstanceDef.mFreeEmitterIndices.Count; l++)
+						for (int l = 0; l < anEmitterInstanceDef.mFreeEmitterIndices.Count; l++)
 						{
-							PIEmitter pIEmitter2 = mDef.mEmitterVector[pIEmitterInstanceDef.mFreeEmitterIndices[l]];
+							PIEmitter pIEmitter2 = mDef.mEmitterVector[anEmitterInstanceDef.mFreeEmitterIndices[l]];
 							for (int m = 0; m < pIEmitter2.mParticleDefVector.Count; m++)
 							{
 								PIParticleDef key2 = pIEmitter2.mParticleDefVector[m];
@@ -2741,41 +2790,41 @@ namespace SexyFramework.Graphics
 									dictionary[pIEmitter2][key2] = m;
 								}
 							}
-							PIParticleDefInstance theParticleDefInstance2 = pIEmitterInstance.mSuperEmitterParticleDefInstanceVector[l];
+							PIParticleDefInstance theParticleDefInstance2 = anEmitterInstance.mSuperEmitterParticleDefInstanceVector[l];
 							SaveParticleDefInstance(theBuffer, theParticleDefInstance2);
 							dictionary2[pIEmitter2] = l;
 						}
-						PIFreeEmitterInstance pIFreeEmitterInstance = (PIFreeEmitterInstance)pIEmitterInstance.mSuperEmitterGroup.mHead;
-						theBuffer.WriteLong(CountParticles(pIFreeEmitterInstance));
-						while (pIFreeEmitterInstance != null)
+						PIFreeEmitterInstance aChildEmitterInstance = (PIFreeEmitterInstance)anEmitterInstance.mSuperEmitterGroup.mHead;
+						theBuffer.WriteLong(CountParticles(aChildEmitterInstance));
+						while (aChildEmitterInstance != null)
 						{
-							theBuffer.WriteShort((short)dictionary2[pIFreeEmitterInstance.mEmitterSrc]);
-							SaveParticle(theBuffer, pILayer, pIFreeEmitterInstance);
-							PIEmitter mEmitterSrc = pIFreeEmitterInstance.mEmitterSrc;
+							theBuffer.WriteShort((short)dictionary2[aChildEmitterInstance.mEmitterSrc]);
+							SaveParticle(theBuffer, aLayer, aChildEmitterInstance);
+							PIEmitter mEmitterSrc = aChildEmitterInstance.mEmitterSrc;
 							for (int n = 0; n < mEmitterSrc.mParticleDefVector.Count; n++)
 							{
-								PIParticleDefInstance theParticleDefInstance3 = pIFreeEmitterInstance.mEmitter.mParticleDefInstanceVector[n];
+								PIParticleDefInstance theParticleDefInstance3 = aChildEmitterInstance.mEmitter.mParticleDefInstanceVector[n];
 								SaveParticleDefInstance(theBuffer, theParticleDefInstance3);
 							}
-							PIParticleInstance pIParticleInstance = pIFreeEmitterInstance.mEmitter.mParticleGroup.mHead;
-							theBuffer.WriteLong(CountParticles(pIParticleInstance));
-							while (pIParticleInstance != null)
+							PIParticleInstance aParticleInstance = aChildEmitterInstance.mEmitter.mParticleGroup.mHead;
+							theBuffer.WriteLong(CountParticles(aParticleInstance));
+							while (aParticleInstance != null)
 							{
-								theBuffer.WriteShort((short)dictionary[pIParticleInstance.mEmitterSrc][pIParticleInstance.mParticleDef]);
-								SaveParticle(theBuffer, pILayer, pIParticleInstance);
-								pIParticleInstance = pIParticleInstance.mNext;
+								theBuffer.WriteShort((short)dictionary[aParticleInstance.mEmitterSrc][aParticleInstance.mParticleDef]);
+								SaveParticle(theBuffer, aLayer, aParticleInstance);
+								aParticleInstance = aParticleInstance.mNext;
 							}
-							pIFreeEmitterInstance = (PIFreeEmitterInstance)pIFreeEmitterInstance.mNext;
+							aChildEmitterInstance = (PIFreeEmitterInstance)aChildEmitterInstance.mNext;
 						}
-						PIParticleInstance pIParticleInstance2 = pIEmitterInstance.mParticleGroup.mHead;
-						int num2 = CountParticles(pIParticleInstance2);
+						PIParticleInstance aParticleInstance2 = anEmitterInstance.mParticleGroup.mHead;
+						int num2 = CountParticles(aParticleInstance2);
 						theBuffer.WriteLong(num2);
-						while (pIParticleInstance2 != null)
+						while (aParticleInstance2 != null)
 						{
-							short theShort = (short)dictionary[pIParticleInstance2.mEmitterSrc][pIParticleInstance2.mParticleDef];
+							short theShort = (short)dictionary[aParticleInstance2.mEmitterSrc][aParticleInstance2.mParticleDef];
 							theBuffer.WriteShort(theShort);
-							SaveParticle(theBuffer, pILayer, pIParticleInstance2);
-							pIParticleInstance2 = pIParticleInstance2.mNext;
+							SaveParticle(theBuffer, aLayer, aParticleInstance2);
+							aParticleInstance2 = aParticleInstance2.mNext;
 						}
 					}
 				}
@@ -2791,54 +2840,54 @@ namespace SexyFramework.Graphics
 		public void ResetAnim()
 		{
 			mFrameNum = 0f;
-			for (int i = 0; i < mDef.mLayerDefVector.Count; i++)
+			for (int aLayerIdx = 0; aLayerIdx < mDef.mLayerDefVector.Count; aLayerIdx++)
 			{
-				PILayerDef pILayerDef = mDef.mLayerDefVector[i];
-				PILayer pILayer = mLayerVector[i];
-				for (int j = 0; j < pILayer.mEmitterInstanceVector.Count; j++)
+				PILayerDef aLayerDef = mDef.mLayerDefVector[aLayerIdx];
+				PILayer aLayer = mLayerVector[aLayerIdx];
+				for (int anEmitterInstanceIdx = 0; anEmitterInstanceIdx < aLayer.mEmitterInstanceVector.Count; anEmitterInstanceIdx++)
 				{
-					PIEmitterInstanceDef pIEmitterInstanceDef = pILayerDef.mEmitterInstanceDefVector[j];
-					PIEmitterInstance pIEmitterInstance = pILayer.mEmitterInstanceVector[j];
-					PIFreeEmitterInstance pIFreeEmitterInstance = (PIFreeEmitterInstance)pIEmitterInstance.mSuperEmitterGroup.mHead;
-					while (pIFreeEmitterInstance != null)
+					PIEmitterInstanceDef anEmitterInstanceDef = aLayerDef.mEmitterInstanceDefVector[anEmitterInstanceIdx];
+					PIEmitterInstance anEmitterInstance = aLayer.mEmitterInstanceVector[anEmitterInstanceIdx];
+					PIFreeEmitterInstance aChildEmitterInstance = (PIFreeEmitterInstance)anEmitterInstance.mSuperEmitterGroup.mHead;
+					while (aChildEmitterInstance != null)
 					{
-						PIFreeEmitterInstance pIFreeEmitterInstance2 = (PIFreeEmitterInstance)pIFreeEmitterInstance.mNext;
-						PIParticleInstance pIParticleInstance = pIFreeEmitterInstance.mEmitter.mParticleGroup.mHead;
-						while (pIParticleInstance != null)
+						PIFreeEmitterInstance aChildNext = (PIFreeEmitterInstance)aChildEmitterInstance.mNext;
+						PIParticleInstance aParticleInstance = aChildEmitterInstance.mEmitter.mParticleGroup.mHead;
+						while (aParticleInstance != null)
 						{
-							PIParticleInstance mNext = pIParticleInstance.mNext;
-							mParticlePool.Free(pIParticleInstance);
-							pIParticleInstance = mNext;
+							PIParticleInstance aNext = aParticleInstance.mNext;
+							mParticlePool.Free(aParticleInstance);
+							aParticleInstance = aNext;
 						}
-						mFreeEmitterPool.Free(pIFreeEmitterInstance);
-						pIFreeEmitterInstance = pIFreeEmitterInstance2;
+						mFreeEmitterPool.Free(aChildEmitterInstance);
+						aChildEmitterInstance = aChildNext;
 					}
-					pIEmitterInstance.mSuperEmitterGroup.mHead = null;
-					pIEmitterInstance.mSuperEmitterGroup.mTail = null;
-					pIEmitterInstance.mSuperEmitterGroup.mCount = 0;
-					PIParticleInstance pIParticleInstance2 = pIEmitterInstance.mParticleGroup.mHead;
-					while (pIParticleInstance2 != null)
+					anEmitterInstance.mSuperEmitterGroup.mHead = null;
+					anEmitterInstance.mSuperEmitterGroup.mTail = null;
+					anEmitterInstance.mSuperEmitterGroup.mCount = 0;
+					PIParticleInstance aLooseParticle = anEmitterInstance.mParticleGroup.mHead;
+					while (aLooseParticle != null)
 					{
-						PIParticleInstance mNext2 = pIParticleInstance2.mNext;
-						mParticlePool.Free(pIParticleInstance2);
-						pIParticleInstance2 = mNext2;
+						PIParticleInstance aNext = aLooseParticle.mNext;
+						mParticlePool.Free(aLooseParticle);
+						aLooseParticle = aNext;
 					}
-					pIEmitterInstance.mParticleGroup.mHead = null;
-					pIEmitterInstance.mParticleGroup.mTail = null;
-					pIEmitterInstance.mParticleGroup.mCount = 0;
-					for (int k = 0; k < pIEmitterInstanceDef.mFreeEmitterIndices.Count; k++)
+					anEmitterInstance.mParticleGroup.mHead = null;
+					anEmitterInstance.mParticleGroup.mTail = null;
+					anEmitterInstance.mParticleGroup.mCount = 0;
+					for (int aFreeEmitterIdx = 0; aFreeEmitterIdx < anEmitterInstanceDef.mFreeEmitterIndices.Count; aFreeEmitterIdx++)
 					{
-						PIParticleDefInstance pIParticleDefInstance = pIEmitterInstance.mSuperEmitterParticleDefInstanceVector[k];
-						pIParticleDefInstance.Reset();
+						PIParticleDefInstance aParticleDefInstance = anEmitterInstance.mSuperEmitterParticleDefInstanceVector[aFreeEmitterIdx];
+						aParticleDefInstance.Reset();
 					}
-					PIEmitter pIEmitter = mDef.mEmitterVector[pIEmitterInstanceDef.mEmitterDefIdx];
-					for (int l = 0; l < pIEmitter.mParticleDefVector.Count; l++)
+					PIEmitter anEmitter = mDef.mEmitterVector[anEmitterInstanceDef.mEmitterDefIdx];
+					for (int aParticleDefIdx = 0; aParticleDefIdx < anEmitter.mParticleDefVector.Count; aParticleDefIdx++)
 					{
-						PIParticleDefInstance pIParticleDefInstance2 = pIEmitterInstance.mParticleDefInstanceVector[l];
-						pIParticleDefInstance2.Reset();
+						PIParticleDefInstance aParticleDefInstance = anEmitterInstance.mParticleDefInstanceVector[aParticleDefIdx];
+						aParticleDefInstance.Reset();
 					}
-					pIEmitterInstance.mWithinLifeFrame = true;
-					pIEmitterInstance.mWasActive = false;
+					anEmitterInstance.mWithinLifeFrame = true;
+					anEmitterInstance.mWasActive = false;
 				}
 			}
 			mCurNumEmitters = 0;
@@ -2890,33 +2939,33 @@ namespace SexyFramework.Graphics
 
 		public bool IsActive()
 		{
-			for (int i = 0; i < mDef.mLayerDefVector.Count; i++)
+			for (int aLayerIdx = 0; aLayerIdx < mDef.mLayerDefVector.Count; aLayerIdx++)
 			{
-				PILayerDef pILayerDef = mDef.mLayerDefVector[i];
-				PILayer pILayer = mLayerVector[i];
-				if (!pILayer.mVisible)
+				PILayerDef aLayerDef = mDef.mLayerDefVector[aLayerIdx];
+				PILayer aLayer = mLayerVector[aLayerIdx];
+				if (!aLayer.mVisible)
 				{
 					continue;
 				}
-				for (int j = 0; j < pILayer.mEmitterInstanceVector.Count; j++)
+				for (int anEmitterInstanceIdx = 0; anEmitterInstanceIdx < aLayer.mEmitterInstanceVector.Count; anEmitterInstanceIdx++)
 				{
-					PIEmitterInstanceDef pIEmitterInstanceDef = pILayerDef.mEmitterInstanceDefVector[j];
-					PIEmitterInstance pIEmitterInstance = pILayer.mEmitterInstanceVector[j];
-					if (pIEmitterInstance.mVisible)
+					PIEmitterInstanceDef anEmitterInstanceDef = aLayerDef.mEmitterInstanceDefVector[anEmitterInstanceIdx];
+					PIEmitterInstance anEmitterInstance = aLayer.mEmitterInstanceVector[anEmitterInstanceIdx];
+					if (anEmitterInstance.mVisible)
 					{
-						if (pIEmitterInstanceDef.mValues[13].GetNextKeyframeTime(mFrameNum) >= mFrameNum)
+						if (anEmitterInstanceDef.mValues[(int)PIEmitterInstanceDef.PIEmitterValue.VALUE_ACTIVE].GetNextKeyframeTime(mFrameNum) >= mFrameNum)
 						{
 							return true;
 						}
-						if (pIEmitterInstance.mWithinLifeFrame)
+						if (anEmitterInstance.mWithinLifeFrame)
 						{
 							return true;
 						}
-						if (pIEmitterInstance.mSuperEmitterGroup.mHead != null)
+						if (anEmitterInstance.mSuperEmitterGroup.mHead != null)
 						{
 							return true;
 						}
-						if (pIEmitterInstance.mParticleGroup.mHead != null)
+						if (anEmitterInstance.mParticleGroup.mHead != null)
 						{
 							return true;
 						}
@@ -2947,7 +2996,7 @@ namespace SexyFramework.Graphics
 				return;
 			}
 			mUpdateCnt++;
-			bool flag = mFrameNum == 0f;
+			bool isFirstFrame = mFrameNum == 0f;
 			if (mWantsSRand)
 			{
 				if (mRandSeeds.Count > 0)
@@ -2960,170 +3009,163 @@ namespace SexyFramework.Graphics
 				}
 				mWantsSRand = false;
 			}
-			if (flag && mStartupState.GetDataLen() != 0)
+			if (isFirstFrame && mStartupState.GetDataLen() != 0)
 			{
 				mStartupState.SeekFront();
 				LoadState(mStartupState, true);
 				mWantsSRand = false;
 				return;
 			}
-			bool flag2 = true;
-			while (mFrameNum < (float)mFirstFrameNum || flag2)
+			bool firstIteration = true;
+			while (mFrameNum < (float)mFirstFrameNum || firstIteration)
 			{
-				flag2 = false;
+				firstIteration = false;
 				mCurNumEmitters = 0;
 				mCurNumParticles = 0;
-				float num = 100f / mAnimSpeed;
-				int num2 = (int)mFrameNum;
-				if (flag)
+				float anUpdateRate = 100f / mAnimSpeed;
+				int aPrevFrame = (int)mFrameNum;
+				if (isFirstFrame)
 				{
 					mFrameNum += 0.0001f;
 				}
 				else
 				{
-					mFrameNum += (float)mFramerate / num;
+					mFrameNum += (float)mFramerate / anUpdateRate;
 				}
-				mIsNewFrame = num2 != (int)mFrameNum;
-				for (int i = 0; i < mDef.mLayerDefVector.Count; i++)
+				mIsNewFrame = aPrevFrame != (int)mFrameNum;
+				for (int aLayerIdx = 0; aLayerIdx < mDef.mLayerDefVector.Count; aLayerIdx++)
 				{
-					PILayerDef pILayerDef = mDef.mLayerDefVector[i];
-					PILayer pILayer = mLayerVector[i];
-					if (!pILayer.mVisible)
+					PILayerDef aLayerDef = mDef.mLayerDefVector[aLayerIdx];
+					PILayer aLayer = mLayerVector[aLayerIdx];
+					if (!aLayer.mVisible)
 					{
 						continue;
 					}
-					for (int j = 0; j < pILayerDef.mDeflectorVector.Count; j++)
+					for (int aDeflectorIdx = 0; aDeflectorIdx < aLayerDef.mDeflectorVector.Count; aDeflectorIdx++)
 					{
-						PIDeflector pIDeflector = pILayerDef.mDeflectorVector[j];
-						SexyTransform2D sexyTransform2D = new SexyTransform2D(false);
-						float valueAt = pIDeflector.mAngle.GetValueAt(mFrameNum);
-						if (valueAt != 0f)
+						PIDeflector aDeflector = aLayerDef.mDeflectorVector[aDeflectorIdx];
+						SexyTransform2D aTransform = new SexyTransform2D(false);
+						float aDeflectorAng = aDeflector.mAngle.GetValueAt(mFrameNum);
+						if (aDeflectorAng != 0f)
 						{
-							sexyTransform2D.RotateDeg(valueAt);
+							aTransform.RotateDeg(aDeflectorAng);
 						}
-						Vector2 valueAt2 = pIDeflector.mPos.GetValueAt(mFrameNum);
-						sexyTransform2D.Translate(valueAt2.X, valueAt2.Y);
-						Vector2 valueAt3 = pILayerDef.mOffset.GetValueAt(mFrameNum);
-						sexyTransform2D.Translate(valueAt3.X, valueAt3.Y);
-						float valueAt4 = pILayerDef.mAngle.GetValueAt(mFrameNum);
-						if (valueAt4 != 0f)
+						Vector2 aDeflectorPos = aDeflector.mPos.GetValueAt(mFrameNum);
+						aTransform.Translate(aDeflectorPos.X, aDeflectorPos.Y);
+						Vector2 anOffset = aLayerDef.mOffset.GetValueAt(mFrameNum);
+						aTransform.Translate(anOffset.X, anOffset.Y);
+						float aLayerAngle = aLayerDef.mAngle.GetValueAt(mFrameNum);
+						if (aLayerAngle != 0f)
 						{
-							sexyTransform2D.RotateDeg(valueAt4);
+							aTransform.RotateDeg(aLayerAngle);
 						}
-						SexyTransform2D theMatrix = mDrawTransform * sexyTransform2D;
-						for (int k = 0; k < pIDeflector.mPoints.Count; k++)
+						SexyTransform2D aFinalTrans = mDrawTransform * aTransform;
+						for (int aPtIdx = 0; aPtIdx < aDeflector.mPoints.Count; aPtIdx++)
 						{
-							pIDeflector.mCurPoints[k] = GlobalPIEffect.TransformFPoint(theMatrix, pIDeflector.mPoints[k].GetValueAt(mFrameNum));
+							aDeflector.mCurPoints[aPtIdx] = GlobalPIEffect.TransformFPoint(aFinalTrans, aDeflector.mPoints[aPtIdx].GetValueAt(mFrameNum));
 						}
 					}
-					for (int l = 0; l < pILayerDef.mForceVector.Count; l++)
+					for (int aForceIdx = 0; aForceIdx < aLayerDef.mForceVector.Count; aForceIdx++)
 					{
-						PIForce pIForce = pILayerDef.mForceVector[l];
-						SexyTransform2D sexyTransform2D2 = new SexyTransform2D(false);
-						sexyTransform2D2.Scale(pIForce.mWidth.GetValueAt(mFrameNum) / 2f, pIForce.mHeight.GetValueAt(mFrameNum) / 2f);
-						float valueAt5 = pIForce.mAngle.GetValueAt(mFrameNum);
-						if (valueAt5 != 0f)
+						PIForce aForce = aLayerDef.mForceVector[aForceIdx];
+						SexyTransform2D aTransform = new SexyTransform2D(false);
+						aTransform.Scale(aForce.mWidth.GetValueAt(mFrameNum) / 2f, aForce.mHeight.GetValueAt(mFrameNum) / 2f);
+						float aForceAngle = aForce.mAngle.GetValueAt(mFrameNum);
+						if (aForceAngle != 0f)
 						{
-							sexyTransform2D2.RotateDeg(valueAt5);
+							aTransform.RotateDeg(aForceAngle);
 						}
-						Vector2 valueAt6 = pIForce.mPos.GetValueAt(mFrameNum);
-						sexyTransform2D2.Translate(valueAt6.X, valueAt6.Y);
-						Vector2 valueAt7 = pILayerDef.mOffset.GetValueAt(mFrameNum);
-						sexyTransform2D2.Translate(valueAt7.X, valueAt7.Y);
-						float valueAt8 = pILayerDef.mAngle.GetValueAt(mFrameNum);
-						if (valueAt8 != 0f)
+						Vector2 aForcePos = aForce.mPos.GetValueAt(mFrameNum);
+						aTransform.Translate(aForcePos.X, aForcePos.Y);
+						Vector2 anOffset = aLayerDef.mOffset.GetValueAt(mFrameNum);
+						aTransform.Translate(anOffset.X, anOffset.Y);
+						float aLayerAngle = aLayerDef.mAngle.GetValueAt(mFrameNum);
+						if (aLayerAngle != 0f)
 						{
-							sexyTransform2D2.RotateDeg(valueAt8);
+							aTransform.RotateDeg(aLayerAngle);
 						}
-						SexyTransform2D theMatrix2 = mDrawTransform * sexyTransform2D2;
-						Vector2[] array = new Vector2[5]
+						SexyTransform2D aFinalTrans = mDrawTransform * aTransform;
+						Vector2[] aBoxPoints = sForceBoxPoints;
+						for (int aPtIdx = 0; aPtIdx < 5; aPtIdx++)
 						{
-							new Vector2(-1f, -1f),
-							new Vector2(1f, -1f),
-							new Vector2(1f, 1f),
-							new Vector2(-1f, 1f),
-							new Vector2(0f, 0f)
-						};
-						for (int m = 0; m < 5; m++)
-						{
-							pIForce.mCurPoints[m] = GlobalPIEffect.TransformFPoint(theMatrix2, array[m]);
+							aForce.mCurPoints[aPtIdx] = GlobalPIEffect.TransformFPoint(aFinalTrans, aBoxPoints[aPtIdx]);
 						}
 					}
-					for (int n = 0; n < pILayer.mEmitterInstanceVector.Count; n++)
+					for (int anEmitterInstanceIdx = 0; anEmitterInstanceIdx < aLayer.mEmitterInstanceVector.Count; anEmitterInstanceIdx++)
 					{
-						PIEmitterInstanceDef pIEmitterInstanceDef = pILayerDef.mEmitterInstanceDefVector[n];
-						PIEmitterInstance pIEmitterInstance = pILayer.mEmitterInstanceVector[n];
-						int num3 = 0;
-						int num4 = 0;
-						int num5 = 1;
-						while (pIEmitterInstance.mVisible && num5 > 0)
+						PIEmitterInstanceDef anEmitterInstanceDef = aLayerDef.mEmitterInstanceDefVector[anEmitterInstanceIdx];
+						PIEmitterInstance anEmitterInstance = aLayer.mEmitterInstanceVector[anEmitterInstanceIdx];
+						int anEmitterCount = 0;
+						int aParticleCount = 0;
+						int aRemainingPasses = 1;
+						while (anEmitterInstance.mVisible && aRemainingPasses > 0)
 						{
-							num3 = 0;
-							num4 = 0;
-							num5--;
-							bool flag3 = pIEmitterInstanceDef.mValues[13].GetLastKeyframe(mFrameNum) > 0.99f;
-							if (!flag3)
+							anEmitterCount = 0;
+							aParticleCount = 0;
+							aRemainingPasses--;
+							bool isActive = anEmitterInstanceDef.mValues[(int)PIEmitterInstanceDef.PIEmitterValue.VALUE_ACTIVE].GetLastKeyframe(mFrameNum) > 0.99f;
+							if (!isActive)
 							{
-								num5 = 0;
+								aRemainingPasses = 0;
 							}
-							else if (!pIEmitterInstance.mWasActive)
+							else if (!anEmitterInstance.mWasActive)
 							{
-								num5 += (int)((float)pIEmitterInstanceDef.mFramesToPreload * num / (float)mFramerate);
+								aRemainingPasses += (int)((float)anEmitterInstanceDef.mFramesToPreload * anUpdateRate / (float)mFramerate);
 							}
-							pIEmitterInstance.mWasActive = flag3;
-							float nextKeyframeTime = pIEmitterInstanceDef.mValues[13].GetNextKeyframeTime(0f);
-							float lastKeyframeTime = pIEmitterInstanceDef.mValues[13].GetLastKeyframeTime((float)mLastFrameNum + 1f);
-							float lastKeyframe = pIEmitterInstanceDef.mValues[13].GetLastKeyframe((float)mLastFrameNum + 1f);
-							pIEmitterInstance.mWithinLifeFrame = mFrameNum >= nextKeyframeTime && (mFrameNum < lastKeyframeTime || lastKeyframe > 0.99f) && (mEmitAfterTimeline || mFrameNum < (float)mLastFrameNum);
-							if (flag3 || (pIEmitterInstanceDef.mIsSuperEmitter && pIEmitterInstance.mWithinLifeFrame))
+							anEmitterInstance.mWasActive = isActive;
+							float aFirstActiveTime = anEmitterInstanceDef.mValues[(int)PIEmitterInstanceDef.PIEmitterValue.VALUE_ACTIVE].GetNextKeyframeTime(0f);
+							float aLastActiveTime = anEmitterInstanceDef.mValues[(int)PIEmitterInstanceDef.PIEmitterValue.VALUE_ACTIVE].GetLastKeyframeTime((float)mLastFrameNum + 1f);
+							float aLastActiveValue = anEmitterInstanceDef.mValues[(int)PIEmitterInstanceDef.PIEmitterValue.VALUE_ACTIVE].GetLastKeyframe((float)mLastFrameNum + 1f);
+							anEmitterInstance.mWithinLifeFrame = mFrameNum >= aFirstActiveTime && (mFrameNum < aLastActiveTime || aLastActiveValue > 0.99f) && (mEmitAfterTimeline || mFrameNum < (float)mLastFrameNum);
+							if (isActive || (anEmitterInstanceDef.mIsSuperEmitter && anEmitterInstance.mWithinLifeFrame))
 							{
-								num3++;
+								anEmitterCount++;
 							}
-							if (pIEmitterInstanceDef.mIsSuperEmitter)
+							if (anEmitterInstanceDef.mIsSuperEmitter)
 							{
-								for (int num6 = 0; num6 < pIEmitterInstanceDef.mFreeEmitterIndices.Count; num6++)
+								for (int aFreeEmitterIdx = 0; aFreeEmitterIdx < anEmitterInstanceDef.mFreeEmitterIndices.Count; aFreeEmitterIdx++)
 								{
-									PIEmitter theEmitter = mDef.mEmitterVector[pIEmitterInstanceDef.mFreeEmitterIndices[num6]];
-									PIParticleDefInstance theParticleDefInstance = pIEmitterInstance.mSuperEmitterParticleDefInstanceVector[num6];
-									UpdateParticleDef(pILayer, theEmitter, pIEmitterInstance, null, theParticleDefInstance, pIEmitterInstance.mSuperEmitterGroup, null);
+									PIEmitter anEmitter = mDef.mEmitterVector[anEmitterInstanceDef.mFreeEmitterIndices[aFreeEmitterIdx]];
+									PIParticleDefInstance aParticleDefInstance = anEmitterInstance.mSuperEmitterParticleDefInstanceVector[aFreeEmitterIdx];
+									UpdateParticleDef(aLayer, anEmitter, anEmitterInstance, null, aParticleDefInstance, anEmitterInstance.mSuperEmitterGroup, null);
 								}
-								UpdateParticleGroup(pILayer, pIEmitterInstance, pIEmitterInstance.mSuperEmitterGroup);
-								PIFreeEmitterInstance pIFreeEmitterInstance = (PIFreeEmitterInstance)pIEmitterInstance.mSuperEmitterGroup.mHead;
-								while (pIFreeEmitterInstance != null)
+								UpdateParticleGroup(aLayer, anEmitterInstance, anEmitterInstance.mSuperEmitterGroup);
+								PIFreeEmitterInstance aChildEmitterInstance = (PIFreeEmitterInstance)anEmitterInstance.mSuperEmitterGroup.mHead;
+								while (aChildEmitterInstance != null)
 								{
-									PIFreeEmitterInstance pIFreeEmitterInstance2 = (PIFreeEmitterInstance)pIFreeEmitterInstance.mNext;
-									PIEmitter mEmitterSrc = pIFreeEmitterInstance.mEmitterSrc;
-									for (int num7 = 0; num7 < mEmitterSrc.mParticleDefVector.Count; num7++)
+									PIFreeEmitterInstance aChildNext = (PIFreeEmitterInstance)aChildEmitterInstance.mNext;
+									PIEmitter anEmitter = aChildEmitterInstance.mEmitterSrc;
+									for (int aParticleDefIdx = 0; aParticleDefIdx < anEmitter.mParticleDefVector.Count; aParticleDefIdx++)
 									{
-										PIParticleDef theParticleDef = mEmitterSrc.mParticleDefVector[num7];
-										PIParticleDefInstance theParticleDefInstance2 = pIFreeEmitterInstance.mEmitter.mParticleDefInstanceVector[num7];
-										UpdateParticleDef(pILayer, mEmitterSrc, pIEmitterInstance, theParticleDef, theParticleDefInstance2, pIFreeEmitterInstance.mEmitter.mParticleGroup, pIFreeEmitterInstance);
+										PIParticleDef aParticleDef = anEmitter.mParticleDefVector[aParticleDefIdx];
+										PIParticleDefInstance aParticleDefInstance = aChildEmitterInstance.mEmitter.mParticleDefInstanceVector[aParticleDefIdx];
+										UpdateParticleDef(aLayer, anEmitter, anEmitterInstance, aParticleDef, aParticleDefInstance, aChildEmitterInstance.mEmitter.mParticleGroup, aChildEmitterInstance);
 									}
-									UpdateParticleGroup(pILayer, pIEmitterInstance, pIFreeEmitterInstance.mEmitter.mParticleGroup);
-									num4 += pIFreeEmitterInstance.mEmitter.mParticleGroup.mCount;
-									num3++;
-									pIFreeEmitterInstance = pIFreeEmitterInstance2;
+									UpdateParticleGroup(aLayer, anEmitterInstance, aChildEmitterInstance.mEmitter.mParticleGroup);
+									aParticleCount += aChildEmitterInstance.mEmitter.mParticleGroup.mCount;
+									anEmitterCount++;
+									aChildEmitterInstance = aChildNext;
 								}
 							}
 							else
 							{
-								PIEmitter pIEmitter = mDef.mEmitterVector[pIEmitterInstanceDef.mEmitterDefIdx];
-								for (int num8 = 0; num8 < pIEmitter.mParticleDefVector.Count; num8++)
+								PIEmitter anEmitter = mDef.mEmitterVector[anEmitterInstanceDef.mEmitterDefIdx];
+								for (int aParticleDefIdx = 0; aParticleDefIdx < anEmitter.mParticleDefVector.Count; aParticleDefIdx++)
 								{
-									PIParticleGroup mParticleGroup = pIEmitterInstance.mParticleGroup;
-									PIParticleDef theParticleDef2 = pIEmitter.mParticleDefVector[num8];
-									PIParticleDefInstance theParticleDefInstance3 = pIEmitterInstance.mParticleDefInstanceVector[num8];
-									UpdateParticleDef(pILayer, pIEmitter, pIEmitterInstance, theParticleDef2, theParticleDefInstance3, mParticleGroup, null);
+									PIParticleGroup aParticleGroup = anEmitterInstance.mParticleGroup;
+									PIParticleDef aParticleDef = anEmitter.mParticleDefVector[aParticleDefIdx];
+									PIParticleDefInstance aParticleDefInstance = anEmitterInstance.mParticleDefInstanceVector[aParticleDefIdx];
+									UpdateParticleDef(aLayer, anEmitter, anEmitterInstance, aParticleDef, aParticleDefInstance, aParticleGroup, null);
 								}
-								UpdateParticleGroup(pILayer, pIEmitterInstance, pIEmitterInstance.mParticleGroup);
-								num4 += pIEmitterInstance.mParticleGroup.mCount;
+								UpdateParticleGroup(aLayer, anEmitterInstance, anEmitterInstance.mParticleGroup);
+								aParticleCount += anEmitterInstance.mParticleGroup.mCount;
 							}
 						}
-						mCurNumEmitters += num3;
-						mCurNumParticles += num4;
+						mCurNumEmitters += anEmitterCount;
+						mCurNumParticles += aParticleCount;
 					}
 				}
-				flag = false;
+				isFirstFrame = false;
 			}
 		}
 
@@ -3131,28 +3173,28 @@ namespace SexyFramework.Graphics
 		{
 			g.PushState();
 			g.SetColorizeImages(true);
-			PILayerDef mLayerDef = theLayer.mLayerDef;
-			for (int i = 0; i < theLayer.mEmitterInstanceVector.Count; i++)
+			PILayerDef aLayerDef = theLayer.mLayerDef;
+			for (int anEmitterInstanceIdx = 0; anEmitterInstanceIdx < theLayer.mEmitterInstanceVector.Count; anEmitterInstanceIdx++)
 			{
-				PIEmitterInstanceDef pIEmitterInstanceDef = mLayerDef.mEmitterInstanceDefVector[i];
-				PIEmitterInstance pIEmitterInstance = theLayer.mEmitterInstanceVector[i];
-				if (!pIEmitterInstance.mVisible)
+				PIEmitterInstanceDef anEmitterInstanceDef = aLayerDef.mEmitterInstanceDefVector[anEmitterInstanceIdx];
+				PIEmitterInstance anEmitterInstance = theLayer.mEmitterInstanceVector[anEmitterInstanceIdx];
+				if (!anEmitterInstance.mVisible)
 				{
 					continue;
 				}
-				if (pIEmitterInstanceDef.mIsSuperEmitter)
+				if (anEmitterInstanceDef.mIsSuperEmitter)
 				{
-					for (int j = 0; j < pIEmitterInstanceDef.mFreeEmitterIndices.Count; j++)
+					for (int aFreeEmitterIdx = 0; aFreeEmitterIdx < anEmitterInstanceDef.mFreeEmitterIndices.Count; aFreeEmitterIdx++)
 					{
-						for (PIFreeEmitterInstance pIFreeEmitterInstance = (PIFreeEmitterInstance)pIEmitterInstance.mSuperEmitterGroup.mHead; pIFreeEmitterInstance != null; pIFreeEmitterInstance = (PIFreeEmitterInstance)pIFreeEmitterInstance.mNext)
+						for (PIFreeEmitterInstance aChildEmitterInstance = (PIFreeEmitterInstance)anEmitterInstance.mSuperEmitterGroup.mHead; aChildEmitterInstance != null; aChildEmitterInstance = (PIFreeEmitterInstance)aChildEmitterInstance.mNext)
 						{
-							DrawParticleGroup(g, theLayer, pIEmitterInstance, pIFreeEmitterInstance.mEmitter.mParticleGroup, true);
+							DrawParticleGroup(g, theLayer, anEmitterInstance, aChildEmitterInstance.mEmitter.mParticleGroup, true);
 						}
 					}
 				}
 				else
 				{
-					DrawParticleGroup(g, theLayer, pIEmitterInstance, pIEmitterInstance.mParticleGroup, true);
+					DrawParticleGroup(g, theLayer, anEmitterInstance, anEmitterInstance.mParticleGroup, true);
 				}
 			}
 			g.PopState();
@@ -3161,40 +3203,51 @@ namespace SexyFramework.Graphics
 		public void DrawLayer(Graphics g, PILayer theLayer)
 		{
 			g.PushState();
-			mNormalList.Clear();
-			mAdditiveList.Clear();
-			PILayerDef mLayerDef = theLayer.mLayerDef;
-			for (int i = 0; i < theLayer.mEmitterInstanceVector.Count; i++)
+			g.SetColorizeImages(true);
+			PILayerDef aLayerDef = theLayer.mLayerDef;
+			for (int anEmitterInstanceIdx = 0; anEmitterInstanceIdx < theLayer.mEmitterInstanceVector.Count; anEmitterInstanceIdx++)
 			{
-				PIEmitterInstanceDef pIEmitterInstanceDef = mLayerDef.mEmitterInstanceDefVector[i];
-				PIEmitterInstance pIEmitterInstance = theLayer.mEmitterInstanceVector[i];
-				if (!pIEmitterInstance.mVisible)
+				PIEmitterInstanceDef anEmitterInstanceDef = aLayerDef.mEmitterInstanceDefVector[anEmitterInstanceIdx];
+				PIEmitterInstance anEmitterInstance = theLayer.mEmitterInstanceVector[anEmitterInstanceIdx];
+				if (!anEmitterInstance.mVisible)
 				{
 					continue;
 				}
-				mDarken = false;
-				for (int j = 0; j < 2; j++)
+				for (int aPass = 0; aPass < 2; aPass++)
 				{
-					if (pIEmitterInstanceDef.mIsSuperEmitter)
+					bool isDarkeningPass = (aPass == 0);
+					if (anEmitterInstanceDef.mIsSuperEmitter)
 					{
-						for (int k = 0; k < pIEmitterInstanceDef.mFreeEmitterIndices.Count; k++)
+						for (int aFreeEmitterIdx = 0; aFreeEmitterIdx < anEmitterInstanceDef.mFreeEmitterIndices.Count; aFreeEmitterIdx++)
 						{
-							for (PIFreeEmitterInstance pIFreeEmitterInstance = (PIFreeEmitterInstance)pIEmitterInstance.mSuperEmitterGroup.mHead; pIFreeEmitterInstance != null; pIFreeEmitterInstance = (PIFreeEmitterInstance)pIFreeEmitterInstance.mNext)
+							for (PIFreeEmitterInstance aChildEmitterInstance = (PIFreeEmitterInstance)anEmitterInstance.mSuperEmitterGroup.mHead; aChildEmitterInstance != null; aChildEmitterInstance = (PIFreeEmitterInstance)aChildEmitterInstance.mNext)
 							{
-								DrawParticleGroup(g, theLayer, pIEmitterInstance, pIFreeEmitterInstance.mEmitter.mParticleGroup, j == 0);
+								DrawParticleGroup(g, theLayer, anEmitterInstance, aChildEmitterInstance.mEmitter.mParticleGroup, isDarkeningPass);
 							}
 						}
 					}
 					else
 					{
-						DrawParticleGroup(g, theLayer, pIEmitterInstance, pIEmitterInstance.mParticleGroup, j == 0);
+						DrawParticleGroup(g, theLayer, anEmitterInstance, anEmitterInstance.mParticleGroup, isDarkeningPass);
 					}
 				}
 			}
 			g.PopState();
 		}
 
-		public void DrawPhisycalLayer(Graphics g, PILayer theLayer)
+        private Vector2[] mTempBlockerPoints = new Vector2[512];
+        private Vector2[,] mTempTris = new Vector2[256, 3];
+        private SexyVertex2D[] mTempVertices = new SexyVertex2D[3];
+        // Per-frame Force box points; reused to avoid array alloc in PIEffect.Update.
+        private static readonly Vector2[] sForceBoxPoints = new Vector2[5]
+        {
+            new Vector2(-1f, -1f),
+            new Vector2(1f, -1f),
+            new Vector2(1f, 1f),
+            new Vector2(-1f, 1f),
+            new Vector2(0f, 0f)
+        };
+        public void DrawPhisycalLayer(Graphics g, PILayer theLayer)
 		{
 			g.PushState();
 			g.SetColorizeImages(true);
@@ -3202,37 +3255,43 @@ namespace SexyFramework.Graphics
 			g.SetDrawMode(0);
 			for (int i = 0; i < mLayerDef.mBlockerVector.Count; i++)
 			{
-				PIBlocker pIBlocker = mLayerDef.mBlockerVector[i];
-				bool flag = pIBlocker.mActive.GetLastKeyframe(mFrameNum) > 0.99f;
+				PIBlocker aBlocker = mLayerDef.mBlockerVector[i];
+				bool flag = aBlocker.mActive.GetLastKeyframe(mFrameNum) > 0.99f;
 				if (!mDebug && !flag)
 				{
 					continue;
 				}
-				SexyTransform2D sexyTransform2D = new SexyTransform2D(false);
-				float valueAt = pIBlocker.mAngle.GetValueAt(mFrameNum);
+				SexyTransform2D aTransform = new SexyTransform2D(false);
+				float valueAt = aBlocker.mAngle.GetValueAt(mFrameNum);
 				if (valueAt != 0f)
 				{
-					sexyTransform2D.RotateDeg(valueAt);
+					aTransform.RotateDeg(valueAt);
 				}
-				Vector2 valueAt2 = pIBlocker.mPos.GetValueAt(mFrameNum);
-				sexyTransform2D.Translate(valueAt2.X, valueAt2.Y);
+				Vector2 valueAt2 = aBlocker.mPos.GetValueAt(mFrameNum);
+				aTransform.Translate(valueAt2.X, valueAt2.Y);
 				Vector2 valueAt3 = mLayerDef.mOffset.GetValueAt(mFrameNum);
-				sexyTransform2D.Translate(valueAt3.X, valueAt3.Y);
+				aTransform.Translate(valueAt3.X, valueAt3.Y);
 				float valueAt4 = mLayerDef.mAngle.GetValueAt(mFrameNum);
 				if (valueAt4 != 0f)
 				{
-					sexyTransform2D.RotateDeg(valueAt4);
+					aTransform.RotateDeg(valueAt4);
 				}
-				SexyTransform2D theMatrix = mDrawTransform * sexyTransform2D;
-				Vector2[] array = new Vector2[512];
-				int num = Math.Min(512, pIBlocker.mPoints.Count);
-				for (int j = 0; j < num; j++)
-				{
-					array[j] = GlobalPIEffect.TransformFPoint(theMatrix, pIBlocker.mPoints[j].GetValueAt(mFrameNum));
-				}
-				Vector2[,] array2 = new Vector2[256, 3];
-				int theNumTris = 0;
-				Common.DividePoly(array, num, array2, 256, ref theNumTris);
+				SexyTransform2D theMatrix = mDrawTransform * aTransform;
+                //Vector2[] array = new Vector2[512];
+                //int num = Math.Min(512, aBlocker.mPoints.Count);
+                //for (int j = 0; j < num; j++)
+                //{
+                //	array[j] = GlobalPIEffect.TransformFPoint(theMatrix, aBlocker.mPoints[j].GetValueAt(mFrameNum));
+                //}
+                //Vector2[,] array2 = new Vector2[256, 3];
+                int num = Math.Min(512, aBlocker.mPoints.Count);
+                for (int j = 0; j < num; j++)
+                {
+                    mTempBlockerPoints[j] = GlobalPIEffect.TransformFPoint(theMatrix, aBlocker.mPoints[j].GetValueAt(mFrameNum));
+                }
+                int theNumTris = 0;
+                Common.DividePoly(mTempBlockerPoints, num, mTempTris, 256, ref theNumTris);
+				//Common.DividePoly(array, num, array2, 256, ref theNumTris);
 				if (!flag)
 				{
 					continue;
@@ -3244,7 +3303,7 @@ namespace SexyFramework.Graphics
 						SexyVertex2D[] array3 = new SexyVertex2D[3];
 						for (int l = 0; l < 3; l++)
 						{
-							array3[l] = new SexyVertex2D(array2[k, l].X, array2[k, l].Y, (array2[k, l].X + theLayer.mBkgImgDrawOfs.X) / (float)theLayer.mBkgImage.mWidth, (array2[k, l].Y + theLayer.mBkgImgDrawOfs.Y) / (float)theLayer.mBkgImage.mHeight);
+							array3[l] = new SexyVertex2D(mTempTris[k, l].X, mTempTris[k, l].Y, (mTempTris[k, l].X + theLayer.mBkgImgDrawOfs.X) / (float)theLayer.mBkgImage.mWidth, (mTempTris[k, l].Y + theLayer.mBkgImgDrawOfs.Y) / (float)theLayer.mBkgImage.mHeight);
 						}
 						g.SetColor(Color.White);
 						g.DrawTriangleTex(theLayer.mBkgImage, array3[0], array3[1], array3[2]);
@@ -3254,7 +3313,7 @@ namespace SexyFramework.Graphics
 						Vector2[] array4 = new Vector2[3];
 						for (int m = 0; m < 3; m++)
 						{
-							array4[m] = array2[k, m];
+							array4[m] = mTempTris[k, m];
 						}
 						g.SetColor(mBkgColor);
 					}
@@ -3262,9 +3321,9 @@ namespace SexyFramework.Graphics
 			}
 			for (int n = 0; n < mLayerDef.mDeflectorVector.Count; n++)
 			{
-				PIDeflector pIDeflector = mLayerDef.mDeflectorVector[n];
-				bool flag2 = pIDeflector.mActive.GetLastKeyframe(mFrameNum) > 0.99f;
-				if ((!pIDeflector.mVisible || !flag2) && !mDebug)
+				PIDeflector aDeflector = mLayerDef.mDeflectorVector[n];
+				bool flag2 = aDeflector.mActive.GetLastKeyframe(mFrameNum) > 0.99f;
+				if ((!aDeflector.mVisible || !flag2) && !mDebug)
 				{
 					continue;
 				}
@@ -3276,11 +3335,11 @@ namespace SexyFramework.Graphics
 				{
 					g.SetColor(64, 0, 0);
 				}
-				for (int num2 = 1; num2 < pIDeflector.mCurPoints.Count; num2++)
+				for (int num2 = 1; num2 < aDeflector.mCurPoints.Count; num2++)
 				{
-					Vector2 vector = pIDeflector.mCurPoints[num2 - 1];
-					Vector2 vector2 = pIDeflector.mCurPoints[num2];
-					if (pIDeflector.mThickness <= 1.5f)
+					Vector2 vector = aDeflector.mCurPoints[num2 - 1];
+					Vector2 vector2 = aDeflector.mCurPoints[num2];
+					if (aDeflector.mThickness <= 1.5f)
 					{
 						g.DrawLine((int)vector.X, (int)vector.Y, (int)vector2.X, (int)vector2.Y);
 						continue;
@@ -3289,10 +3348,10 @@ namespace SexyFramework.Graphics
 					Vector2 vector3 = GlobalPIEffect.TransformFPoint(thePoint: new Vector2(sexyVector.x, sexyVector.y), theMatrix: mDrawTransform);
 					Vector2[] array5 = new Vector2[4]
 					{
-						vector + vector3 * pIDeflector.mThickness,
-						vector2 + vector3 * pIDeflector.mThickness,
-						vector2 - vector3 * pIDeflector.mThickness,
-						vector - vector3 * pIDeflector.mThickness
+						vector + vector3 * aDeflector.mThickness,
+						vector2 + vector3 * aDeflector.mThickness,
+						vector2 - vector3 * aDeflector.mThickness,
+						vector - vector3 * aDeflector.mThickness
 					};
 					for (int num3 = 0; num3 < 4; num3++)
 					{
@@ -3304,9 +3363,9 @@ namespace SexyFramework.Graphics
 			}
 			for (int num4 = 0; num4 < mLayerDef.mForceVector.Count; num4++)
 			{
-				PIForce pIForce = mLayerDef.mForceVector[num4];
-				bool flag3 = pIForce.mActive.GetLastKeyframe(mFrameNum) > 0.99f;
-				if ((pIForce.mVisible && flag3) || mDebug)
+				PIForce aForce = mLayerDef.mForceVector[num4];
+				bool flag3 = aForce.mActive.GetLastKeyframe(mFrameNum) > 0.99f;
+				if ((aForce.mVisible && flag3) || mDebug)
 				{
 					if (flag3)
 					{
@@ -3318,11 +3377,11 @@ namespace SexyFramework.Graphics
 					}
 					for (int num5 = 0; num5 < 4; num5++)
 					{
-						Vector2 vector4 = pIForce.mCurPoints[num5];
-						Vector2 vector5 = pIForce.mCurPoints[(num5 + 1) % 4];
+						Vector2 vector4 = aForce.mCurPoints[num5];
+						Vector2 vector5 = aForce.mCurPoints[(num5 + 1) % 4];
 						g.DrawLine((int)vector4.X, (int)vector4.Y, (int)vector5.X, (int)vector5.Y);
 					}
-					float num6 = MathHelper.ToRadians(0f - pIForce.mDirection.GetValueAt(mFrameNum)) + MathHelper.ToRadians(0f - pIForce.mAngle.GetValueAt(mFrameNum));
+					float num6 = MathHelper.ToRadians(0f - aForce.mDirection.GetValueAt(mFrameNum)) + MathHelper.ToRadians(0f - aForce.mAngle.GetValueAt(mFrameNum));
 					Transform transform = new Transform();
 					transform.RotateRad(0f - num6);
 					Vector2[] array6 = new Vector2[3]
@@ -3333,8 +3392,8 @@ namespace SexyFramework.Graphics
 					};
 					for (int num7 = 0; num7 < 3; num7++)
 					{
-						Vector2 vector6 = GlobalPIEffect.TransformFPoint(transform.GetMatrix(), array6[num7]) + pIForce.mCurPoints[4];
-						Vector2 vector7 = GlobalPIEffect.TransformFPoint(transform.GetMatrix(), array6[(num7 + 1) % 3]) + pIForce.mCurPoints[4];
+						Vector2 vector6 = GlobalPIEffect.TransformFPoint(transform.GetMatrix(), array6[num7]) + aForce.mCurPoints[4];
+						Vector2 vector7 = GlobalPIEffect.TransformFPoint(transform.GetMatrix(), array6[(num7 + 1) % 3]) + aForce.mCurPoints[4];
 						g.DrawLine((int)vector6.X, (int)vector6.Y, (int)vector7.X, (int)vector7.Y);
 					}
 				}
@@ -3345,15 +3404,13 @@ namespace SexyFramework.Graphics
 		public void Draw(Graphics g)
 		{
 			mLastDrawnPixelCount = 0;
-			for (int i = 0; i < mDef.mLayerDefVector.Count; i++)
+			for (int aLayerIdx = 0; aLayerIdx < mDef.mLayerDefVector.Count; aLayerIdx++)
 			{
-				PILayer pILayer = mLayerVector[i];
-				if (pILayer.mVisible)
+				PILayer aLayer = mLayerVector[aLayerIdx];
+				if (aLayer.mVisible)
 				{
-					DrawLayer(g, pILayer);
-					DrawLayerNormal(g, pILayer);
-					DrawLayerAdditive(g, pILayer);
-					DrawPhisycalLayer(g, pILayer);
+					DrawLayer(g, aLayer);
+					DrawPhisycalLayer(g, aLayer);
 				}
 			}
 			mLastDrawnPixelCount *= (int)GlobalPIEffect.GetMatrixScale(mDrawTransform);
@@ -3362,18 +3419,18 @@ namespace SexyFramework.Graphics
 		public void Draw(Graphics g, bool isDarkenise)
 		{
 			mLastDrawnPixelCount = 0;
-			for (int i = 0; i < mDef.mLayerDefVector.Count; i++)
+			for (int aLayerIdx = 0; aLayerIdx < mDef.mLayerDefVector.Count; aLayerIdx++)
 			{
-				PILayer pILayer = mLayerVector[i];
-				if (pILayer.mVisible)
+				PILayer aLayer = mLayerVector[aLayerIdx];
+				if (aLayer.mVisible)
 				{
 					if (isDarkenise)
 					{
-						DrawDarkenLayer(g, pILayer);
+						DrawDarkenLayer(g, aLayer);
 					}
 					else
 					{
-						DrawLayer(g, pILayer);
+						DrawLayer(g, aLayer);
 					}
 				}
 			}
