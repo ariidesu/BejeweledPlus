@@ -26,15 +26,7 @@ namespace BejeweledLivePlus
 
 		private SpriteBatch mSpriteBatch;
 
-		private Texture2D mSplash;
-
-		private Texture2D mSplashCopyRight;
-
 		private SpriteFont mSpriteFont;
-
-		private bool mIsLoading = true;
-
-		private double mElipseTime;
 
 		private bool mInitBegin;
 
@@ -73,7 +65,7 @@ namespace BejeweledLivePlus
 			base.Content = new WP7ContentManager(base.Services);
 			base.Content.RootDirectory = "Content";
 			base.IsFixedTimeStep = false;
-			base.IsMouseVisible = true;
+            base.IsMouseVisible = true;
 			theApp = new BejeweledLivePlusApp(this);
 			SexyFramework.GlobalMembers.gSexyApp = theApp;
 			SexyFramework.GlobalMembers.gSexyAppBase = theApp;
@@ -92,8 +84,6 @@ namespace BejeweledLivePlus
 			base.Initialize();
 			Strings.Culture = CultureInfo.CurrentCulture;
 			mSpriteBatch = new SpriteBatch(base.GraphicsDevice);
-			mSplash = base.Content.Load<Texture2D>("Default-Landscape");
-			mSplashCopyRight = base.Content.Load<Texture2D>("copyright/" + Strings.Legal);
 			mSpriteFont = base.Content.Load<SpriteFont>("Arial_20");
 			preTime = DateTime.Now;
 		}
@@ -173,22 +163,6 @@ namespace BejeweledLivePlus
 			// catch (Exception)
 			// {
 			// }
-			if (!mIsLoading)
-			{
-				theApp.Update(gameTime.ElapsedGameTime.Seconds);
-				return;
-				// try
-				// {
-				// 	theApp.Update(gameTime.ElapsedGameTime.Seconds);
-				// 	return;
-				// }
-				// catch (GameUpdateRequiredException ex4)
-				// {
-				// 	theApp.HandleGameUpdateRequired(ex4);
-				// 	return;
-				// }
-			}
-			mElipseTime += gameTime.ElapsedGameTime.TotalSeconds;
 			if (!mInitBegin)
 			{
 				GC.Collect();
@@ -197,48 +171,13 @@ namespace BejeweledLivePlus
 				theApp.Start();
 				mInitBegin = true;
 			}
-			else if (mElipseTime >= 3.0)
-			{
-				mIsLoading = false;
-				DateTime now = DateTime.Now;
-				TimeSpan timeSpan = now - preTime;
-			}
+			theApp.Update(gameTime.ElapsedGameTime.Seconds);
 		}
 
 		protected override void Draw(GameTime gameTime)
 		{
-			if (mIsLoading)
+			if (mInitBegin)
 			{
-				mSpriteBatch.Begin();
-				float scaleX = (float)GraphicsDevice.Viewport.Width / 480f;
-				float scaleY = (float)GraphicsDevice.Viewport.Height / 800f;
-
-				mSpriteBatch.Draw(
-					mSplash,
-					new Rectangle(0, 0, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height),
-					Color.White
-				);
-
-				int copyY = (int)(736f * scaleY);
-				int copyW = (int)(480f * scaleX);
-				int copyH = (int)(64f * scaleY);
-
-				mSpriteBatch.Draw(
-					mSplashCopyRight,
-					new Rectangle(0, copyY, copyW, copyH),
-					Color.White
-				);
-				mSpriteBatch.End();
-			}
-			else
-			{
-				if (mSplash != null)
-				{
-					mSplash.Dispose();
-					mSplash = null;
-					mSplashCopyRight.Dispose();
-					mSplashCopyRight = null;
-				}
 				theApp.Draw(0);
 			}
 			base.Draw(gameTime);
@@ -252,10 +191,6 @@ namespace BejeweledLivePlus
 
 		protected override void OnDeactivated(object sender, EventArgs args)
 		{
-			if (mIsLoading)
-			{
-				mElipseTime -= 2.0;
-			}
 			theApp.OnDeactivated();
 			base.OnDeactivated(sender, args);
 		}
@@ -288,14 +223,7 @@ namespace BejeweledLivePlus
 				if (subTime > 0.4000000059604645)
 				{
 					subTime = 0.0;
-					if (mIsLoading)
-					{
-						Exit();
-					}
-					else
-					{
-						theApp.OnHardwardBackButtonPressed();
-					}
+					theApp.OnHardwardBackButtonPressed();
 				}
 				else
 				{

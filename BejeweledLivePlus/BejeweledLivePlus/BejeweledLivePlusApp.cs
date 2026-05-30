@@ -235,6 +235,12 @@ namespace BejeweledLivePlus
 
 		public Mesh mWarpTubeCap3D;
 
+		public List<HyperAnimSequence> mHyperSpaceAnims = new List<HyperAnimSequence>();
+
+		public HyperTube3P3DListener mHyperTube3DListener = new HyperTube3P3DListener();
+
+        private bool mHyperspace3DLoaded;
+
 		public List<string> mAffirmationFiles = new List<string>();
 
 		public List<string> mSBAFiles = new List<string>();
@@ -444,6 +450,46 @@ namespace BejeweledLivePlus
 		private void InitStepPrepareCurvedVal()
 		{
 			mCurveValCache = new PreCalculatedCurvedValManager();
+		}
+
+		public bool LoadHyperspace3DResources()
+		{
+			if (mHyperspace3DLoaded) return true;
+
+			GenericResFile[] gemFiles = new[]
+			{
+				GlobalMembersResourcesWP.RESFILE_3D_GEMRED,
+				GlobalMembersResourcesWP.RESFILE_3D_GEMWHITE,
+				GlobalMembersResourcesWP.RESFILE_3D_GEMGREEN,
+				GlobalMembersResourcesWP.RESFILE_3D_GEMYELLOW,
+				GlobalMembersResourcesWP.RESFILE_3D_GEMPURPLE,
+				GlobalMembersResourcesWP.RESFILE_3D_GEMORANGE,
+				GlobalMembersResourcesWP.RESFILE_3D_GEMBLUE,
+			};
+			for (int i = 0; i < 7; i++)
+			{
+				if (mGems3D[i] == null) mGems3D[i] = mGraphicsDriver.LoadMesh(gemFiles[i].GetFilePath(), mGems3DListener[i]);
+			}
+
+			if (GlobalMembersResourcesWP.RESFILE_3D_WARPTUBE == null || GlobalMembersResourcesWP.RESFILE_3D_WARPTUBE_CAP == null)
+			{
+				return false;
+			}
+			mWarpTube3D = mGraphicsDriver.LoadMesh(GlobalMembersResourcesWP.RESFILE_3D_WARPTUBE.GetFilePath(), mHyperTube3DListener);
+			mWarpTubeCap3D = mGraphicsDriver.LoadMesh(GlobalMembersResourcesWP.RESFILE_3D_WARPTUBE_CAP.GetFilePath(), new Bej3P3DListener());
+			if (mWarpTube3D == null || mWarpTubeCap3D == null)
+			{
+				return false;
+			}
+			if (GlobalMembersResourcesWP.RESFILE_3D_HYPERSPACE_MAIN_0 == null)
+			{
+				return false;
+			}
+			HyperAnimSequence seq = HyperAnimSequence.LoadFromFile(GlobalMembersResourcesWP.RESFILE_3D_HYPERSPACE_MAIN_0.GetFilePath());
+			if (seq == null) return false;
+			mHyperSpaceAnims.Add(seq);
+			mHyperspace3DLoaded = true;
+			return true;
 		}
 
 		private void InitStepLoadExtraConfigs()

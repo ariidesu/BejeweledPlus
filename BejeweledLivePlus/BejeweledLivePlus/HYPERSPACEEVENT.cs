@@ -7,6 +7,10 @@ namespace BejeweledLivePlus
 		HYPERSPACEEVENT_OldLevelClear,
 		HYPERSPACEEVENT_ZoomIn,
 		HYPERSPACEEVENT_SlideOver,
-		HYPERSPACEEVENT_Finish
-	}
+		HYPERSPACEEVENT_Finish,
+		// Ultra-only
+		HYPERSPACEEVENT_BoardShatter,
+		HYPERSPACEEVENT_NextBkg,
+        HYPERSPACEEVENT_UltraFullySlideOver
+    }
 }

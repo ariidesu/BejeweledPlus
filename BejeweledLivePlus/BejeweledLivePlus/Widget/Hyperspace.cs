@@ -5,6 +5,10 @@ namespace BejeweledLivePlus.Widget
 {
 	public class Hyperspace : SexyFramework.Widget.Widget
 	{
+		public bool mSlidingHUD;
+
+		public bool mTransitionBoard;
+
 		public override void Update()
 		{
 			base.Update();
@@ -29,8 +33,17 @@ namespace BejeweledLivePlus.Widget
 			return false;
 		}
 
+		public virtual bool ShouldDrawBoardEffects()
+		{
+			return true;
+		}
+
 		public virtual void SetBGImage(SharedImageRef inImage)
+		{
+		}
+		public virtual void SkipToPortalRide()
 		{
 		}
 	}
 }
+

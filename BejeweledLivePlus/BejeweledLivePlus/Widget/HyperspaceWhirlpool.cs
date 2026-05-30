@@ -25,10 +25,6 @@ namespace BejeweledLivePlus.Widget
 
 		public Board mBoard;
 
-		public bool mSlidingHUD;
-
-		public bool mTransitionBoard;
-
 		public HyperSpaceState mState;
 
 		public bool mIs3d;
@@ -783,6 +779,11 @@ namespace BejeweledLivePlus.Widget
 		public override bool IsUsing3DTransition()
 		{
 			return true;
+		}
+
+		public override void SkipToPortalRide()
+		{
+			SetState(HyperSpaceState.HyperSpaceState_PortalRide);
 		}
 
 		public void SetState(HyperSpaceState state)

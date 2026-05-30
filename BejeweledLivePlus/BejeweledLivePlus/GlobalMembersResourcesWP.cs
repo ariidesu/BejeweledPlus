@@ -3227,7 +3227,43 @@ namespace BejeweledLivePlus
 
 		public static RenderEffectDefinition EFFECT_WAVE;
 
-		public static Image ATLASIMAGE_ATLAS_LOADER_480_00;
+		public static GenericResFile RESFILE_3D_GEMRED;
+
+		public static GenericResFile RESFILE_3D_GEMWHITE;
+
+		public static GenericResFile RESFILE_3D_GEMGREEN;
+
+		public static GenericResFile RESFILE_3D_GEMYELLOW;
+
+		public static GenericResFile RESFILE_3D_GEMPURPLE;
+
+		public static GenericResFile RESFILE_3D_GEMORANGE;
+
+		public static GenericResFile RESFILE_3D_GEMBLUE;
+
+		public static GenericResFile RESFILE_3D_WARPTUBE;
+
+		public static GenericResFile RESFILE_3D_WARPTUBE_CAP;
+
+		public static GenericResFile RESFILE_3D_HYPERSPACE_MAIN_0;
+
+		public static Image IMAGE_HYPERSPACE_INITIAL;
+
+        public static Image IMAGE_HYPERSPACE;
+
+        public static Image IMAGE_HYPERSPAZEN_INITIAL;
+
+        public static Image IMAGE_HYPERSPAZEN;
+
+        public static Image IMAGE_WARP_LINES_01;
+
+        public static Image IMAGE_WARP_LINES_02;
+
+        public static Image IMAGE_WARP_LINES_03;
+
+        public static Image IMAGE_WARP_LINES_04;
+
+        public static Image ATLASIMAGE_ATLAS_LOADER_480_00;
 
 		public static Image IMAGE_LOADER_WHITEDOT;
 
@@ -3643,7 +3679,7 @@ namespace BejeweledLivePlus
 
 		public static Image IMAGE_HEATWAVE;
 
-		internal static ResGlobalPtr[] gResources = new ResGlobalPtr[1811];
+		internal static ResGlobalPtr[] gResources = new ResGlobalPtr[1814];
 
 		internal static uint[] gResourceLocales = new uint[6] { 1145390149u, 1162761555u, 1163085139u, 1179797074u, 1230260564u, 0u };
 
@@ -7148,7 +7184,15 @@ namespace BejeweledLivePlus
 			{
 				RESFILE_PROPERTIES_MUSIC = GetGenericResFileThrow(theManager, 14, "RESFILE_PROPERTIES_MUSIC", 0, 0);
 				IMAGE_HEATWAVE = GetImageThrow(theManager, 1810, "IMAGE_HEATWAVE", 0, 0);
-				PIEFFECT_ANIMS_CARD_GEM_SPARKLE2 = GetPIEffectThrow(theManager, 1477, "PIEFFECT_ANIMS_CARD_GEM_SPARKLE2", 0, 0);
+				IMAGE_HYPERSPACE_INITIAL = GetImageThrow(theManager, 1811, "IMAGE_HYPERSPACE_INITIAL", 0, 0);
+                IMAGE_HYPERSPACE = GetImageThrow(theManager, 1812, "IMAGE_HYPERSPACE", 0, 0);
+                IMAGE_HYPERSPAZEN_INITIAL = GetImageThrow(theManager, 1813, "IMAGE_HYPERSPAZEN_INITIAL", 0, 0);
+                IMAGE_HYPERSPAZEN = GetImageThrow(theManager, 1814, "IMAGE_HYPERSPAZEN", 0, 0);
+                IMAGE_WARP_LINES_01 = GetImageThrow(theManager, 1815, "IMAGE_WARP_LINES_01", 0, 0);
+                IMAGE_WARP_LINES_02 = GetImageThrow(theManager, 1816, "IMAGE_WARP_LINES_02", 0, 0);
+                IMAGE_WARP_LINES_03 = GetImageThrow(theManager, 1817, "IMAGE_WARP_LINES_03", 0, 0);
+                IMAGE_WARP_LINES_04 = GetImageThrow(theManager, 1818, "IMAGE_WARP_LINES_04", 0, 0);
+                PIEFFECT_ANIMS_CARD_GEM_SPARKLE2 = GetPIEffectThrow(theManager, 1477, "PIEFFECT_ANIMS_CARD_GEM_SPARKLE2", 0, 0);
 				PIEFFECT_HELP_BUTTERFLY_HELP = GetPIEffectThrow(theManager, 1478, "PIEFFECT_HELP_BUTTERFLY_HELP", 0, 0);
 				PIEFFECT_HELP_CARD_GEM_SPARKLE2 = GetPIEffectThrow(theManager, 1479, "PIEFFECT_HELP_CARD_GEM_SPARKLE2", 0, 0);
 				PIEFFECT_HELP_DIAMOND_SPARKLE = GetPIEffectThrow(theManager, 1480, "PIEFFECT_HELP_DIAMOND_SPARKLE", 0, 0);
@@ -11935,6 +11979,16 @@ namespace BejeweledLivePlus
 				EFFECT_TUBECAP_3D = GetRenderEffectThrow(theManager, 1573, "EFFECT_TUBECAP_3D", 0, 0);
 				EFFECT_UNDER_DIALOG = GetRenderEffectThrow(theManager, 1574, "EFFECT_UNDER_DIALOG", 0, 0);
 				EFFECT_WAVE = GetRenderEffectThrow(theManager, 1575, "EFFECT_WAVE", 0, 0);
+				RESFILE_3D_GEMRED = GetGenericResFileThrow(theManager, (int)ResourceId.RESFILE_3D_GEMRED_ID, "RESFILE_3D_GEMRED", 0, 0);
+				RESFILE_3D_GEMWHITE = GetGenericResFileThrow(theManager, (int)ResourceId.RESFILE_3D_GEMWHITE_ID, "RESFILE_3D_GEMWHITE", 0, 0);
+				RESFILE_3D_GEMGREEN = GetGenericResFileThrow(theManager, (int)ResourceId.RESFILE_3D_GEMGREEN_ID, "RESFILE_3D_GEMGREEN", 0, 0);
+				RESFILE_3D_GEMYELLOW = GetGenericResFileThrow(theManager, (int)ResourceId.RESFILE_3D_GEMYELLOW_ID, "RESFILE_3D_GEMYELLOW", 0, 0);
+				RESFILE_3D_GEMPURPLE = GetGenericResFileThrow(theManager, (int)ResourceId.RESFILE_3D_GEMPURPLE_ID, "RESFILE_3D_GEMPURPLE", 0, 0);
+				RESFILE_3D_GEMORANGE = GetGenericResFileThrow(theManager, (int)ResourceId.RESFILE_3D_GEMORANGE_ID, "RESFILE_3D_GEMORANGE", 0, 0);
+				RESFILE_3D_GEMBLUE = GetGenericResFileThrow(theManager, (int)ResourceId.RESFILE_3D_GEMBLUE_ID, "RESFILE_3D_GEMBLUE", 0, 0);
+				RESFILE_3D_WARPTUBE = GetGenericResFileThrow(theManager, (int)ResourceId.RESFILE_3D_WARPTUBE_ID, "RESFILE_3D_WARPTUBE", 0, 0);
+				RESFILE_3D_WARPTUBE_CAP = GetGenericResFileThrow(theManager, (int)ResourceId.RESFILE_3D_WARPTUBE_CAP_ID, "RESFILE_3D_WARPTUBE_CAP", 0, 0);
+				RESFILE_3D_HYPERSPACE_MAIN_0 = GetGenericResFileThrow(theManager, (int)ResourceId.RESFILE_3D_HYPERSPACE_MAIN_0_ID, "RESFILE_3D_HYPERSPACE_MAIN_0", 0, 0);
 			}
 			catch (ResourceManagerException)
 			{
@@ -17870,7 +17924,23 @@ namespace BejeweledLivePlus
 				return "IMAGE_ARROW_GLOW";
 			case 1810:
 				return "IMAGE_HEATWAVE";
-			default:
+			case 1811:
+				return "IMAGE_HYPERSPACE_INITIAL";
+			case 1812:
+				return "IMAGE_HYPERSPACE";
+            case 1813:
+                return "IMAGE_HYPERSPAZEN_INITIAL";
+            case 1814:
+				return "IMAGE_HYPERSPAZEN";
+            case 1815:
+				return "IMAGE_WARP_LINES_01";
+            case 1816:
+                return "IMAGE_WARP_LINES_02";
+            case 1817:
+                return "IMAGE_WARP_LINES_03";
+            case 1818:
+                return "IMAGE_WARP_LINES_04";
+            default:
 				return "";
 			}
 		}
