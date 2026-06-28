@@ -294,20 +294,12 @@ namespace BejeweledLivePlus.Bej3Graphics
 				}
 			}
 			int num2 = 0;
-			UpdateTypeEmber(3);
-			UpdateTypeEmber(4);
-			UpdateTypeEmber(5);
-			UpdateTypeEmber(6);
 			for (int i = 0; i < 24; i++)
 			{
 				int num3 = 0;
 				if (mUpdateCnt % 24 == i)
 				{
 					GarbageCollectEffects(i);
-				}
-				if (i >= 3 && i <= 6)
-				{
-					continue;
 				}
 				List<Effect>.Enumerator enumerator = mEffectList[i].GetEnumerator();
 				while (enumerator.MoveNext())
@@ -359,6 +351,7 @@ namespace BejeweledLivePlus.Bej3Graphics
 						}
 						break;
 					case Effect.Type.TYPE_EMBER_BOTTOM:
+					case Effect.Type.TYPE_EMBER_FADEINOUT_BOTTOM:
 					case Effect.Type.TYPE_EMBER:
 					case Effect.Type.TYPE_EMBER_FADEINOUT:
 						current.mScale += current.mDScale;
@@ -454,7 +447,6 @@ namespace BejeweledLivePlus.Bej3Graphics
 							current.mDAlpha = current.mValue[1];
 						}
 						current.mAngle += current.mDAngle;
-						current.mScale += current.mDScale;
 						break;
 					}
 					case Effect.Type.TYPE_GLITTER_SPARK:
@@ -470,11 +462,11 @@ namespace BejeweledLivePlus.Bej3Graphics
 						}
 						break;
 					case Effect.Type.TYPE_GEM_SHARD:
-						if (mUpdateCnt % 2 == 0)
-						{
+                        if (mUpdateCnt % 2 == 0)
+                        {
 							current.mFrame = (current.mFrame + 1) % 40;
-						}
-						current.mDX *= current.mDecel;
+                        }
+                        current.mDX *= current.mDecel;
 						current.mDY *= current.mDecel;
 						current.mAngle += current.mDAngle;
 						current.mValue[0] += current.mValue[2];
@@ -1186,12 +1178,12 @@ namespace BejeweledLivePlus.Bej3Graphics
 							Math.Max(1f - Math.Abs(num2 - 1f) * 3f, 0f) * num
 						};
 						effect.SetVector4("Params", array);
-						float num3 = (float)(double)current.mRadius;
+						float r = (float)current.mRadius;
+						double hw = GlobalMembers.S(r);
 						FRect theTRect = new FRect(
-							(int)GlobalMembers.S((double)current.mCenter.mX + (double)current.mMoveDelta.mX * (double)current.mMovePct - (double)num3) , 
-							(int)GlobalMembers.S((double)current.mCenter.mY + (double)current.mMoveDelta.mY * (double)current.mMovePct - (double)num3), 
-							(int)(GlobalMembers.S(num3) * 2f), 
-							(int)(GlobalMembers.S(num3) * 2f));
+							(float)GlobalMembers.S(current.mCenter.mX + current.mMoveDelta.mX * (float)current.mMovePct - r * 0.5f),
+							(float)GlobalMembers.S(current.mCenter.mY + current.mMoveDelta.mY * (float)current.mMovePct - r * 0.5f),
+							(float)hw, (float)hw);
 						Color color = new Color((int)(array[0] * 255f), (int)(array[1] * 255f), (int)(array[2] * 255f), (int)(array[3] * 255f));
 						graphics.SetColor(color);
 						BltDouble(graphics, GlobalMembersResourcesWP.IMAGE_HEATWAVE, theTRect, color, 2);

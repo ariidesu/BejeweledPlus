@@ -33,19 +33,6 @@ namespace BejeweledLivePlus
 			eUIConfig_StandardNoReplay
 		}
 
-		private struct MyPiece
-		{
-			public Piece piece;
-
-			public float alpha;
-
-			public float scale;
-
-			public int offsX;
-
-			public int offsY;
-		}
-
 		public class DeferredSound
 		{
 			public int mId;
@@ -673,15 +660,7 @@ namespace BejeweledLivePlus
 			GlobalMembers.M(30),
 			GlobalMembers.M(45)
 		};
-
-		private static float Update_aSpeed = 1f;
-
-		private MyPiece[] DSP_pNormalPieces = new MyPiece[128];
-
-		private MyPiece[] DSP_pHyperCubes = new MyPiece[64];
-
-		private MyPiece[] DSP_pButterflies = new MyPiece[64];
-
+		
 		private Color[] DSP_gemColors = new Color[7]
 		{
 			new Color(255, 255, 255),
@@ -693,11 +672,7 @@ namespace BejeweledLivePlus
 			new Color(255, 255, 255)
 		};
 
-		private Piece[] DP_pStdPieces = new Piece[128];
-
-		private Piece[] DP_pShadowPieces = new Piece[128];
-
-		private Piece[] DP_pQuestPieces = new Piece[128];
+		private static float Update_aSpeed = 1f;
 
 		private void ClipCollapsingBoard(Graphics g)
 		{
@@ -3594,11 +3569,6 @@ namespace BejeweledLivePlus
 					}
 				}
 			}
-			if (mNukeRadius.GetInVal() >= (double)GlobalMembers.M(0.58f))
-			{
-				mNukeRadius.GetInVal();
-				double num9 = (double)GlobalMembers.M(1.65f);
-			}
 			if (mNukeRadius.CheckInThreshold(GlobalMembers.M(1.65f)))
 			{
 				mGameOverPiece.mFlags = 0;
@@ -3716,6 +3686,7 @@ namespace BejeweledLivePlus
 					}
 				}
 				mPointMultTextMorph.SetConstant(0.0);
+				mPointMultPosPct.SetConstant(0.0);
 				GlobalMembers.gApp.mCurveValCache.GetCurvedVal(PreCalculatedCurvedValManager.CURVED_VAL_ID.eBOARD_POINT_MULT_POS_PCT_1, mPointMultPosPct);
 				GlobalMembers.gApp.mCurveValCache.GetCurvedVal(PreCalculatedCurvedValManager.CURVED_VAL_ID.eBOARD_POINT_MULT_SCALE_1, mPointMultScale, mPointMultPosPct);
 				GlobalMembers.gApp.mCurveValCache.GetCurvedVal(PreCalculatedCurvedValManager.CURVED_VAL_ID.eBOARD_POINT_MULT_ALPHA_1, mPointMultAlpha, mPointMultPosPct);
@@ -3977,6 +3948,7 @@ namespace BejeweledLivePlus
 		public ParticleEffect NewTopLaserEffect(int theGemColor)
 		{
 			ParticleEffect particleEffect = ParticleEffect.fromPIEffect(GlobalMembersResourcesWP.PIEFFECT_STARGEM);
+			particleEffect.mScale = 0.85f;
 			particleEffect.SetEmitAfterTimeline(true);
 			particleEffect.mDoDrawTransform = true;
 			for (int i = 0; i < 7; i++)
@@ -3999,6 +3971,7 @@ namespace BejeweledLivePlus
 		public ParticleEffect NewBottomLaserEffect(int theGemColor)
 		{
 			ParticleEffect particleEffect = ParticleEffect.fromPIEffect(GlobalMembersResourcesWP.PIEFFECT_STARGEM);
+			particleEffect.mScale = 0.85f;
 			particleEffect.SetEmitAfterTimeline(true);
 			particleEffect.mDoDrawTransform = true;
 			particleEffect.mDoubleSpeed = true;
@@ -4026,6 +3999,7 @@ namespace BejeweledLivePlus
 			thePiece.mAnimCurve.SetMode(1);
 			ParticleEffect particleEffect = ParticleEffect.fromPIEffect(GlobalMembersResourcesWP.PIEFFECT_MULTIPLIER);
 			particleEffect.mPieceRel = thePiece;
+			particleEffect.mScale = 100f / 128f;
 			particleEffect.mDoDrawTransform = true;
 			particleEffect.mDoubleSpeed = true;
 			particleEffect.SetEmitAfterTimeline(true);
@@ -10949,7 +10923,7 @@ namespace BejeweledLivePlus
 
 		public virtual void DrawHypercube(Graphics g, Piece thePiece)
 		{
-			int theCel = (int)GlobalMembers.gApp.mUpdateCount / GlobalMembers.M(8) % GlobalMembersResourcesWP.IMAGE_HYPERCUBE_FRAME.GetCelCount();
+			int theCel = (int)GlobalMembers.gApp.mUpdateCount / GlobalMembers.M(5) % GlobalMembersResourcesWP.IMAGE_HYPERCUBE_FRAME.GetCelCount();
 			int num = (int)GlobalMembers.S(thePiece.GetScreenX() - 16f);
 			int num2 = (int)GlobalMembers.S(thePiece.GetScreenY() - 16f);
 			g.SetColor(Color.White);
@@ -10963,10 +10937,48 @@ namespace BejeweledLivePlus
 
 		public void DrawBombGem(Graphics g, Piece thePiece)
 		{
+			Image bombImage = GlobalMembersResourcesWP.IMAGE_BOMBGEMS;
+			if (bombImage == null)
+			{
+				return;
+			}
+			int celIndex = thePiece.mCounter;
+			int celCount = bombImage.GetCelCount();
+			if (celIndex >= celCount)
+			{
+				celIndex = celCount - 1;
+			}
+			if (celIndex < 0)
+			{
+				celIndex = 0;
+			}
+			int cx = (int)GlobalMembers.S(thePiece.mX + 64f);
+			int cy = (int)GlobalMembers.S(thePiece.mY + 64f);
+			int x = cx - bombImage.GetCelWidth() / 2;
+			int y = cy - bombImage.GetCelHeight() / 2;
+			g.SetColorizeImages(true);
+			float alpha = (float)((double)thePiece.mAlpha * (double)GetPieceAlpha());
+			g.SetColor(new Color(255, 255, 255, (int)(255f * alpha)));
+			g.DrawImageCel(bombImage, x, y, celIndex);
+			g.SetColorizeImages(false);
 		}
 
 		public void DrawDoomGem(Graphics g, Piece thePiece)
 		{
+			Image doomImage = GlobalMembersResourcesWP.IMAGE_DOOMGEM;
+			if (doomImage == null)
+			{
+				return;
+			}
+			int cx = (int)GlobalMembers.S(thePiece.mX + 64f);
+			int cy = (int)GlobalMembers.S(thePiece.mY + 64f);
+			int x = cx - doomImage.GetCelWidth() / 2;
+			int y = cy - doomImage.GetCelHeight() / 2;
+			g.SetColorizeImages(true);
+			float alpha = (float)((double)thePiece.mAlpha * (double)GetPieceAlpha());
+			g.SetColor(new Color(255, 255, 255, (int)(255f * alpha)));
+			g.DrawImage(doomImage, x, y);
+			g.SetColorizeImages(false);
 		}
 
 		public virtual void DrawPieceShadow(Graphics g, Piece thePiece)
@@ -11002,6 +11014,29 @@ namespace BejeweledLivePlus
 				}
 			}
 		}
+
+		private static readonly Color[] sMultiplierColorTints = new Color[7]
+		{
+			new Color(128, 0, 0),
+			new Color(96, 96, 96),
+			new Color(0, 128, 0),
+			new Color(128, 80, 0),
+			new Color(128, 0, 96),
+			new Color(160, 64, 0),
+			new Color(0, 64, 160)
+		};
+
+		private Image[] sMultiplierImages = new Image[8]
+		{
+			GlobalMembersResourcesWP.IMAGE_MULTIPLIER_OLD_2,
+			GlobalMembersResourcesWP.IMAGE_MULTIPLIER_OLD_3,
+			GlobalMembersResourcesWP.IMAGE_MULTIPLIER_OLD_4,
+			GlobalMembersResourcesWP.IMAGE_MULTIPLIER_OLD_5,
+			GlobalMembersResourcesWP.IMAGE_MULTIPLIER_OLD_6,
+			GlobalMembersResourcesWP.IMAGE_MULTIPLIER_OLD_7,
+			GlobalMembersResourcesWP.IMAGE_MULTIPLIER_OLD_8,
+			GlobalMembersResourcesWP.IMAGE_MULTIPLIER_OLD_9
+		};
 
 		public virtual void DrawPiece(Graphics g, Piece thePiece)
 		{
@@ -11054,7 +11089,11 @@ namespace BejeweledLivePlus
 			{
 				DrawDoomGem(g, thePiece);
 			}
-			else if (!thePiece.IsFlagSet(128u))
+			else if (thePiece.IsFlagSet(128u))
+			{
+				DrawButterfly(g, num5, num6, thePiece, num);
+			}
+			else
 			{
 				flag = true;
 			}
@@ -11082,32 +11121,75 @@ namespace BejeweledLivePlus
 				}
 				else
 				{
-					new Color(255, 255, 255);
-					new Color(192, 192, 192);
-					new Color(32, 192, 32);
-					new Color(224, 192, 32);
-					new Color(255, 255, 255);
-					new Color(255, 160, 32);
-					new Color(255, 255, 255);
 					Image imageById = GlobalMembersResourcesWP.GetImageById(802 + thePiece.mColor);
 					float num8 = thePiece.mRotPct * (float)imageById.GetCelCount();
-					Rect celRect = imageById.GetCelRect((int)num8);
-					Rect celRect2 = imageById.GetCelRect(((int)num8 + 1) % imageById.GetCelCount());
-					float[] array = new float[4]
+					bool isLaser = thePiece.IsFlagSet(PIECEFLAG.PIECEFLAG_LASER);
+					if (isLaser)
 					{
-						(float)(celRect2.mX - celRect.mX) / (float)imageById.mWidth,
-						(float)(celRect2.mY - celRect.mY) / (float)imageById.mHeight,
-						num8 - (float)(int)num8,
-						0f
-					};
-					if (imageById.mAtlasImage != null)
-					{
-						array[0] /= imageById.mAtlasImage.mWidth;
-						array[1] /= imageById.mAtlasImage.mHeight;
+						Color tint = DSP_gemColors[thePiece.mColor];
+						int laserAlpha = (int)(255.0 * (double)thePiece.mAlpha * (double)GetPieceAlpha());
+						g.SetColor(new Color(tint.mRed, tint.mGreen, tint.mBlue, laserAlpha));
 					}
 					GlobalMembers.gGR.DrawImageCel(g, imageById, GlobalMembers.S(num5), GlobalMembers.S(num6), (int)num8);
+					if (isLaser)
+					{
+						g.SetColor(new Color(255, 255, 255, (int)(255f * num2)));
+					}
 				}
 				g.SetColorizeImages(false);
+			}
+			if (thePiece.IsFlagSet(PIECEFLAG.PIECEFLAG_POINT_MULTIPLIER) && !thePiece.IsShrinking())
+			{
+				g.SetColorizeImages(true);
+				int multIdx = mPointMultiplier - 1;
+				if (multIdx < 0) multIdx = 0;
+				if (multIdx > 7) multIdx = 7;
+				Image multImage = sMultiplierImages[multIdx];
+				Image streak = GlobalMembersResourcesWP.IMAGE_MULTIPLIER_OLD_STREAK;
+				int aYOfs = 0;
+				if (thePiece.mColor == 6) aYOfs = -10;
+				if (thePiece.mColor == 4) aYOfs = 12;
+				Color tint = (thePiece.mColor >= 0 && thePiece.mColor < 7) ? sMultiplierColorTints[thePiece.mColor] : Color.White;
+				int anOfsX = num5;
+				int aFrame = aYOfs + num6;
+				int additiveLum = (int)(GetPieceAlpha() * 160.0);
+				float multScale = 100f / 128f;
+				Utils.PushScale(g, multScale, multScale, GlobalMembers.S(anOfsX), GlobalMembers.S(num6));
+				g.PushState();
+				if (graphics3D != null && !mInReplay)
+				{
+					graphics3D.ClearMask();
+					graphics3D.SetMasking(Graphics3D.EMaskMode.MASKMODE_WRITE_MASKANDCOLOR, 0, 0.25f, 0.5f);
+					g.SetColor(GlobalMembers.gGemColors[thePiece.mColor] * GetPieceAlpha());
+					g.SetDrawMode(Graphics.DrawMode.Normal);
+					g.DrawImageCel(multImage, GlobalMembers.S(anOfsX), GlobalMembers.S(aFrame), 3);
+					g.SetColor(new Color(255, 255, 255, (int)(GetPieceAlpha() * thePiece.mAlpha.GetOutVal() * 255.0)));
+					g.SetDrawMode(Graphics.DrawMode.Additive);
+					g.DrawImageCel(multImage, GlobalMembers.S(anOfsX), GlobalMembers.S(aFrame), 2);
+					graphics3D.SetMasking(Graphics3D.EMaskMode.MASKMODE_TEST_INSIDE, 0, 0.25f, 0.5f);
+					int streakY = (int)(((double)thePiece.mAnimCurve.GetOutVal() + (double)num6 + (double)aYOfs) * (double)GlobalMembers.gApp.mArtRes / 1200.0);
+					g.DrawImageCel(streak, GlobalMembers.S(anOfsX), streakY, thePiece.mColor);
+					graphics3D.SetMasking(Graphics3D.EMaskMode.MASKMODE_NONE, 0, 0.25f, 0.5f);
+				}
+				// All other passes draw ON TOP of the streak. Base pre-pass: additive glow (cel-0)
+				// + number (cel-1, tint color). Then the final pass: number (cel-1, gem color) +
+				// additive glow (cel-0, white) — the number drawn twice for full richness, matching
+				// BejBlitz, but here both passes are after the streak so the streak stays behind.
+				g.SetDrawMode(Graphics.DrawMode.Additive);
+				g.SetColor(new Color(additiveLum, additiveLum, additiveLum));
+				GlobalMembers.gGR.DrawImageCel(g, multImage, GlobalMembers.S(anOfsX), GlobalMembers.S(aFrame), 0);
+				g.SetDrawMode(Graphics.DrawMode.Normal);
+				g.SetColor(new Color(tint.mRed, tint.mGreen, tint.mBlue, (int)(GetPieceAlpha() * 255.0)));
+				GlobalMembers.gGR.DrawImageCel(g, multImage, GlobalMembers.S(anOfsX), GlobalMembers.S(aFrame), 1);
+				g.SetColor(GlobalMembers.gGemColors[thePiece.mColor] * GetPieceAlpha());
+				g.SetDrawMode(Graphics.DrawMode.Normal);
+				GlobalMembers.gGR.DrawImageCel(g, multImage, GlobalMembers.S(anOfsX), GlobalMembers.S(aFrame), 1);
+				g.SetColor(new Color(255, 255, 255, (int)(GetPieceAlpha() * thePiece.mAlpha.GetOutVal() * 255.0)));
+				g.SetDrawMode(Graphics.DrawMode.Additive);
+				GlobalMembers.gGR.DrawImageCel(g, multImage, GlobalMembers.S(anOfsX), GlobalMembers.S(aFrame), 0);
+				g.SetDrawMode(Graphics.DrawMode.Normal);
+				g.PopState();
+				Utils.PopScale(g);
 			}
 			if (thePiece.IsFlagSet(8192u))
 			{
@@ -11164,175 +11246,6 @@ namespace BejeweledLivePlus
 			{
 				RestoreBoardDrawScale(g);
 			}
-		}
-
-		public void DrawStandardPieces(Graphics g, Piece[] pPieces, int numPieces)
-		{
-			DrawStandardPieces(g, pPieces, numPieces, 1f);
-		}
-
-		public void DrawStandardPieces(Graphics g, Piece[] pPieces, int numPieces, float theScale)
-		{
-			int num = 0;
-			int num2 = 0;
-			int num3 = 0;
-			Piece piece = null;
-			Graphics3D graphics3D = g.Get3D();
-			for (int i = 0; i < numPieces; i++)
-			{
-				Piece piece2;
-				if ((piece2 = pPieces[i]) == null)
-				{
-					continue;
-				}
-				float num4 = ((mHyperspace == null || piece2.mColor < 0) ? ((float)((double)piece2.mAlpha * (double)GetPieceAlpha())) : ((float)((double)piece2.mAlpha * (double)mHyperspace.GetPieceAlpha())));
-				if (!(num4 < 0.01f))
-				{
-					float scale = (float)((double)piece2.mScale * (double)theScale);
-					int offsX = (int)(piece2.GetScreenX() + piece2.mShakeOfsX);
-					int offsY = (int)(piece2.GetScreenY() + piece2.mShakeOfsY);
-					if (piece2.IsFlagSet(2u))
-					{
-						DSP_pHyperCubes[num2].piece = piece2;
-						DSP_pHyperCubes[num2].alpha = num4;
-						DSP_pHyperCubes[num2].scale = scale;
-						DSP_pHyperCubes[num2].offsX = offsX;
-						DSP_pHyperCubes[num2].offsY = offsY;
-						num2++;
-					}
-					else if (piece2.IsFlagSet(128u))
-					{
-						DSP_pButterflies[num3].piece = piece2;
-						DSP_pButterflies[num3].alpha = num4;
-						DSP_pButterflies[num3].scale = scale;
-						DSP_pButterflies[num3].offsX = offsX;
-						DSP_pButterflies[num3].offsY = offsY;
-						num3++;
-					}
-					else if (piece2.mColor >= 0)
-					{
-						DSP_pNormalPieces[num].piece = piece2;
-						DSP_pNormalPieces[num].alpha = num4;
-						DSP_pNormalPieces[num].scale = scale;
-						DSP_pNormalPieces[num].offsX = offsX;
-						DSP_pNormalPieces[num].offsY = offsY;
-						num++;
-					}
-					if ((double)piece2.mSelectorAlpha != 0.0)
-					{
-						piece = piece2;
-					}
-				}
-			}
-			g.SetColorizeImages(true);
-			int num5 = (int)GlobalMembers.gApp.mUpdateCount / GlobalMembers.M(10);
-			for (int i = 0; i < num; i++)
-			{
-				Piece piece2 = DSP_pNormalPieces[i].piece;
-				float scale = DSP_pNormalPieces[i].scale;
-				float num4 = DSP_pNormalPieces[i].alpha;
-				int offsX = DSP_pNormalPieces[i].offsX;
-				int offsY = DSP_pNormalPieces[i].offsY;
-				if (scale != 1f)
-				{
-					g.SetScale(scale, scale, GlobalMembers.S(piece2.GetScreenX() + 50f), GlobalMembers.S(piece2.GetScreenY() + 50f));
-				}
-				g.SetColor(new Color(255, 255, 255, (int)(255f * num4)));
-				if (CanBakeShadow(piece2))
-				{
-					if (graphics3D == null)
-					{
-						float num6 = scale;
-						if (num6 > 1f)
-						{
-							num6 = (num6 - 1f) * 2f + 1f;
-						}
-						int val = (int)((0f - num6 + 2f) * 16f / 2f - 1f);
-						val = Math.Max(0, Math.Min(val, 14));
-						Image image = GlobalMembers.gApp.mShrunkenGems[piece2.mColor, val];
-						RestoreBoardDrawScale(g);
-						GlobalMembers.gGR.DrawImage(g, image, GlobalMembers.S(offsX) - (image.mWidth - GlobalMembers.S(100)) / 2, GlobalMembers.S(offsY) - (image.mHeight - GlobalMembers.S(100)) / 2);
-					}
-					else
-					{
-						GlobalMembers.gGR.DrawImageCel(g, GlobalMembersResourcesWP.IMAGE_GEMS_SHADOWED, GlobalMembers.S(offsX), GlobalMembers.S(offsY), piece2.mColor);
-					}
-				}
-				else
-				{
-					Image imageById = GlobalMembersResourcesWP.GetImageById(802 + piece2.mColor);
-					float num7 = piece2.mRotPct * (float)imageById.GetCelCount();
-					GlobalMembers.gGR.DrawImageCel(g, imageById, GlobalMembers.S(offsX), GlobalMembers.S(offsY), (int)num7);
-				}
-				if (scale != 1f)
-				{
-					RestoreBoardDrawScale(g);
-				}
-			}
-			if (num2 > 0)
-			{
-				for (int i = 0; i < num2; i++)
-				{
-					Piece piece2 = DSP_pHyperCubes[i].piece;
-					DrawHypercube(g, piece2);
-				}
-			}
-			if (num3 > 0)
-			{
-				g.SetColor(Color.White);
-				for (int j = 0; j < num3; j++)
-				{
-					DrawButterfly(g, DSP_pButterflies[j].offsX, DSP_pButterflies[j].offsY, DSP_pButterflies[j].piece, DSP_pButterflies[j].scale);
-				}
-			}
-			if (piece != null)
-			{
-				g.SetColorizeImages(true);
-				g.SetColor(new Color(255, 255, 255, (int)(255.0 * (double)piece.mSelectorAlpha * (double)GetPieceAlpha())));
-				GlobalMembers.gGR.DrawImage(g, GlobalMembersResourcesWP.IMAGE_SELECTOR, (int)GlobalMembers.S(piece.GetScreenX()), (int)GlobalMembers.S(piece.GetScreenY()));
-			}
-			g.SetColorizeImages(false);
-		}
-
-		public void DrawShadowPieces(Graphics g, Piece[] pPieces, int numPieces)
-		{
-			DrawShadowPieces(g, pPieces, numPieces, 1f);
-		}
-
-		public void DrawShadowPieces(Graphics g, Piece[] pPieces, int numPieces, float theScale)
-		{
-			if (pPieces == null || numPieces == 0)
-			{
-				return;
-			}
-			bool colorizeImages = g.GetColorizeImages();
-			g.SetColorizeImages(true);
-			for (int i = 0; i < numPieces; i++)
-			{
-				Piece piece;
-				if ((piece = pPieces[i]) != null)
-				{
-					int theNum = (int)(piece.GetScreenX() + piece.mShakeOfsX);
-					int theNum2 = (int)(piece.GetScreenY() + piece.mShakeOfsY);
-					float num = (float)(double)piece.mScale;
-					if (num != 1f)
-					{
-						g.SetScale(num, num, GlobalMembers.S(piece.GetScreenX() + 50f), GlobalMembers.S(piece.GetScreenY() + 50f));
-					}
-					float num2 = ((mHyperspace == null || piece.mColor < 0) ? ((float)((double)piece.mAlpha * (double)GetPieceAlpha())) : ((float)((double)piece.mAlpha * (double)mHyperspace.GetPieceAlpha())));
-					g.SetColor(new Color(255, 255, 255, (int)(255f * num2)));
-					if (!piece.IsFlagSet(128u) && ((piece.mColor > -1 && piece.mColor < 7) || piece.IsFlagSet(4u)))
-					{
-						int theCel = (int)Math.Min(piece.mRotPct * (float)GlobalMembersResourcesWP.IMAGE_GEMS_RED.GetCelCount(), GlobalMembersResourcesWP.IMAGE_GEMS_RED.GetCelCount() - 1);
-						GlobalMembers.gGR.DrawImageCel(g, GlobalMembersResourcesWP.GetImageById(809 + piece.mColor), GlobalMembers.S(theNum), GlobalMembers.S(theNum2), theCel);
-					}
-					if (num != 1f)
-					{
-						RestoreBoardDrawScale(g);
-					}
-				}
-			}
-			g.SetColorizeImages(colorizeImages);
 		}
 
 		public virtual void DrawPieceText(Graphics g, Piece thePiece)
@@ -11939,35 +11852,20 @@ namespace BejeweledLivePlus
 
 		public virtual void DrawPieces(Graphics g, bool thePostFX)
 		{
-			int numPieces = 0;
-			int numPieces2 = 0;
-			int numPieces3 = 0;
 			uint num = 0u;
 			Graphics3D graphics3D = g.Get3D();
 			graphics3D?.SetTexture(0, GlobalMembersResourcesWP.IMAGE_GEMS_RED);
-			Piece[,] array = mBoard;
-			foreach (Piece piece in array)
-			{
-				if (piece == null || piece == mGameOverPiece || (thePostFX && !(piece.mElectrocutePercent > 0f) && (num & (1 << piece.mColor + 1)) == 0) || (thePostFX && (piece.IsFlagSet(4096u) || piece.IsFlagSet(2048u))))
-				{
-					continue;
-				}
-				if (piece.IsFlagSet(65536u))
-				{
-					DP_pQuestPieces[numPieces3++] = piece;
-					continue;
-				}
-				DP_pStdPieces[numPieces++] = piece;
-				if (!piece.IsFlagSet(1u) && !CanBakeShadow(piece))
-				{
-					DP_pShadowPieces[numPieces2++] = piece;
-				}
-			}
 			if (!thePostFX)
 			{
 				if (!mSuspendingGame)
 				{
-					DrawShadowPieces(g, DP_pShadowPieces, numPieces2);
+					foreach (Piece piece in mBoard)
+					{
+						if (piece != null && !piece.IsFlagSet(1u) && !CanBakeShadow(piece))
+						{
+							DrawPieceShadow(g, piece);
+						}
+					}
 				}
 				if (GlobalMembers.gApp.mInterfaceState != InterfaceState.INTERFACE_STATE_BADGEMENU && GlobalMembers.gApp.mInterfaceState != InterfaceState.INTERFACE_STATE_GAMEDETAILMENU && (mHyperspace == null || mHyperspace.ShouldDrawBoardEffects()))
 				{
@@ -11989,9 +11887,23 @@ namespace BejeweledLivePlus
 			}
 			if (!mSuspendingGame)
 			{
-				DrawStandardPieces(g, DP_pStdPieces, numPieces);
+				foreach (Piece piece in mBoard)
+				{
+					if (piece == null || piece == mGameOverPiece || IsPieceSwapping(piece, false, false))
+					{
+						continue;
+					}
+					if (thePostFX && !(piece.mElectrocutePercent > 0f) && (num & (1 << piece.mColor + 1)) == 0)
+					{
+						continue;
+					}
+					if (thePostFX && (piece.IsFlagSet(4096u) || piece.IsFlagSet(2048u)))
+					{
+						continue;
+					}
+					DrawPiece(g, piece, 1f);
+				}
 			}
-			DrawQuestPieces(g, DP_pQuestPieces, numPieces3, thePostFX);
 			if (mSuspendingGame)
 			{
 				return;

@@ -184,6 +184,12 @@ namespace BejeweledLivePlus.UI
 			case GameMode.MODE_ZEN:
 			case GameMode.MODE_ICESTORM:
 				break;
+			case GameMode.MODE_BLITZ:
+				mStatsHeadingLabels[0].SetText(GlobalMembers._ID("Highest Multiplier:", 3317));
+				mStatsHeadingLabels[1].SetText(GlobalMembers._ID("Best move:", 3318));
+				mStatsHeadingLabels[2].SetText(GlobalMembers._ID("Longest Cascade:", 3319));
+				mSpecialGemsHeadingLabel.SetText(GlobalMembers._ID("SPECIAL GEMS", 3301));
+				break;
 			}
 		}
 
@@ -239,6 +245,22 @@ namespace BejeweledLivePlus.UI
 				theX = ConstantsWP.GAMEDETAILMENU_POST_GAME_INLAY_1_GEM_POS_3_X + num + ConstantsWP.GAMEDETAILMENU_POST_GAME_INLAY_1_GEM_TEXT_OFFSET_X_1;
 				theY = ConstantsWP.GAMEDETAILMENU_POST_GAME_INLAY_DIAMOND_MINE_POS_Y + ConstantsWP.GAMEDETAILMENU_POST_GAME_INLAY_1_GEM_TEXT_OFFSET_Y;
 				g.DrawString(mSpecialStatsStrings[2], theX, theY);
+				break;
+			}
+			case GameMode.MODE_BLITZ:
+			{
+				Bej3Widget.DrawImageCentered(g, GlobalMembersResourcesWP.IMAGE_DIALOG_ICON_FLAME_LRG, 0, ConstantsWP.GAMEDETAILMENU_POST_GAME_INLAY_1_GEM_POS_1_X + gAMEDETAILMENU_POST_GAME_TAB_WIDTH, ConstantsWP.GAMEDETAILMENU_POST_GAME_INLAY_FLAME_GEM_POS_Y);
+				Bej3Widget.DrawImageCentered(g, GlobalMembersResourcesWP.IMAGE_DIALOG_ICON_STAR_LRG, 0, ConstantsWP.GAMEDETAILMENU_POST_GAME_INLAY_1_GEM_POS_2_X + gAMEDETAILMENU_POST_GAME_TAB_WIDTH, ConstantsWP.GAMEDETAILMENU_POST_GAME_INLAY_STAR_GEM_POS_Y);
+				Bej3Widget.DrawImageCentered(g, GlobalMembersResourcesWP.IMAGE_DIALOG_ICON_HYPERCUBE_LRG, 0, ConstantsWP.GAMEDETAILMENU_POST_GAME_INLAY_1_GEM_POS_3_X + gAMEDETAILMENU_POST_GAME_TAB_WIDTH, ConstantsWP.GAMEDETAILMENU_POST_GAME_INLAY_HYPERCUBE_POS_Y);
+				int theX2 = ConstantsWP.GAMEDETAILMENU_POST_GAME_INLAY_1_GEM_POS_1_X + num + ConstantsWP.GAMEDETAILMENU_POST_GAME_INLAY_1_GEM_TEXT_OFFSET_X_1;
+				int theY2 = ConstantsWP.GAMEDETAILMENU_POST_GAME_INLAY_DIAMOND_MINE_POS_Y + ConstantsWP.GAMEDETAILMENU_POST_GAME_INLAY_1_GEM_TEXT_OFFSET_Y;
+				g.DrawString(mSpecialStatsStrings[0], theX2, theY2);
+				theX2 = ConstantsWP.GAMEDETAILMENU_POST_GAME_INLAY_1_GEM_POS_2_X + num + ConstantsWP.GAMEDETAILMENU_POST_GAME_INLAY_1_GEM_TEXT_OFFSET_X_2;
+				theY2 = ConstantsWP.GAMEDETAILMENU_POST_GAME_INLAY_DIAMOND_MINE_POS_Y + ConstantsWP.GAMEDETAILMENU_POST_GAME_INLAY_1_GEM_TEXT_OFFSET_Y;
+				g.DrawString(mSpecialStatsStrings[1], theX2, theY2);
+				theX2 = ConstantsWP.GAMEDETAILMENU_POST_GAME_INLAY_1_GEM_POS_3_X + num + ConstantsWP.GAMEDETAILMENU_POST_GAME_INLAY_1_GEM_TEXT_OFFSET_X_3;
+				theY2 = ConstantsWP.GAMEDETAILMENU_POST_GAME_INLAY_DIAMOND_MINE_POS_Y + ConstantsWP.GAMEDETAILMENU_POST_GAME_INLAY_1_GEM_TEXT_OFFSET_Y;
+				g.DrawString(mSpecialStatsStrings[2], theX2, theY2);
 				break;
 			}
 			}
@@ -353,6 +375,14 @@ namespace BejeweledLivePlus.UI
 				mStatsLabels[1].SetText(SexyFramework.Common.CommaSeperate(theBoard.mGameStats[25]));
 				mStatsLabels[2].SetText(SexyFramework.Common.CommaSeperate(theBoard.mGameStats[24]));
 				mStatsLabels[3].SetText(Utils.GetTimeString(theBoard.mGameStats[0] - 3));
+				mSpecialStatsStrings[0] = string.Format(GlobalMembers._ID("x {0}", 3331), theBoard.mGameStats[17]);
+				mSpecialStatsStrings[1] = string.Format(GlobalMembers._ID("x {0}", 3332), theBoard.mGameStats[18]);
+				mSpecialStatsStrings[2] = string.Format(GlobalMembers._ID("x {0}", 3333), theBoard.mGameStats[19]);
+				break;
+			case GameMode.MODE_BLITZ:
+				mStatsLabels[0].SetText(SexyFramework.Common.CommaSeperate(theBoard.mPointMultiplier));
+				mStatsLabels[1].SetText(SexyFramework.Common.CommaSeperate(theBoard.mGameStats[25]));
+				mStatsLabels[2].SetText(SexyFramework.Common.CommaSeperate(theBoard.mGameStats[24]));
 				mSpecialStatsStrings[0] = string.Format(GlobalMembers._ID("x {0}", 3331), theBoard.mGameStats[17]);
 				mSpecialStatsStrings[1] = string.Format(GlobalMembers._ID("x {0}", 3332), theBoard.mGameStats[18]);
 				mSpecialStatsStrings[2] = string.Format(GlobalMembers._ID("x {0}", 3333), theBoard.mGameStats[19]);

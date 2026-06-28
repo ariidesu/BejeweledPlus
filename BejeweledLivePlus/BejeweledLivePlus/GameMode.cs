@@ -9,6 +9,7 @@ namespace BejeweledLivePlus
 		MODE_BUTTERFLY,
 		MODE_ICESTORM,
 		MODE_POKER,
+		MODE_BLITZ,
 		MODE_MAX
 	}
 }

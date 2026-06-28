@@ -544,11 +544,11 @@ namespace BejeweledLivePlus.Bej3Graphics
 				g.SetColorizeImages(true);
 				g.SetColor(Color.White);
 				Image imageById = GlobalMembersResourcesWP.GetImageById(888 + mGemColor);
-				GlobalMembers.gGR.DrawImageCel(g, imageById, GlobalMembers.S(num2) - ConstantsWP.SPEEDBOARD_GEMNUMS_OFFSET, GlobalMembers.S(num3) - ConstantsWP.SPEEDBOARD_GEMNUMS_OFFSET, mTimeBonus / 5 - 1);
+				GlobalMembers.gGR.DrawImageCel(g, imageById, GlobalMembers.S(num2), GlobalMembers.S(num3), mTimeBonus / 5 - 1);
 				if (piece != null && mFXManager.mBoard.GetTicksLeft() <= GlobalMembers.M(500) && mFXManager.mBoard.mGameTicks / GlobalMembers.M(18) % 2 == 0)
 				{
 					g.SetColor(new Color(GlobalMembers.M(255), GlobalMembers.M(200), GlobalMembers.M(200), GlobalMembers.M(255)));
-					GlobalMembers.gGR.DrawImageCel(g, GlobalMembersResourcesWP.IMAGE_LIGHTNING_GEMNUMS_WHITE, GlobalMembers.S(num2) - ConstantsWP.SPEEDBOARD_GEMNUMS_OFFSET, GlobalMembers.S(num3) - ConstantsWP.SPEEDBOARD_GEMNUMS_OFFSET, mTimeBonus / 5 - 1);
+					GlobalMembers.gGR.DrawImageCel(g, GlobalMembersResourcesWP.IMAGE_LIGHTNING_GEMNUMS_WHITE, GlobalMembers.S(num2), GlobalMembers.S(num3), mTimeBonus / 5 - 1);
 				}
 				((ImageFont)g.mFont).PopLayerColor("GLOW");
 			}

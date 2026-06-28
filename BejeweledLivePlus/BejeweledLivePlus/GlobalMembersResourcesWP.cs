@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using SexyFramework.Graphics;
 using SexyFramework.Misc;
@@ -15,7 +15,7 @@ namespace BejeweledLivePlus
 
 		internal static Dictionary<object, int> gVarToIdMap = new Dictionary<object, int>();
 
-		internal static Point[] gImgOffsets = new Point[1811];
+		internal static Point[] gImgOffsets = new Point[1830];
 
 		public static object gVarToIdMapCrit = new object();
 
@@ -1983,6 +1983,28 @@ namespace BejeweledLivePlus
 
 		public static Image IMAGE_LIGHTNING_GEMNUMS_CLEAR;
 
+		public static Image IMAGE_MULTIPLIER_OLD_2;
+
+		public static Image IMAGE_MULTIPLIER_OLD_3;
+
+		public static Image IMAGE_MULTIPLIER_OLD_4;
+
+		public static Image IMAGE_MULTIPLIER_OLD_5;
+
+		public static Image IMAGE_MULTIPLIER_OLD_6;
+
+		public static Image IMAGE_MULTIPLIER_OLD_7;
+
+		public static Image IMAGE_MULTIPLIER_OLD_8;
+
+		public static Image IMAGE_MULTIPLIER_OLD_9;
+
+		public static Image IMAGE_MULTIPLIER_OLD_STREAK;
+
+		public static Image IMAGE_MULTIPLIER_LARGE_BACK;
+
+		public static Image IMAGE_MULTIPLIER_LARGE_FRONT;
+
 		public static Image IMAGE_GEMOUTLINES;
 
 		public static Image IMAGE_INGAMEUI_LIGHTNING_BOARD_SEPARATOR_FRAME;
@@ -3679,7 +3701,7 @@ namespace BejeweledLivePlus
 
 		public static Image IMAGE_HEATWAVE;
 
-		internal static ResGlobalPtr[] gResources = new ResGlobalPtr[1814];
+		internal static ResGlobalPtr[] gResources = new ResGlobalPtr[1830];
 
 		internal static uint[] gResourceLocales = new uint[6] { 1145390149u, 1162761555u, 1163085139u, 1179797074u, 1230260564u, 0u };
 
@@ -3693,7 +3715,7 @@ namespace BejeweledLivePlus
 			if (!InitResourceManager_sAlreadyRun || forceRun)
 			{
 				InitResourceManager_sAlreadyRun = true;
-				for (int i = 0; i < 1811; i++)
+				for (int i = 0; i < 1830; i++)
 				{
 					ResGlobalPtr resGlobalPtr = theManager.RegisterGlobalPtr(GetStringIdById(i));
 					gResources[i] = resGlobalPtr;
@@ -8643,6 +8665,17 @@ namespace BejeweledLivePlus
 				IMAGE_GEMSNORMAL_PURPLE = GetImageThrow(theManager, 866, "IMAGE_GEMSNORMAL_PURPLE", 960, 0);
 				IMAGE_GEMSNORMAL_ORANGE = GetImageThrow(theManager, 867, "IMAGE_GEMSNORMAL_ORANGE", 960, 0);
 				IMAGE_GEMSNORMAL_BLUE = GetImageThrow(theManager, 868, "IMAGE_GEMSNORMAL_BLUE", 960, 0);
+				IMAGE_MULTIPLIER_OLD_2 = GetImageThrow(theManager, 1819, "IMAGE_MULTIPLIER_OLD_2", 960, 0);
+				IMAGE_MULTIPLIER_OLD_3 = GetImageThrow(theManager, 1820, "IMAGE_MULTIPLIER_OLD_3", 960, 0);
+				IMAGE_MULTIPLIER_OLD_4 = GetImageThrow(theManager, 1821, "IMAGE_MULTIPLIER_OLD_4", 960, 0);
+				IMAGE_MULTIPLIER_OLD_5 = GetImageThrow(theManager, 1822, "IMAGE_MULTIPLIER_OLD_5", 960, 0);
+				IMAGE_MULTIPLIER_OLD_6 = GetImageThrow(theManager, 1823, "IMAGE_MULTIPLIER_OLD_6", 960, 0);
+				IMAGE_MULTIPLIER_OLD_7 = GetImageThrow(theManager, 1824, "IMAGE_MULTIPLIER_OLD_7", 960, 0);
+				IMAGE_MULTIPLIER_OLD_8 = GetImageThrow(theManager, 1825, "IMAGE_MULTIPLIER_OLD_8", 960, 0);
+				IMAGE_MULTIPLIER_OLD_9 = GetImageThrow(theManager, 1826, "IMAGE_MULTIPLIER_OLD_9", 960, 0);
+				IMAGE_MULTIPLIER_OLD_STREAK = GetImageThrow(theManager, 1827, "IMAGE_MULTIPLIER_OLD_STREAK", 960, 0);
+				IMAGE_MULTIPLIER_LARGE_BACK = GetImageThrow(theManager, 1828, "IMAGE_MULTIPLIER_LARGE_BACK", 960, 0);
+				IMAGE_MULTIPLIER_LARGE_FRONT = GetImageThrow(theManager, 1829, "IMAGE_MULTIPLIER_LARGE_FRONT", 960, 0);
 			}
 			catch (ResourceManagerException)
 			{
@@ -17940,6 +17973,28 @@ namespace BejeweledLivePlus
                 return "IMAGE_WARP_LINES_03";
             case 1818:
                 return "IMAGE_WARP_LINES_04";
+            case 1819:
+                return "IMAGE_MULTIPLIER_OLD_2";
+            case 1820:
+                return "IMAGE_MULTIPLIER_OLD_3";
+            case 1821:
+                return "IMAGE_MULTIPLIER_OLD_4";
+            case 1822:
+                return "IMAGE_MULTIPLIER_OLD_5";
+            case 1823:
+                return "IMAGE_MULTIPLIER_OLD_6";
+            case 1824:
+                return "IMAGE_MULTIPLIER_OLD_7";
+            case 1825:
+                return "IMAGE_MULTIPLIER_OLD_8";
+            case 1826:
+                return "IMAGE_MULTIPLIER_OLD_9";
+            case 1827:
+                return "IMAGE_MULTIPLIER_OLD_STREAK";
+            case 1828:
+                return "IMAGE_MULTIPLIER_LARGE_BACK";
+            case 1829:
+                return "IMAGE_MULTIPLIER_LARGE_FRONT";
             default:
 				return "";
 			}
@@ -17949,7 +18004,7 @@ namespace BejeweledLivePlus
 		{
 			if (GetIdByStringId_aMap.Count == 0)
 			{
-				for (int i = 0; i < 1811; i++)
+				for (int i = 0; i < 1830; i++)
 				{
 					GetIdByStringId_aMap[GetStringIdById(i)] = i;
 				}

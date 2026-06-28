@@ -60,6 +60,8 @@ namespace BejeweledLivePlus.UI
 
 		private CrystalBall mLightningButton;
 
+		private CrystalBall mBlitzButton;
+
 		private CrystalBall mComingSoonButton;
 
 		private ArrowButton Tst1Button;
@@ -98,6 +100,9 @@ namespace BejeweledLivePlus.UI
 			mLightningButton = new CrystalBall(GlobalMembers._ID("LIGHTNING", 3375), GlobalMembers._ID("", 3376), GlobalMembers._ID("", 3377), 3, this, Bej3Widget.COLOR_CRYSTALBALL_FONT, ConstantsWP.MAIN_MENU_BUTTON_LIGHTNING_SCALE);
 			mButtons.Add(mLightningButton);
 			AddWidget(mLightningButton);
+			mBlitzButton = new CrystalBall(GlobalMembers._ID("BLITZ", 3363), GlobalMembers._ID("", 3374), GlobalMembers._ID("", 3386), (int)MAINMENU_BUTTON_IDS.BTN_BLITZ_ID, this, Bej3Widget.COLOR_CRYSTALBALL_FONT, ConstantsWP.MAIN_MENU_BUTTON_BLITZ_SCALE);
+			mButtons.Add(mBlitzButton);
+			AddWidget(mBlitzButton);
 			mButterflyButton = new CrystalBall(GlobalMembers._ID("BUTTERFLIES", 3378), GlobalMembers._ID("", 3379), GlobalMembers._ID("", 3380), 5, this, Bej3Widget.COLOR_CRYSTALBALL_FONT, ConstantsWP.MAIN_MENU_BUTTON_BUTTERFLIES_SCALE + 0.1f);
 			mButtons.Add(mButterflyButton);
 			AddWidget(mButterflyButton);
@@ -147,8 +152,9 @@ namespace BejeweledLivePlus.UI
 			Bej3Widget.CenterWidgetAt(ConstantsWP.MAIN_MENU_BUTTON_CLASSIC_X, ConstantsWP.MAIN_MENU_BUTTON_BLITZ_Y + 410 + num, mBuyFullGameButton);
 			Bej3Widget.CenterWidgetAt(ConstantsWP.MAIN_MENU_BUTTON_CLASSIC_X, ConstantsWP.MAIN_MENU_BUTTON_BLITZ_Y + 250 + num, mAchievementButton);
 			Bej3Widget.CenterWidgetAt(ConstantsWP.MAIN_MENU_BUTTON_CLASSIC_X, ConstantsWP.MAIN_MENU_BUTTON_BLITZ_Y + 120 + num, mLeaderBoardButton);
-			Bej3Widget.CenterWidgetAt(ConstantsWP.MAIN_MENU_BUTTON_BUTTERFLIES_X + 2 * ConstantsWP.MAIN_MENU_BUTTON_CLASSIC_X, ConstantsWP.MAIN_MENU_BUTTON_BUTTERFLIES_Y + num - num2, mButterflyButton);
+			Bej3Widget.CenterWidgetAt(ConstantsWP.MAIN_MENU_BUTTON_BUTTERFLIES_X + (int)(1.5f * ConstantsWP.MAIN_MENU_BUTTON_CLASSIC_X), ConstantsWP.MAIN_MENU_BUTTON_BUTTERFLIES_Y, mButterflyButton);
 			Bej3Widget.CenterWidgetAt(ConstantsWP.MAIN_MENU_BUTTON_BLITZ_X, ConstantsWP.MAIN_MENU_BUTTON_BLITZ_Y + num, mLightningButton);
+			Bej3Widget.CenterWidgetAt(ConstantsWP.MAIN_MENU_BUTTON_BUTTERFLIES_X + (int)(2.5f * ConstantsWP.MAIN_MENU_BUTTON_CLASSIC_X), ConstantsWP.MAIN_MENU_BUTTON_BUTTERFLIES_Y, mBlitzButton);
 			Bej3Widget.CenterWidgetAt(ConstantsWP.MAIN_MENU_BUTTON_CLASSIC_X, ConstantsWP.MAIN_MENU_BUTTON_CLASSIC_Y + num, mClassicButton);
 			Bej3Widget.CenterWidgetAt(ConstantsWP.MAIN_MENU_BUTTON_DIAMONDMINE_X, ConstantsWP.MAIN_MENU_BUTTON_DIAMONDMINE_Y + num, mDiamondMineButton);
 			Bej3Widget.CenterWidgetAt(ConstantsWP.MAIN_MENU_BUTTON_ZEN_X + 2 * ConstantsWP.MAIN_MENU_BUTTON_CLASSIC_X, ConstantsWP.MAIN_MENU_BUTTON_ZEN_Y + num + num2, mZenButton);

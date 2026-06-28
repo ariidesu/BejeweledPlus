@@ -480,7 +480,7 @@ namespace BejeweledLivePlus.Misc
 			mCurvedValLookupTable[63].SetCurve("b+0,-80,0,1,####     g####  7~|4(  &#;-0");
 			mCurvedValLookupTable[69].SetCurve("b+0,-80,0,1,####         ~####");
 			mCurvedValLookupTable[64].SetCurve("b+0,1,0,1,####     $~###    }####");
-			mCurvedValLookupTable[70].SetCurve("b+0,1,0.006667,1,~###      U~###   K####");
+			mCurvedValLookupTable[70].SetCurve("b+0,1,0.005,1,~###    V~###     J####");
 			mCurvedValLookupTable[71].SetCurve("b+0,1,0.066667,1,####         ~~###");
 			mCurvedValLookupTable[72].SetCurve("b+0,1,0.01,1,~###         ~####");
 			mCurvedValLookupTable[73].SetCurve("b+0,1,0.01,1,~###         ~####");

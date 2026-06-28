@@ -480,6 +480,7 @@ namespace BejeweledLivePlus
 					mPreHurrahPoints = mPoints;
 					GlobalMembers.gApp.mCurveValCache.GetCurvedVal(PreCalculatedCurvedValManager.CURVED_VAL_ID.eSPEED_BOARD_COLLECTED_TIME_ALPHA, mCollectedTimeAlpha);
 					// GlobalMembers.gApp.mMusic.PlaySongNoDelay(12, false);
+					(GlobalMembers.gApp.mMusicInterface as CustomBassMusicInterface).SetTempo("Speed_lose", (int)mCurTempo);
 					(GlobalMembers.gApp.mMusicInterface as CustomBassMusicInterface).QueueEvent("FadeOut", $"{GetMusicName()}", false);
 					(GlobalMembers.gApp.mMusicInterface as CustomBassMusicInterface).QueueEvent("Play", $"{GetMusicName()}_lose", true);
 					GlobalMembers.gApp.PlaySample(GlobalMembersResourcesWP.SOUND_BOMB_EXPLODE, 0, GlobalMembers.M(1), GlobalMembers.M(-2.0));
@@ -915,32 +916,30 @@ namespace BejeweledLivePlus
 			}
 			Math.Pow(mCollectorExtendPct, GlobalMembers.M(0.7));
 			mTimeFXManager.Update();
-			if (GetTicksLeft() > 1250 || mBonusTime > 0)
+			if (mBonusTime > 0 || GetTicksLeft() > 1100)
 			{
-				mPanicScalePct = Math.Max(0f, mPanicScalePct - GlobalMembers.M(0.0025f));
+				mPanicScalePct = Math.Max(0f, mPanicScalePct - GlobalMembers.M(0.01f));
 			}
 			else if (mBonusTime == 0)
 			{
-				mPanicScalePct = Math.Min(1f, mPanicScalePct + GlobalMembers.M(0.0025f));
+				mPanicScalePct = Math.Min(1f, mPanicScalePct + GlobalMembers.M(0.01f));
 			}
+
+			float aNewTempo = Math.Min(110 + mPointMultiplier * 10, 160);
+			if (mCurTempo == 0.0f)
+				mCurTempo = aNewTempo;
+			else if (mCurTempo < aNewTempo)
+				mCurTempo += 0.1f;
+
 			CustomBassMusicInterface theMusicInterface = (CustomBassMusicInterface)GlobalMembers.gApp.mMusicInterface;
-            if (theMusicInterface.mSongName == "Speed")
-            {
-                float aNewTempo = Math.Min(110 + ((mPointMultiplier - 1) * 10), 160);
-                if (mCurTempo == 0.0f)
-                    mCurTempo = aNewTempo;
-                else if (mCurTempo < aNewTempo)
-                    mCurTempo += 0.1f;
-
-                theMusicInterface.SetTempo("Speed", (int)mCurTempo);
-            }
-
 			SongInfo speedSongInfo = theMusicInterface.FindSong("Speed");
 			if (speedSongInfo != null)
 			{
-				for (int trackId = 16; trackId < speedSongInfo.mTracks.Count; trackId++)
+				theMusicInterface.SetTempo("Speed", (int)mCurTempo);
+				
+				foreach (TrackInfo track in speedSongInfo.mTracks)
 				{
-					speedSongInfo.mTracks[trackId].mVolume.SetInVal(mPanicScalePct);
+					track.mVolume.SetInVal(mPanicScalePct);
 				}
 
 				theMusicInterface.mForceParamUpdate = true;
