@@ -685,17 +685,22 @@ namespace SexyFramework.Graphics
 		public Vector2 GetGeomPos(PIEmitterInstance theEmitterInstance, PIParticleInstance theParticleInstance, ref float theTravelAngle)
 		{
 			bool temp = false;
-			return GetGeomPos(theEmitterInstance, theParticleInstance, ref theTravelAngle, ref temp);
+			return GetGeomPos(theEmitterInstance, theParticleInstance, ref theTravelAngle, ref temp, true);
 		}
 
 		public Vector2 GetGeomPos(PIEmitterInstance theEmitterInstance, PIParticleInstance theParticleInstance)
 		{
 			float temp = 0f;
 			bool temp2 = false;
-			return GetGeomPos(theEmitterInstance, theParticleInstance, ref temp, ref temp2);
+			return GetGeomPos(theEmitterInstance, theParticleInstance, ref temp, ref temp2, false);
 		}
 
 		public Vector2 GetGeomPos(PIEmitterInstance theEmitterInstance, PIParticleInstance theParticleInstance, ref float theTravelAngle, ref bool isMaskedOut)
+		{
+			return GetGeomPos(theEmitterInstance, theParticleInstance, ref theTravelAngle, ref isMaskedOut, true);
+		}
+
+		public Vector2 GetGeomPos(PIEmitterInstance theEmitterInstance, PIParticleInstance theParticleInstance, ref float theTravelAngle, ref bool isMaskedOut, bool wantTravelAngle)
 		{
 			Vector2 thePoint = default(Vector2);
 			PIEmitterInstanceDef anEmitterInstanceDef = theEmitterInstance.mEmitterInstanceDef;
@@ -748,7 +753,7 @@ namespace SexyFramework.Graphics
 				Vector2 aSegDir = aSegEnd - aSegStart;
 				thePoint = aSegStart * (1f - aSegmentT) + aSegEnd * aSegmentT;
 				float aSign = ((!anEmitterInstanceDef.mEmitIn) ? 1f : (anEmitterInstanceDef.mEmitOut ? GetRandSign() : (-1f)));
-				if (theTravelAngle != 0f)
+				if (wantTravelAngle)
 				{
 					float aLineAngle = (float)Math.Atan2(aSegDir.Y, aSegDir.X) + GlobalPIEffect.M_PI / 2f + aSign * GlobalPIEffect.M_PI / 2f;
 					theTravelAngle += aLineAngle;
@@ -796,7 +801,7 @@ namespace SexyFramework.Graphics
 								: ((float)((double)(GlobalPIEffect.M_PI / 2f) - Math.Pow((GlobalPIEffect.M_PI / 2f - anAngle) / (GlobalPIEffect.M_PI / 2f), aPower) * (double)GlobalPIEffect.M_PI / 2.0)))));
 				}
 				thePoint = new Vector2((float)(Math.Cos(anAngle) * (double)anXRadius), (float)(Math.Sin(anAngle) * (double)aYRadius));
-				if (theTravelAngle != 0f)
+				if (wantTravelAngle)
 				{
 					float aSign = ((!anEmitterInstanceDef.mEmitIn) ? 1f : (anEmitterInstanceDef.mEmitOut ? GetRandSign() : (-1f)));
 					float aTravelDir = anAngle + aSign * GlobalPIEffect.M_PI / 2f;
@@ -818,7 +823,7 @@ namespace SexyFramework.Graphics
 					anAngle = GetRandFloat() * GlobalPIEffect.M_PI;
 				}
 				thePoint = new Vector2((float)Math.Cos(anAngle) * aRadius, (float)Math.Sin(anAngle) * aRadius);
-				if (theTravelAngle != 0f)
+				if (wantTravelAngle)
 				{
 					float aSign = ((!anEmitterInstanceDef.mEmitIn) ? 1f : (anEmitterInstanceDef.mEmitOut ? GetRandSign() : (-1f)));
 					float aTravelDir = anAngle + aSign * GlobalPIEffect.M_PI / 2f;
@@ -847,7 +852,7 @@ namespace SexyFramework.Graphics
 				{
 					thePoint = new Vector2(GetRandFloat() * aWidth / 2f, GetRandFloat() * aHeight / 2f);
 				}
-				if (theEmitterInstance.mMaskImage.GetDeviceImage() != null && isMaskedOut)
+				if (theEmitterInstance.mMaskImage.GetDeviceImage() != null)
 				{
 					float aNormX = thePoint.X / aWidth + 0.5f;
 					float aNormY = thePoint.Y / aHeight + 0.5f;
@@ -936,8 +941,8 @@ namespace SexyFramework.Graphics
 						* (theParticleDef.mValues[(int)PIParticleDef.PIParticleDefValue.VALUE_SIZE_X].GetValueAt(mFrameNum) + theParticleInstance.mVariationValues[(int)PIParticleInstance.PIParticleVariation.VARIATION_SIZE_X]);
 					theParticleInstance.mSrcSizeYMult = (theParticleGroup.mWasEmitted
 							? theEmitter.mValues[(int)PIEmitter.PIEmitterValue.VALUE_SIZE_Y].GetValueAt(mFrameNum)
-							: theEmitterInstance.mEmitterInstanceDef.mValues[(int)PIEmitterInstanceDef.PIEmitterValue.VALUE_SIZE_X].GetValueAt(mFrameNum))
-						* (theParticleDef.mValues[(int)PIParticleDef.PIParticleDefValue.VALUE_SIZE_X].GetValueAt(mFrameNum) + theParticleInstance.mVariationValues[(int)PIParticleInstance.PIParticleVariation.VARIATION_SIZE_X]);
+							: theEmitterInstance.mEmitterInstanceDef.mValues[(int)PIEmitterInstanceDef.PIEmitterValue.VALUE_SIZE_Y].GetValueAt(mFrameNum))
+						* (theParticleDef.mValues[(int)PIParticleDef.PIParticleDefValue.VALUE_SIZE_Y].GetValueAt(mFrameNum) + theParticleInstance.mVariationValues[(int)PIParticleInstance.PIParticleVariation.VARIATION_SIZE_Y]);
 				}
 				float aSizeX = Math.Max(theParticleDef.mValues[(int)PIParticleDef.PIParticleDefValue.VALUE_SIZE_X_OVER_LIFE].GetValueAt(aLifePct) * theParticleInstance.mSrcSizeXMult, 0.1f);
 				float aSizeY = Math.Max(theParticleDef.mValues[(int)PIParticleDef.PIParticleDefValue.VALUE_SIZE_Y_OVER_LIFE].GetValueAt(aLifePct) * theParticleInstance.mSrcSizeYMult, 0.1f);
@@ -1510,24 +1515,14 @@ namespace SexyFramework.Graphics
 					aLifePct = aParticleInstance.mTicks / aParticleInstance.mLife;
 				}
 				aParticleInstance.mLifePct = aLifePct;
-				if (theParticleGroup.mIsSuperEmitter)
+				if (!(aParticleInstance.mLifePct < 0.9999999f && aParticleInstance.mLife > 1E-08f && (theEmitterInstance.mWasActive || anEmitterInstanceDef.mIsSuperEmitter)))
 				{
-					if (aParticleInstance.mLifePct >= 0.9999999f || aParticleInstance.mLife <= 1E-08f || (!theEmitterInstance.mWasActive && !anEmitterInstanceDef.mIsSuperEmitter))
+					if (theParticleGroup.mIsSuperEmitter && ((PIFreeEmitterInstance)aParticleInstance).mEmitter.mParticleGroup.mHead != null)
 					{
-						if (((PIFreeEmitterInstance)aParticleInstance).mEmitter.mParticleGroup.mHead != null)
-						{
-							aParticleInstance = aNext;
-							continue;
-						}
-						FreeParticle(aParticleInstance, theParticleGroup);
 						aParticleInstance = aNext;
 						continue;
 					}
-				}
-				else
-				{
-					aParticleInstance.mLifePctInt += aParticleInstance.mLifePctIntInc;
-					if ((aParticleInstance.mLifePctInt & unchecked((int)0x80000000)) != 0)
+					if (!(!theParticleGroup.mIsSuperEmitter && aParticleDef != null && aParticleDef.mSingleParticle && theEmitterInstance.mWasActive))
 					{
 						FreeParticle(aParticleInstance, theParticleGroup);
 						aParticleInstance = aNext;
@@ -1797,18 +1792,7 @@ namespace SexyFramework.Graphics
 			Color aColorMult = new Color(theLayer.mColor.mRed * mColor.mRed / 255, theLayer.mColor.mGreen * mColor.mGreen / 255, theLayer.mColor.mBlue * mColor.mBlue / 255, theLayer.mColor.mAlpha * mColor.mAlpha / 255);
 			bool hasColor = aColorMult != Color.White;
 
-			// Two sub-passes by drawMode so the blend state stays constant within a sub-pass
-			// and the framework's vertex batcher can coalesce many particles into one GPU
-			// draw call. Without this, interleaved intense/non-intense particles flush per
-			// particle (additive <-> normal blend toggle).
-			//
-			// Pass 0: drawMode 0 (normal/darkening) -- non-intense particles, or all
-			// particles when isDarkeningPass.
-			// Pass 1: drawMode 1 (additive) -- intense particles in normal pass only.
-			int subPassCount = isDarkeningPass ? 1 : 2;
-			for (int subPass = 0; subPass < subPassCount; subPass++)
 			{
-				bool drawIntenseInThisSubPass = (subPass == 1);
 				PIParticleInstance aParticleInstance = theParticleGroup.mHead;
 				while (aParticleInstance != null)
 				{
@@ -1816,15 +1800,6 @@ namespace SexyFramework.Graphics
 					float aLifePct = aParticleInstance.mLifePct;
 					PIParticleDef aParticleDef = aParticleInstance.mParticleDef;
 					bool isIntense = aParticleDef.mIntense;
-					if (!isDarkeningPass)
-					{
-						// Skip particles that don't match this sub-pass's intensity.
-						if (drawIntenseInThisSubPass != isIntense)
-						{
-							aParticleInstance = aNext;
-							continue;
-						}
-					}
 					if ((isIntense && aParticleDef.mPreserveColor) || !isDarkeningPass)
 					{
 						PIEmitter anEmitter = aParticleInstance.mEmitterSrc;
