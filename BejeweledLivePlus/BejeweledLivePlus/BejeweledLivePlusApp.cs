@@ -375,10 +375,6 @@ namespace BejeweledLivePlus
 			InitStepLoadResources();
 			InitStepPrepareCurvedVal();
 			SetUpInterfaceStateDefinitions();
-			while (!mResourceManager.IsResourceLoaded("IMAGE_LOADER_POPCAP_WHITE_GERMAN_REGISTERED"))
-			{
-				Thread.Sleep(200);
-			}
 			if (!GlobalMembersResourcesWP.ExtractInitResources(mResourceManager))
 			{
 				ShowResourceError(true);
@@ -1037,6 +1033,12 @@ namespace BejeweledLivePlus
 
 		private void DoNewBlitzGame(int theMinutes)
 		{
+			GlobalMembers.KILL_WIDGET_NOW(mBoard);
+			mBoard = new BlitzBoard();
+			mBoard.mParams["Title"] = "Blitz";
+			mBoard.Resize(0, 0, mWidth, mHeight);
+			mBoard.Init();
+			DoGameDetailMenu(GameMode.MODE_BLITZ, GameDetailMenu.GAMEDETAILMENU_STATE.STATE_PRE_GAME);
 		}
 
 		private void DoNewClassicGame(bool isRestart = false)
@@ -1483,6 +1485,8 @@ namespace BejeweledLivePlus
 				return GlobalMembers._ID("POKER", 3213);
 			case GameMode.MODE_ICESTORM:
 				return GlobalMembers._ID("ICESTORM", 3214);
+			case GameMode.MODE_BLITZ:
+				return GlobalMembers._ID("BLITZ", 3363);
 			default:
 				return "";
 			}
@@ -1502,6 +1506,8 @@ namespace BejeweledLivePlus
 				return GlobalMembers._ID("Score as many points as possible until there are no more moves.", 3557);
 			case GameMode.MODE_BUTTERFLY:
 				return GlobalMembers._ID("Score as many points as you can before a Butterfly Gem reaches the top.", 3558);
+			case GameMode.MODE_BLITZ:
+				return GlobalMembers._ID("Score as many points as you can before the time runs out.", 3555);
 			default:
 				return string.Empty;
 			}
@@ -1527,13 +1533,16 @@ namespace BejeweledLivePlus
 			case GameMode.MODE_BUTTERFLY:
 				result = 17;
 				break;
+			case GameMode.MODE_BLITZ:
+				result = 0;
+				break;
 			}
 			return result;
 		}
 
 		public int ModeHeadingToGameMode(string theHeading)
 		{
-			for (int i = 0; i < 7; i++)
+			for (int i = 0; i < 8; i++)
 			{
 				string modeHeading = GetModeHeading((GameMode)i);
 				string highScoreTableId = GetHighScoreTableId(modeHeading);
@@ -1542,7 +1551,7 @@ namespace BejeweledLivePlus
 					return i;
 				}
 			}
-			return 7;
+			return 8;
 		}
 
 		public string GetHighScoreTableId(string theLocalisedTableName)
@@ -1566,6 +1575,10 @@ namespace BejeweledLivePlus
 			if (theLocalisedTableName == GlobalMembers._ID("BUTTERFLIES", 3212))
 			{
 				return "BUTTERFLIES";
+			}
+			if (theLocalisedTableName == GlobalMembers._ID("BLITZ", 3363))
+			{
+				return "BLITZ";
 			}
 			return theLocalisedTableName;
 		}
@@ -1832,6 +1845,9 @@ namespace BejeweledLivePlus
 			case GameMode.MODE_BUTTERFLY:
 				DoNewEndlessGame(EEndlessMode.ENDLESS_BUTTERFLY);
 				break;
+			case GameMode.MODE_BLITZ:
+				DoNewBlitzGame(1);
+				break;
 			}
 		}
 
@@ -1890,6 +1906,7 @@ namespace BejeweledLivePlus
 
 		public void GoToBlitz()
 		{
+			DoNewBlitzGame(1);
 		}
 
 		public void DoSecretMenu()

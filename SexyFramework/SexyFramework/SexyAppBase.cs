@@ -1020,6 +1020,7 @@ namespace SexyFramework
 		{
 			mUpdateCount.value++;
 			mGamepadDriver.Update();
+			mResourceManager.Update();
 			if (!mMinimized)
 			{
 				if (mWidgetManager.UpdateFrame())

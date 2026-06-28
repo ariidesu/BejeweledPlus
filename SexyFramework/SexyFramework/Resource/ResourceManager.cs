@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.Threading;
 using SexyFramework.Graphics;
@@ -117,6 +118,8 @@ namespace SexyFramework.Resource
 		private List<GroupLoadInfo> mGroupToLoad = new List<GroupLoadInfo>();
 
 		private bool mLoadFinished;
+
+		private int mCurrentGroupIndex;
 
 		public bool Fail(string theErrorText)
 		{
@@ -2451,11 +2454,73 @@ namespace SexyFramework.Resource
 			GetLoadingGroup(group);
 			mIsLoading = true;
 			mLoadSuccess = false;
-			LoadingProc();
-			// mLoadingProc = LoadingProc;
-			// mLoadingThread = new Thread(mLoadingProc);
-			// mLoadingThread.Name = "ResLoadingThread";
-			// mLoadingThread.Start();
+			mCurrentGroupIndex = 0;
+			mLoadUsedTicksThisFrame = 0;
+		}
+
+		private const int LOAD_BUDGET_MS = 10;
+		private static readonly long LOAD_BUDGET_TICKS = Stopwatch.Frequency * LOAD_BUDGET_MS / 1000;
+		private long mLoadUsedTicksThisFrame;
+
+		public bool Update()
+		{
+			if (!mIsLoading || mLoadFinished)
+			{
+				return false;
+			}
+			if (mLoadUsedTicksThisFrame >= LOAD_BUDGET_TICKS)
+			{
+				return false; // this rendered frame's loading budget is spent
+			}
+
+			for (;;)
+			{
+				if (mLoadUsedTicksThisFrame >= LOAD_BUDGET_TICKS)
+				{
+					return true;
+				}
+
+				if (mCurrentGroupIndex >= mGroupToLoad.Count)
+				{
+					mLoadSuccess = !HadError();
+					mIsLoading = false;
+					mLoadFinished = true;
+					return false;
+				}
+
+				GroupLoadInfo item = mGroupToLoad[mCurrentGroupIndex];
+
+				// (Re)start this group's iterator the first time we touch it.
+				if (item.mCurrentFile == 0)
+				{
+					StartLoadResources(item.mName, false);
+				}
+
+				long t0 = Stopwatch.GetTimestamp();
+				bool loaded = LoadNextResource();
+				mLoadUsedTicksThisFrame += Stopwatch.GetTimestamp() - t0;
+
+				if (!loaded)
+				{
+					if (HadError())
+					{
+						mLoadSuccess = false;
+						mIsLoading = false;
+						mLoadFinished = true;
+						return false;
+					}
+					mLoadedGroups.Add(mCurResGroup);
+					mCurrentGroupIndex++;
+					continue; 
+				}
+
+				item.mCurrentFile++;
+			}
+		}
+
+		public void EndLoadFrame()
+		{
+			mLoadUsedTicksThisFrame = 0;
 		}
 
 		private void GetLoadingGroup(string[] group)

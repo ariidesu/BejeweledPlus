@@ -729,6 +729,7 @@ namespace SexyFramework.Drivers.App
 			mXNAGraphicsDriver.ClearColorBuffer(SexyFramework.Graphics.Color.Black);
 			DrawDirtyStuff();
 			mXNAGraphicsDriver.mXNARenderDevice.PresentScreenImage();
+			mApp.mResourceManager.EndLoadFrame();
 		}
 
 		public override int GetAppTime()
