@@ -34,6 +34,11 @@ namespace SexyFramework.Drivers.Graphics
 		protected EffectParameter mSexy2DTex0;
 		protected EffectTechnique mSexy2DTextured;
 		protected EffectTechnique mSexy2DUntextured;
+		protected EffectParameter mSexy2DAlphaTestRef;
+		
+		private float mAlphaTestRef = -1f;
+
+		private float mBltDepth;
 
 		// Fallback. Used when mSexy2DEffect is null.
 		protected BasicEffect mBasicEffect;
@@ -450,7 +455,7 @@ namespace SexyFramework.Drivers.Graphics
 			{
 				array[j].Position.X = theVertices[j].x;
 				array[j].Position.Y = theVertices[j].y;
-				array[j].Position.Z = 0f;
+				array[j].Position.Z = mBltDepth;
 				array[j].TextureCoordinate = mImage.mVectorBase + mImage.mVectorU * theVertices[j].u + mImage.mVectorV * theVertices[j].v;
 				if (theVertices[j].color == SexyFramework.Graphics.Color.Zero)
 				{
@@ -470,6 +475,12 @@ namespace SexyFramework.Drivers.Graphics
 
 		public override void SetBltDepth(float inDepth)
 		{
+			float vertexZ = -inDepth;
+			if (mBltDepth != vertexZ)
+			{
+				FlushBatchBeforeStateChange();
+				mBltDepth = vertexZ;
+			}
 		}
 
 		public override void PushTransform(SexyTransform2D theTransform, bool concatenate)
@@ -590,6 +601,14 @@ namespace SexyFramework.Drivers.Graphics
 
 		public override void SetAlphaTest(Graphics3D.ECompareFunc inAlphaTestFunc, int inRefAlpha)
 		{
+			float newRef = (inAlphaTestFunc == Graphics3D.ECompareFunc.COMPARE_ALWAYS
+				|| inAlphaTestFunc == Graphics3D.ECompareFunc.COMPARE_NEVER)
+				? -1f : inRefAlpha;
+			if (mAlphaTestRef != newRef)
+			{
+				FlushBatchBeforeStateChange();
+				mAlphaTestRef = newRef;
+			}
 		}
 
 		public override void SetColorWriteState(int inWriteRedEnabled, int inWriteGreenEnabled, int inWriteBlueEnabled, int inWriteAlphaEnabled)
@@ -603,6 +622,10 @@ namespace SexyFramework.Drivers.Graphics
 		public override void SetBlend(Graphics3D.EBlendMode inSrcBlend, Graphics3D.EBlendMode inDestBlend)
 		{
 			mStateMgr.SetBlendOverride(inSrcBlend, inDestBlend);
+			if (inSrcBlend == Graphics3D.EBlendMode.BLEND_DEFAULT && inDestBlend == Graphics3D.EBlendMode.BLEND_DEFAULT)
+			{
+				mStateMgr.SetBlendStateState(mNormalState);
+			}
 		}
 
 		public override void SetBackfaceCulling(int inCullClockwise, int inCullCounterClockwise)
@@ -948,6 +971,7 @@ namespace SexyFramework.Drivers.Graphics
 				mSexy2DEffect.CurrentTechnique = (tex != null) ? mSexy2DTextured : mSexy2DUntextured;
 				if (mSexy2DWVP != null) mSexy2DWVP.SetValue(mStateMgr.mXNAWorldMatrix * mStateMgr.mXNAViewMatrix * mStateMgr.mXNAProjectionMatrix);
 				if (mSexy2DTex0 != null) mSexy2DTex0.SetValue(tex);
+				if (mSexy2DAlphaTestRef != null) mSexy2DAlphaTestRef.SetValue(mAlphaTestRef);
 			}
 			else
 			{
@@ -977,6 +1001,7 @@ namespace SexyFramework.Drivers.Graphics
 				mSexy2DEffect.CurrentTechnique = (tex != null) ? mSexy2DTextured : mSexy2DUntextured;
 				if (mSexy2DWVP != null) mSexy2DWVP.SetValue(mStateMgr.mXNALastWorldMatrix * mStateMgr.mXNAViewMatrix * proj);
 				if (mSexy2DTex0 != null) mSexy2DTex0.SetValue(tex);
+				if (mSexy2DAlphaTestRef != null) mSexy2DAlphaTestRef.SetValue(mAlphaTestRef);
 			}
 			else
 			{
@@ -1053,7 +1078,7 @@ namespace SexyFramework.Drivers.Graphics
 				float num2 = (float)theRect.mY + mPixelOffset;
 				float num3 = theRect.mWidth;
 				float num4 = theRect.mHeight;
-				float z = 0f;
+				float z = mBltDepth;
 				Microsoft.Xna.Framework.Color color = new Microsoft.Xna.Framework.Color(theColor.mRed, theColor.mGreen, theColor.mBlue, theColor.mAlpha);
 				mTmpVPCBuffer[0].Position = new Vector3(num, num2, z);
 				mTmpVPCBuffer[0].Color = color;
@@ -1081,7 +1106,7 @@ namespace SexyFramework.Drivers.Graphics
 			}
 			SetupDrawMode(theDrawMode);
 			Microsoft.Xna.Framework.Color color = new Microsoft.Xna.Framework.Color(theColor.mRed, theColor.mGreen, theColor.mBlue, theColor.mAlpha);
-			float z = 0f;
+			float z = mBltDepth;
 			if (mScratchPoly.Length < theNumVertices) mScratchPoly = new VertexPositionColorTexture[theNumVertices];
 			for (int i = 0; i < theNumVertices; i++)
 			{
@@ -1229,7 +1254,7 @@ namespace SexyFramework.Drivers.Graphics
 				float y = (float)theStartY;
 				float x2 = (float)theEndX;
 				float y2 = (float)theEndY;
-				float z = 0f;
+				float z = mBltDepth;
 				Microsoft.Xna.Framework.Color color = new Microsoft.Xna.Framework.Color(theColor.mRed, theColor.mGreen, theColor.mBlue, theColor.mAlpha);
 				mScratchLine[0] = new VertexPositionColor(new Vector3(x, y, z), color);
 				mScratchLine[1] = new VertexPositionColor(new Vector3(x2, y2, z), color);
@@ -1332,7 +1357,7 @@ namespace SexyFramework.Drivers.Graphics
                 return;
             }
             SetTextureDirect(0, xNATextureData.mTextures[0].mTexture);
-            float z = 0f;
+            float z = mBltDepth;
             bool flag = mTransformStack.Count != 0;
             bool flag2 = theClipRect != Rect.INVALIDATE_RECT && (theClipRect.mX != 0 || theClipRect.mY != 0 || theClipRect.mWidth != mScreenWidth || theClipRect.mHeight != mScreenHeight);
             CheckBatchAndCommit();
@@ -1515,6 +1540,7 @@ namespace SexyFramework.Drivers.Graphics
 				mSexy2DTex0       = mSexy2DEffect.Parameters["Tex0Texture"];
 				mSexy2DTextured   = mSexy2DEffect.Techniques["Textured"];
 				mSexy2DUntextured = mSexy2DEffect.Techniques["Untextured"];
+				mSexy2DAlphaTestRef = mSexy2DEffect.Parameters["AlphaTestRef"];
 			}
 			catch
 			{
@@ -1682,7 +1708,7 @@ namespace SexyFramework.Drivers.Graphics
 				return;
 			}
 			theTransform.Translate(theX, theY);
-			float z = 0f;
+			float z = mBltDepth;
 			Microsoft.Xna.Framework.Color color = new Microsoft.Xna.Framework.Color(theColor.mRed, theColor.mGreen, theColor.mBlue, theColor.mAlpha);
 			int num9 = mX;
 			float num10 = num5;
@@ -1776,7 +1802,7 @@ namespace SexyFramework.Drivers.Graphics
 				int num5 = mY;
 				if (mX < num && mY < num2)
 				{
-					float z = 0f;
+					float z = mBltDepth;
 					Microsoft.Xna.Framework.Color color = new Microsoft.Xna.Framework.Color(theColor.mRed, theColor.mGreen, theColor.mBlue, theColor.mAlpha);
 					int num6 = mX;
 					num3 = num - num6;
