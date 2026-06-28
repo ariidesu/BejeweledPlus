@@ -288,7 +288,7 @@ namespace BejeweledLivePlus
 					UL_aMatchingPieces[num3++] = piece;
 				}
 			}
-			int num4 = (int)((20f / (num + 1f) + 5f) / 1.67f);
+			int num4 = (int)((20f / (num + 1f) + 5f));
 			if (flag)
 			{
 				num4 = (int)((float)num4 * GlobalMembers.M(1.4f));
@@ -419,7 +419,7 @@ namespace BejeweledLivePlus
 					}
 				}
 			}
-			mDoneDelay = 10;
+			mDoneDelay = 30;
 		}
 
 		public void DrawLightning(Graphics g)
@@ -617,7 +617,7 @@ namespace BejeweledLivePlus
 				LightningZap lightningZap = mZaps[i];
 				lightningZap.Update();
 			}
-			mGemAlpha = Math.Max(0f, mGemAlpha - GlobalMembers.M(0.01f) * 1.67f);
+			mGemAlpha = Math.Max(0f, mGemAlpha - GlobalMembers.M(0.01f));
 			if (mStormType == 7)
 			{
 				UpdateLightning();
