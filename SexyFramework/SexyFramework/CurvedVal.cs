@@ -272,7 +272,7 @@ namespace SexyFramework
 				double num = mInMax - mInMin;
 				if (mInVal > mInMax || mInVal < mInMin)
 				{
-					mInVal = mInMin + Math.IEEERemainder(mInVal - mInMin + num, num);
+					mInVal = mInMin + (mInVal - mInMin + num) % num;
 				}
 			}
 			return true;
@@ -688,7 +688,7 @@ namespace SexyFramework
 				{
 					num = mInMin + (double)((int)mAppUpdateCountSrc - mInitAppUpdateCount) * mIncRate;
 				}
-				num = ((mMode != 1 && mMode != 2) ? Math.Min(num, mInMax) : (Math.IEEERemainder(num - mInMin, mInMax - mInMin) + mInMin));
+				num = ((mMode != 1 && mMode != 2) ? Math.Min(num, mInMax) : ((num - mInMin) % (mInMax - mInMin) + mInMin));
 			}
 			if (mMode == 2)
 			{

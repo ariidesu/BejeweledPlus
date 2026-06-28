@@ -169,16 +169,14 @@ namespace BejeweledLivePlus.Misc
 						case 0:
 						{
 							num16 = Math.Min(1f, Math.Max(0f, (num13 - 0.3f) * 2f));
-							float num18 = Math.Max(0f, num13 - 0.5f);
-							num14 = ((j % 2 == 0) ? 0.5f : (0.5f + num18 * ModVal.M(1f)));
+							num14 = 1f;
 							num15 = 1f;
 							break;
 						}
 						case 1:
 						{
 							num16 = Math.Min(1f, Math.Max(0f, (num13 - 0.3f) * 2f));
-							float num17 = Math.Max(0f, num13 - 0.1f);
-							num14 = ((j % 2 == 0) ? 0.5f : (0.5f + num17 * ModVal.M(1f)));
+							num14 = 1f;
 							num15 = Math.Max(0f, (num13 - 0.5f) * 3f);
 							break;
 						}
@@ -192,7 +190,7 @@ namespace BejeweledLivePlus.Misc
 						item.mRed = (int)((float)gCycleColors[j].mRed * num16 + Math.Min(255f, (float)theColor.mRed * num14 * (1f - num16)));
 						item.mGreen = (int)((float)gCycleColors[j].mGreen * num16 + Math.Min(255f, (float)theColor.mGreen * num14 * (1f - num16)));
 						item.mBlue = (int)((float)gCycleColors[j].mBlue * num16 + Math.Min(255f, (float)theColor.mBlue * num14 * (1f - num16)));
-						item.mAlpha = (int)num15 * 255;
+						item.mAlpha = (int)(num15 * 255f);
 						points.mColorCycle[k].mCycleColors.Add(item);
 					}
 				}

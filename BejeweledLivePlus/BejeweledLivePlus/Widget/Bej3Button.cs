@@ -280,7 +280,7 @@ namespace BejeweledLivePlus.Widget
 					g.SetColorizeImages(true);
 					g.SetColor(new Color(255, 255, 255, (int)(255f * mSlideGlow)));
 					int num4 = ((mType != Bej3ButtonType.BUTTON_TYPE_LEFT_SWIPE) ? 1 : (-1));
-					num3 = (int)mSlideGlow * num4 * ConstantsWP.BEJ3BUTTON_SLIDE_ARROW_DIST;
+					num3 = (int)(mSlideGlow * num4 * ConstantsWP.BEJ3BUTTON_SLIDE_ARROW_DIST);
 					g.mClipRect.mX += num3;
 					g.Translate(num3, 0);
 					g.DrawImageMirror(GlobalMembersResourcesWP.IMAGE_DIALOG_ARROW_SWIPEGLOW, xg, yg, mType == Bej3ButtonType.BUTTON_TYPE_LEFT_SWIPE);
