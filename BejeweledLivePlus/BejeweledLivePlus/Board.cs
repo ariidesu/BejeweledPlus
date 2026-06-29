@@ -10998,14 +10998,10 @@ namespace BejeweledLivePlus
 				g.SetColorizeImages(true);
 				float num4 = ((mHyperspace == null || thePiece.mColor < 0) ? ((float)((double)thePiece.mAlpha * (double)GetPieceAlpha())) : ((float)((double)thePiece.mAlpha * (double)mHyperspace.GetPieceAlpha())));
 				g.SetColor(new Color(255, 255, 255, (int)(255f * num4)));
-				if (thePiece.IsFlagSet(16u))
+				if ((thePiece.mColor > -1 && thePiece.mColor < 7) || thePiece.IsFlagSet(4u) || thePiece.IsFlagSet(16u))
 				{
 					int theCel = (int)Math.Min(thePiece.mRotPct * (float)GlobalMembersResourcesWP.IMAGE_GEMS_RED.GetCelCount(), GlobalMembersResourcesWP.IMAGE_GEMS_RED.GetCelCount() - 1);
 					GlobalMembers.gGR.DrawImageCel(g, GlobalMembersResourcesWP.GetImageById(809 + thePiece.mColor), GlobalMembers.S(theNum), GlobalMembers.S(theNum2), theCel);
-				}
-				else if (thePiece.mColor <= -1 || thePiece.mColor >= 7)
-				{
-					thePiece.IsFlagSet(4u);
 				}
 				g.SetColorizeImages(colorizeImages);
 				if (num != 1f)
