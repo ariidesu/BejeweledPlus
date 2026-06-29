@@ -1871,7 +1871,8 @@ namespace SexyFramework.Graphics
 						{
 							aColorI = (int)((uint)aColorI & 0xFF000000u);
 						}
-						Color aColor = new Color((anAlpha << 24) | (aColorI & 0xFFFFFF));
+						int aFinalColor = (anAlpha << 24) | (aColorI & 0xFFFFFF);
+						Color aColor = new Color((aFinalColor >> 16) & 0xFF, (aFinalColor >> 8) & 0xFF, aFinalColor & 0xFF, (aFinalColor >> 24) & 0xFF);
 						if (hasColor)
 						{
 							aColor = new Color(aColorMult.mRed * aColor.mRed / 255, aColorMult.mGreen * aColor.mGreen / 255, aColorMult.mBlue * aColor.mBlue / 255, aColorMult.mAlpha * aColor.mAlpha / 255);
