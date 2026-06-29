@@ -61,7 +61,7 @@ namespace BejeweledLivePlus.Widget
 		public float mStateStartTick;
 		public HyperSpaceState mState;
 		private bool mSlideBackStarted;
-		private const float sGemMeshScale = 0.7f;
+		private const float sSceneScale = 0.7f;
 
 		private static readonly HyperMaterial[] mapColorIndexToMaterial = new HyperMaterial[]
 		{
@@ -603,7 +603,7 @@ namespace BejeweledLivePlus.Widget
 			SexyMatrix4 matWorld = new SexyMatrix4();
 			SexyMatrix4 matWVP;
 			matView = BuildTubeViewMatrix();
-			mCameraPersp.GetProjectionMatrix(matProj);
+			GetSceneProjectionMatrix(matProj);
 
 			float[] mapIndexToScaleFactor = new[] { 1.14f, 1.04f, 1.17f, 1.04f, 1.1f, 1.09f, 1.1f, 1.0f };
 
@@ -640,11 +640,11 @@ namespace BejeweledLivePlus.Widget
 					gemCoords.RotateRadZ(rot.z);
 					if (colorIndex >= 0 && colorIndex < mapIndexToScaleFactor.Length)
 					{
-						float f = mapIndexToScaleFactor[colorIndex] * sGemMeshScale;
+						float f = mapIndexToScaleFactor[colorIndex];
 						scale = new SexyVector3(scale.x * f, scale.y * f, scale.z * f);
 					}
 					gemCoords.Scale(scale.x, scale.y, -scale.z);
-					gemCoords.Translate(pos.x * sGemMeshScale, pos.y * sGemMeshScale, pos.z);
+					gemCoords.Translate(pos.x, pos.y, pos.z);
 					gi.SetCoords(gemCoords);
 					gi.mPos = pos;
 
@@ -654,7 +654,7 @@ namespace BejeweledLivePlus.Widget
 					float w = matWVP.m[3, 3];
 					float scaleFactor = gi.mPosScreen.z;
 					if (w != 0f) gi.mPosScreen = new SexyVector3(gi.mPosScreen.x / w, gi.mPosScreen.y / w, gi.mPosScreen.z / w);
-					gi.mScaleScreen = (scaleFactor < 500f) ? 3f : (3225f / scaleFactor);
+					gi.mScaleScreen = (scaleFactor < 500f ? 3f : 3225f / scaleFactor) * sSceneScale;
 					float dx = cameraCoords.t.x - gemCoords.t.x;
 					float dy = cameraCoords.t.y - gemCoords.t.y;
 					float dz = cameraCoords.t.z - gemCoords.t.z;
@@ -683,14 +683,17 @@ namespace BejeweledLivePlus.Widget
 
 			if (mState >= HyperSpaceState.BoardShatter && mState < HyperSpaceState.LandOnBoard)
 			{
-				// TODO: Fix board position to match the animation
-                mBoard.mOfsX = mBoardScreenPos.x * (GlobalMembers.gApp.mWidth * 0.5f);
-                mBoard.mOfsY = mBoardScreenPos.y * (GlobalMembers.gApp.mHeight * -0.5f) + 165f;
-            }
+				float invScale = 1f / Math.Max(0.001f, GlobalMembers.S(1f));
+				float screenCenterX = GlobalMembers.gApp.mWidth * 0.5f;
+				float screenCenterY = GlobalMembers.gApp.mHeight * 0.5f;
+				float projX = screenCenterX + mBoardScreenPos.x * screenCenterX;
+				float projY = screenCenterY - mBoardScreenPos.y * screenCenterY;
+				mBoard.mOfsX = (projX - GlobalMembers.S(mBoard.GetBoardCenterX())) * invScale;
+				mBoard.mOfsY = (projY - GlobalMembers.S(mBoard.GetBoardCenterY())) * invScale;
+			}
 			if (mState < HyperSpaceState.LandOnBoard && scaleFactorScreen > 0.001f)
 			{
-				float boardScale = (float)(3328.328 / scaleFactorScreen);
-				mBoard.mScale.SetConstant(boardScale);
+				mBoard.mScale.SetConstant((float)(3328.328 / scaleFactorScreen));
 			}
 			if (mState == HyperSpaceState.PortalRide && mAnimSeq.GetCurFrame() >= 170)
 			{
@@ -766,6 +769,13 @@ namespace BejeweledLivePlus.Widget
 					r.m[i, j] = s;
 				}
 			return r;
+		}
+
+		private void GetSceneProjectionMatrix(SexyMatrix4 outM)
+		{
+			mCameraPersp.GetProjectionMatrix(outM);
+			outM.m[0, 0] *= sSceneScale;
+			outM.m[1, 1] *= sSceneScale;
 		}
 		
 		public override void DrawBackground(Graphics g)
@@ -956,7 +966,7 @@ namespace BejeweledLivePlus.Widget
 			sexyView.m[3, 0] += 3.0f;
 			sexyView.m[1, 1] += 0.003f;
 			SexyMatrix4 sexyProj = new SexyMatrix4();
-			mCameraPersp.GetProjectionMatrix(sexyProj);
+			GetSceneProjectionMatrix(sexyProj);
 			Microsoft.Xna.Framework.Matrix xnaView = renderDev.GetXNAMatrix(sexyView);
 			Microsoft.Xna.Framework.Matrix xnaProj = renderDev.GetXNAMatrix(sexyProj);
 
