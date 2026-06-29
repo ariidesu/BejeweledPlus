@@ -70,7 +70,11 @@ namespace BejeweledLivePlus
 			SexyFramework.GlobalMembers.gSexyApp = theApp;
 			SexyFramework.GlobalMembers.gSexyAppBase = theApp;
 			GlobalMembers.gApp = theApp;
-			mKeyboard = new SexyAppBase.MGKeyboard(Window, theApp);
+			if (PlatformInfo.MonoGamePlatform != MonoGamePlatform.Android &&
+			    PlatformInfo.MonoGamePlatform != MonoGamePlatform.iOS)
+			{
+				mKeyboard = new SexyAppBase.MGKeyboard(Window, theApp);
+			}
 			// mGamerService = new GamerServicesComponent(this);
 			// base.Components.Add(mGamerService);
 			// Guide.SimulateTrialMode = false;
