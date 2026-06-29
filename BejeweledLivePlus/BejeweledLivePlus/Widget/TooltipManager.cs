@@ -165,7 +165,7 @@ namespace BejeweledLivePlus.Widget
 				Tooltip tooltip = mTooltips[i];
 				float num = (float)mAlpha.GetOutVal(tooltip.mAlphaPct);
 				g.SetColorizeImages(true);
-				g.SetColor(new Color(255, 255, 255, (int)num * 255));
+				g.SetColor(new Color(255, 255, 255, (int)(num * 255f)));
 				Bej3Widget.DrawImageBoxTileCenter(g, new Rect(tooltip.mOffsetPos.mX, tooltip.mOffsetPos.mY, tooltip.mWidth, tooltip.mHeight), GlobalMembersResourcesWP.IMAGE_TOOLTIP, false, 0, ConstantsWP.TOOLTIP_BOX_OFFSET_Y);
 				int tOOLTIP_ARROW_SIZE = ConstantsWP.TOOLTIP_ARROW_SIZE;
 				int tOOLTIP_ARROW_SIZE2 = ConstantsWP.TOOLTIP_ARROW_SIZE;
@@ -199,7 +199,7 @@ namespace BejeweledLivePlus.Widget
 					break;
 				}
 				double num3 = (double)mArrowOffset;
-				g.SetColor(new Color(255, 255, 255, (int)(num * num * 255f)));
+				g.SetColor(new Color(255, 255, 255, (int)(num * 255f)));
 				if (!flag)
 				{
 					g.DrawImage(theImage, point.mX, point.mY);
