@@ -93,7 +93,7 @@ namespace SexyFramework.Drivers.Graphics
 
 		private int mBatchedIndexIndex;
 
-		private static int mBatchedTriangleSize = 1200;
+		private static int mBatchedTriangleSize = 4096;
 
 		private IGraphicsDriver mGraphicsDriver;
 

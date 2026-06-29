@@ -280,14 +280,27 @@ namespace SexyFramework.Widget
 			theModalFlags.mUnderFlags = FlagsMod.GetModFlags(theModalFlags.mOverFlags, mBelowModalFlagsMod);
 		}
 
+		private readonly Stack<ModalFlags> mModalFlagsPool = new Stack<ModalFlags>();
+
+		private ModalFlags AcquireModalFlags()
+		{
+			ModalFlags theModalFlags = (mModalFlagsPool.Count > 0) ? mModalFlagsPool.Pop() : new ModalFlags();
+			InitModalFlags(theModalFlags);
+			return theModalFlags;
+		}
+
+		private void ReleaseModalFlags(ModalFlags theModalFlags)
+		{
+			mModalFlagsPool.Push(theModalFlags);
+		}
+
 		public void DrawWidgetsTo(SexyFramework.Graphics.Graphics g)
 		{
 			g.Translate(mMouseDestRect.mX, mMouseDestRect.mY);
 			mCurG = new SexyFramework.Graphics.Graphics(g);
 			List<Pair<Widget, int>> list = mDeferredOverlayWidgets;
 			mDeferredOverlayWidgets.Clear();
-			ModalFlags modalFlags = new ModalFlags();
-			InitModalFlags(modalFlags);
+			ModalFlags modalFlags = AcquireModalFlags();
 			LinkedList<Widget>.Enumerator enumerator = mWidgets.GetEnumerator();
 			while (enumerator.MoveNext())
 			{
@@ -304,6 +317,7 @@ namespace SexyFramework.Widget
 				}
 			}
 			FlushDeferredOverlayWidgets(int.MaxValue);
+			ReleaseModalFlags(modalFlags);
 			mDeferredOverlayWidgets = list;
 			mCurG = null;
 		}
@@ -385,8 +399,7 @@ namespace SexyFramework.Widget
 
 		public bool DrawScreen()
 		{
-			ModalFlags modalFlags = new ModalFlags();
-			InitModalFlags(modalFlags);
+			ModalFlags modalFlags = AcquireModalFlags();
 			bool result = false;
 			mMinDeferredOverlayPriority = int.MaxValue;
 			mDeferredOverlayWidgets.Clear();
@@ -430,25 +443,26 @@ namespace SexyFramework.Widget
 			{
 				deviceImage.UnlockSurface();
 			}
+			ReleaseModalFlags(modalFlags);
 			mCurG = null;
 			return result;
 		}
 
 		public bool UpdateFrame()
 		{
-			ModalFlags modalFlags = new ModalFlags();
-			InitModalFlags(modalFlags);
+			ModalFlags modalFlags = AcquireModalFlags();
 			mUpdateCnt++;
 			mLastWMUpdateCount = mUpdateCnt;
 			UpdateAll(modalFlags);
+			ReleaseModalFlags(modalFlags);
 			return mDirty;
 		}
 
 		public bool UpdateFrameF(float theFrac)
 		{
-			ModalFlags modalFlags = new ModalFlags();
-			InitModalFlags(modalFlags);
+			ModalFlags modalFlags = AcquireModalFlags();
 			UpdateFAll(modalFlags, theFrac);
+			ReleaseModalFlags(modalFlags);
 			return mDirty;
 		}
 
@@ -701,7 +715,6 @@ namespace SexyFramework.Widget
 			if (key >= KeyCode.KEYCODE_UNKNOWN && key < (KeyCode)255)
 			{
 				mKeyDown[(int)key] = true;
-				KeyChar((sbyte)key);
 			}
 			if (mFocusWidget != null)
 			{

@@ -46,7 +46,7 @@ namespace BejeweledLivePlus
 
 		private SexyAppBase.Touch mTouch = new SexyAppBase.Touch();
 
-		private SexyAppBase.MGKeyboard mKeyboard = new SexyAppBase.MGKeyboard();
+		private SexyAppBase.MGKeyboard mKeyboard;
 
 		private bool mIsTracking;
 
@@ -70,6 +70,7 @@ namespace BejeweledLivePlus
 			SexyFramework.GlobalMembers.gSexyApp = theApp;
 			SexyFramework.GlobalMembers.gSexyAppBase = theApp;
 			GlobalMembers.gApp = theApp;
+			mKeyboard = new SexyAppBase.MGKeyboard(Window, theApp);
 			// mGamerService = new GamerServicesComponent(this);
 			// base.Components.Add(mGamerService);
 			// Guide.SimulateTrialMode = false;
@@ -229,13 +230,6 @@ namespace BejeweledLivePlus
 				{
 					flag = false;
 				}
-			}
-			
-			mKeyboard.Update();
-			
-			foreach (Keys key in mKeyboard.GetDownKeys())
-			{
-				theApp.KeyDown((int)key);
 			}
 			
 			theApp.GetTouchInputOffset(ref mGameOffsetX, ref mGameOffsetY);

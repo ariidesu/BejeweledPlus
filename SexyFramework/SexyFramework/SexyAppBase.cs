@@ -44,84 +44,32 @@ namespace SexyFramework
 			}
 		}
 
-		// Custom handling for keyboard as MonoGame don't have the concept of key-repeating behavior
-		// Which SexyFramework respects because of EVENT_KEY_DOWN window event
 		public class MGKeyboard
 		{
-		    private KeyboardState prevKeyState;
-		    private KeyboardState currentState;
+		    private readonly SexyAppBase mApp;
 
-		    private Keys? repKey;
-		    private DateTime downSince;
-		    private DateTime lastRepeat;
-
-		    private readonly float timeUntilRepeatMs;
-		    private readonly int repeatsPerSecond;
-
-		    private readonly List<Keys> pressedKeys = new();
-		    private readonly List<Keys> releasedKeys = new();
-
-		    public MGKeyboard(float timeUntilRepeatMs = 500f, int repeatsPerSecond = 35)
+		    public MGKeyboard(GameWindow theWindow, SexyAppBase theApp)
 		    {
-		        this.timeUntilRepeatMs = timeUntilRepeatMs;
-		        this.repeatsPerSecond = repeatsPerSecond;
-		        prevKeyState = Keyboard.GetState();
-		        currentState = prevKeyState;
+		        mApp = theApp;
+		        theWindow.KeyDown += OnKeyDown;
+		        theWindow.KeyUp += OnKeyUp;
+		        theWindow.TextInput += OnTextInput;
 		    }
 
-		    public void Update()
+		    private void OnKeyDown(object sender, InputKeyEventArgs e)
 		    {
-		        pressedKeys.Clear();
-		        releasedKeys.Clear();
-
-		        currentState = Keyboard.GetState();
-		        DateTime now = DateTime.Now;
-
-		        foreach (Keys key in currentState.GetPressedKeys())
-		        {
-		            if (prevKeyState.IsKeyUp(key))
-		            {
-		                pressedKeys.Add(key);
-		                repKey = key;
-		                downSince = now;
-		                lastRepeat = now;
-		            }
-		        }
-
-		        if (repKey.HasValue && currentState.IsKeyDown(repKey.Value))
-		        {
-		            TimeSpan heldFor = now - downSince;
-		            if (heldFor.TotalMilliseconds > timeUntilRepeatMs)
-		            {
-		                TimeSpan sinceLastRepeat = now - lastRepeat;
-		                double repeatInterval = 1000.0 / repeatsPerSecond;
-
-		                if (sinceLastRepeat.TotalMilliseconds >= repeatInterval)
-		                {
-		                    lastRepeat = now;
-		                    pressedKeys.Add(repKey.Value);
-		                }
-		            }
-		        }
-
-		        foreach (Keys key in prevKeyState.GetPressedKeys())
-		        {
-		            if (currentState.IsKeyUp(key))
-		            {
-		                releasedKeys.Add(key);
-		                if (repKey == key)
-		                    repKey = null;
-		            }
-		        }
-
-		        prevKeyState = currentState;
+		        mApp.KeyDown((int)e.Key);
 		    }
 
-		    public Keys[] GetDownKeys() => pressedKeys.ToArray();
-		    public Keys[] GetReleasedKeys() => releasedKeys.ToArray();
-
-		    public bool IsKeyDown(Keys key) => Array.IndexOf(GetDownKeys(), key) != -1;
-		    public bool IsKeyUp(Keys key) => Array.IndexOf(GetReleasedKeys(), key) != -1;
+		    private void OnKeyUp(object sender, InputKeyEventArgs e)
+		    {
+		        mApp.KeyUp((int)e.Key);
+		    }
+		    
+		    private void OnTextInput(object sender, TextInputEventArgs e)
+		    {
+		        mApp.KeyChar(e.Character);
+		    }
 		}
 
 		public class WidgetSafeDeleteInfo
@@ -1119,6 +1067,16 @@ namespace SexyFramework
 		{
 			mWidgetManager.KeyDown((KeyCode)theKey);
 			return mAppDriver.KeyDown(theKey);
+		}
+
+		public virtual bool KeyUp(int theKey)
+		{
+			return mWidgetManager.KeyUp((KeyCode)theKey);
+		}
+
+		public virtual int KeyChar(char theChar)
+		{
+			return mWidgetManager.KeyChar((sbyte)theChar);
 		}
 
 		public virtual bool DebugKeyDown(int theKey)
