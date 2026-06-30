@@ -117,6 +117,11 @@ namespace BejeweledLivePlus
 			return (float)mGameSpeed.GetOutVal();
 		}
 
+		public override float GetSpeedModeFactorScale()
+		{
+			return 1.05f;
+		}
+
 		public override int WantExpandedTopWidget()
 		{
 			return 1;
