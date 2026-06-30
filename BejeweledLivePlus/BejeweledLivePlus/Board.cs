@@ -7,6 +7,7 @@ using SexyFramework.Graphics;
 using SexyFramework.Misc;
 using SexyFramework.Sound;
 using SexyFramework.Widget;
+using MonoGame.Framework.Utilities;
 using System;
 using System.Collections.Generic;
 
@@ -12525,7 +12526,12 @@ namespace BejeweledLivePlus
 			{
 				num = piece.mCol;
 				num2 = piece.mRow;
-				Piece piece2 = MoveAssistedPiece(piece, x, y, selectedPiece);
+				Piece piece2 = null;
+				if (PlatformInfo.MonoGamePlatform == MonoGamePlatform.Android ||
+				    PlatformInfo.MonoGamePlatform == MonoGamePlatform.iOS)
+				{
+					piece2 = MoveAssistedPiece(piece, x, y, selectedPiece);
+				}
 				if (piece2 != null)
 				{
 					piece = piece2;
