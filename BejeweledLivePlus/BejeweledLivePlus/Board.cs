@@ -6959,6 +6959,10 @@ namespace BejeweledLivePlus
 				{
 					piece11 = enumerator3.Current.Value.second;
 				}
+				if (piece11 == null)
+				{
+					continue;
+				}
 				if (piece11.mFlags == 0 && !FS_aBulgeTriggerPieceSet.ContainsKey(piece11))
 				{
 					FS_aPowerupPieceSet[piece11] = 0;
@@ -7244,7 +7248,7 @@ namespace BejeweledLivePlus
 					TallyPiece(key3, !FS_aPowerupPieceSet.ContainsKey(key3));
 				}
 			}
-			if (flag && fromUpdateSwapping && (FS_aDelayingPieceSet.ContainsKey(thePiece1) || FS_aDelayingPieceSet.ContainsKey(thePiece2)))
+			if (flag && fromUpdateSwapping && ((thePiece1 != null && FS_aDelayingPieceSet.ContainsKey(thePiece1)) || (thePiece2 != null && FS_aDelayingPieceSet.ContainsKey(thePiece2))))
 			{
 				return 2;
 			}
