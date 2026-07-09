@@ -622,6 +622,8 @@ namespace BejeweledLivePlus.Bej3Graphics
 						if (mBoard != null && mBoard.mPostFXManager == this)
 						{
 							current.mX += (float)(double)mBoard.mSideXOff * mBoard.mSlideXScale;
+							current.mX += mBoard.mOfsX;
+							current.mY += mBoard.mOfsY;
 						}
 					}
 					if (current.mType == Effect.Type.TYPE_CUSTOMCLASS)
@@ -890,6 +892,8 @@ namespace BejeweledLivePlus.Bej3Graphics
 						if (mBoard != null && mBoard.mPostFXManager == this)
 						{
 							current.mX -= (float)((double)mBoard.mSideXOff * (double)mBoard.mSlideXScale);
+							current.mX -= mBoard.mOfsX;
+							current.mY -= mBoard.mOfsY;
 						}
 					}
 				}
@@ -1089,10 +1093,12 @@ namespace BejeweledLivePlus.Bej3Graphics
 		public void BltDouble(Graphics g, Image theImage, FRect theDestRect, Color theColor, float theDestScale)
 		{
 			FRect fRect = new FRect(theDestRect);
+			float negH = ConstantsWP.DEVICE_VIRTUAL_NEGATIVE_HEIGHT_F;
+			float visH = ConstantsWP.DEVICE_VIRTUAL_VISIBLE_HEIGHT;
 			float pu = fRect.mX / (float)GlobalMembers.gApp.mScreenBounds.mWidth * theDestScale;
 			float pu2 = (fRect.mX + fRect.mWidth) / (float)GlobalMembers.gApp.mScreenBounds.mWidth * theDestScale;
-			float pv = fRect.mY / (float)GlobalMembers.gApp.mScreenBounds.mHeight * theDestScale;
-			float pv2 = (fRect.mY + fRect.mHeight) / (float)GlobalMembers.gApp.mScreenBounds.mHeight * theDestScale;
+			float pv = (fRect.mY - negH) / visH * theDestScale;
+			float pv2 = (fRect.mY + fRect.mHeight - negH) / visH * theDestScale;
 			SexyVertex2D[] theVertices = new SexyVertex2D[4]
 			{
 				new SexyVertex2D(fRect.mX - 0.5f, fRect.mY - 0.5f, 0f, 0f, pu, pv),
@@ -1111,14 +1117,16 @@ namespace BejeweledLivePlus.Bej3Graphics
 
 		public void BltDoubleFromSrcRect(Graphics g, Image theImage, FRect theDestRect, FRect theSrcRect, Color theColor, float theDestScale)
 		{
+			float negH = ConstantsWP.DEVICE_VIRTUAL_NEGATIVE_HEIGHT_F;
+			float visH = ConstantsWP.DEVICE_VIRTUAL_VISIBLE_HEIGHT;
 			float pu = theDestRect.mX / (float)mWidth * theDestScale;
 			float pu2 = (theDestRect.mX + theDestRect.mWidth) / (float)mWidth * theDestScale;
-			float pv = theDestRect.mY / (float)mHeight * theDestScale;
-			float pv2 = (theDestRect.mY + theDestRect.mHeight) / (float)mHeight * theDestScale;
+			float pv = (theDestRect.mY - negH) / visH * theDestScale;
+			float pv2 = (theDestRect.mY + theDestRect.mHeight - negH) / visH * theDestScale;
 			float pu3 = (theSrcRect.mX + g.mTransX) / (float)GlobalMembers.gApp.mScreenBounds.mWidth;
 			float pu4 = (theSrcRect.mX + g.mTransX + theSrcRect.mWidth) / (float)GlobalMembers.gApp.mScreenBounds.mWidth;
-			float pv3 = theSrcRect.mY / (float)GlobalMembers.gApp.mScreenBounds.mHeight;
-			float pv4 = (theSrcRect.mY + theSrcRect.mHeight) / (float)GlobalMembers.gApp.mScreenBounds.mHeight;
+			float pv3 = (theSrcRect.mY - negH) / visH;
+			float pv4 = (theSrcRect.mY + theSrcRect.mHeight - negH) / visH;
 			SexyVertex2D[] theVertices = new SexyVertex2D[4]
 			{
 				new SexyVertex2D(theDestRect.mX + g.mTransX - 0.5f, theDestRect.mY - 0.5f, pu3, pv3, pu, pv),
@@ -1208,13 +1216,18 @@ namespace BejeweledLivePlus.Bej3Graphics
 				float[] array2 = new float[4];
 				array2[0] = (array2[1] = GlobalMembers.M(0.02f));
 				effect.SetVector4("Params", array2);
-				Rect rect = new Rect(0, 0, image.mWidth, image.mHeight);
+				Rect srcRect = new Rect(0, 0, image.mWidth, image.mHeight);
+				Rect destRect = new Rect(
+					(int)ConstantsWP.DEVICE_VIRTUAL_NEGATIVE_WIDTH_F,
+					(int)ConstantsWP.DEVICE_VIRTUAL_NEGATIVE_HEIGHT_F,
+					ConstantsWP.DEVICE_VIRTUAL_VISIBLE_WIDTH,
+					ConstantsWP.DEVICE_VIRTUAL_VISIBLE_HEIGHT);
 				using (RenderEffectAutoState renderEffectAutoState2 = new RenderEffectAutoState(g, effect))
 				{
 					while (!renderEffectAutoState2.IsDone())
 					{
 						renderEffectAutoState2.MG_StartPass();
-						g.DrawImage(image, 0, 0);
+						g.DrawImage(image, destRect, srcRect);
 						renderEffectAutoState2.NextPass();
 					}
 				}

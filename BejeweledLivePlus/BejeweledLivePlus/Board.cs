@@ -84,6 +84,8 @@ namespace BejeweledLivePlus
 
 		public int mTransScoreOffsetY;
 
+		public int mBoardSlideYComp;
+
 		public int mTransDashboardOffsetY;
 
 		public int mTransReplayOffsetY;
@@ -3243,6 +3245,14 @@ namespace BejeweledLivePlus
 				mOfsY = 0f;
 				mSideXOff.SetConstant(((float)mWidth * 0.5f - GlobalMembers.S(GetBoardCenterX())) / Math.Max(0.001f, GlobalMembers.S(1f)));
 				GlobalMembers.gApp.mCurveValCache.GetCurvedVal(PreCalculatedCurvedValManager.CURVED_VAL_ID.eBOARD_SCALE_HYPERSPACE_ZOOM, mScale);
+				foreach (Piece piece in mBoard)
+				{
+					if (piece != null && piece.mColor >= 0 && piece.mFlags != 0)
+					{
+						piece.ClearBoundEffects();
+						StartPieceEffect(piece);
+					}
+				}
 				break;
 			case HYPERSPACEEVENT.HYPERSPACEEVENT_NextBkg:
 				SetupBackground(1);
@@ -5973,8 +5983,7 @@ namespace BejeweledLivePlus
 				}
 				popAnimEffect.Play();
 				mPostFXManager.AddEffect(popAnimEffect);
-				// We scale by 0.8 so it can fit the flame gem explosion (lol)
-				mPostFXManager.AddHeatwave(theX, theY, 0.8f * (aChainReactionCount + 1));
+				mPostFXManager.AddHeatwave(theX, theY, aChainReactionCount + 1);
 			}
 		}
 
@@ -8686,7 +8695,7 @@ namespace BejeweledLivePlus
 				if (GlobalMembersResourcesWP.IMAGE_INGAMEUI_REPLAY_BUTTON != null)
 				{
 					int num = GlobalMembers.S(GlobalMembers.gApp.mWidth / 2);
-					int num2 = (int)(0f - (GlobalMembers.IMG_SYOFS(1094) + (float)GlobalMembersResourcesWP.IMAGE_INGAMEUI_REPLAY_BUTTON.GetCelHeight()));
+					int num2 = (int)((float)ConstantsWP.DEVICE_VIRTUAL_NEGATIVE_HEIGHT_F - (GlobalMembers.IMG_SYOFS(1094) + (float)GlobalMembersResourcesWP.IMAGE_INGAMEUI_REPLAY_BUTTON.GetCelHeight()));
 					mReplayButton.Resize(GlobalMembers.IMGRECT_NS(GlobalMembersResourcesWP.IMAGE_INGAMEUI_REPLAY_BUTTON, num, (float)((double)ConstantsWP.REPLAY_OFFSET_Y + (double)num2 * (1.0 - (double)mReplayWidgetShowPct))));
 				}
 			}
@@ -10654,6 +10663,10 @@ namespace BejeweledLivePlus
 			{
 				mBackground.mWantAnim = mHyperspace == null && (double)GetAlpha() == 1.0 && (double)mScale == 1.0 && mHasBoardSettled && !mInReplay && !mSideXOff.IsDoingCurve() && GlobalMembers.gApp.mDialogList.Count == 0;
 			}
+			if (mHintButton != null)
+			{
+				mHintButton.mVisible = (double)mSideXOff == 0.0 && (double)mScale >= 0.8;
+			}
 			if ((double)mAlpha == 0.0 && mKilling && GlobalMembers.gApp.mBoard == this)
 			{
 				GlobalMembers.KILL_WIDGET(GlobalMembers.gApp.mBoard);
@@ -10940,32 +10953,30 @@ namespace BejeweledLivePlus
 			g.SetColor(Color.White);
 		}
 
-		public void DrawBombGem(Graphics g, Piece thePiece)
+		public void DrawBombGem(Graphics g, int anOfsX, int anOfsY, Piece thePiece)
 		{
+			Image glowImage = GlobalMembersResourcesWP.IMAGE_BOMBGLOWS_GLOW;
 			Image bombImage = GlobalMembersResourcesWP.IMAGE_BOMBGEMS;
-			if (bombImage == null)
+			if (bombImage == null || glowImage == null)
 			{
 				return;
 			}
-			int celIndex = thePiece.mCounter;
-			int celCount = bombImage.GetCelCount();
-			if (celIndex >= celCount)
-			{
-				celIndex = celCount - 1;
-			}
-			if (celIndex < 0)
-			{
-				celIndex = 0;
-			}
-			int cx = (int)GlobalMembers.S(thePiece.mX + 64f);
-			int cy = (int)GlobalMembers.S(thePiece.mY + 64f);
-			int x = cx - bombImage.GetCelWidth() / 2;
-			int y = cy - bombImage.GetCelHeight() / 2;
+			float pieceAlpha = (float)(double)thePiece.mAlpha * GetPieceAlpha();
+			float pulse = Math.Max(0f, (float)Math.Sin((double)(mUpdateCnt % 200) * 0.005 * Math.PI));
+			int cel = thePiece.mColor;
+			int cx = GlobalMembers.S(anOfsX + 50);
+			int cy = GlobalMembers.S(anOfsY + 50);
+			int glowX = cx - glowImage.GetCelWidth() / 2;
+			int glowY = cy - glowImage.GetCelHeight() / 2;
+			int gemX = cx - bombImage.GetCelWidth() / 2;
+			int gemY = cy - bombImage.GetCelHeight() / 2;
 			g.SetColorizeImages(true);
-			float alpha = (float)((double)thePiece.mAlpha * (double)GetPieceAlpha());
-			g.SetColor(new Color(255, 255, 255, (int)(255f * alpha)));
-			g.DrawImageCel(bombImage, x, y, celIndex);
-			g.SetColorizeImages(false);
+			g.SetColor(new Color(255, 255, 255, (int)(pulse * pieceAlpha * 255f)));
+			g.SetDrawMode(Graphics.DrawMode.Additive);
+			g.DrawImageCel(glowImage, glowX, glowY, cel);
+			g.SetDrawMode(Graphics.DrawMode.Normal);
+			g.SetColor(new Color(255, 255, 255, (int)(pieceAlpha * 255f)));
+			g.DrawImageCel(bombImage, gemX, gemY, cel);
 		}
 
 		public void DrawDoomGem(Graphics g, Piece thePiece)
@@ -11084,7 +11095,7 @@ namespace BejeweledLivePlus
 			}
 			else if (thePiece.IsFlagSet(96u))
 			{
-				DrawBombGem(g, thePiece);
+				DrawBombGem(g, num5, num6, thePiece);
 			}
 			else if (thePiece.IsFlagSet(256u))
 			{
@@ -11172,10 +11183,6 @@ namespace BejeweledLivePlus
 					g.DrawImageCel(streak, GlobalMembers.S(anOfsX), streakY, thePiece.mColor);
 					graphics3D.SetMasking(Graphics3D.EMaskMode.MASKMODE_NONE, 0, 0.25f, 0.5f);
 				}
-				// All other passes draw ON TOP of the streak. Base pre-pass: additive glow (cel-0)
-				// + number (cel-1, tint color). Then the final pass: number (cel-1, gem color) +
-				// additive glow (cel-0, white) — the number drawn twice for full richness, matching
-				// BejBlitz, but here both passes are after the streak so the streak stays behind.
 				g.SetDrawMode(Graphics.DrawMode.Additive);
 				g.SetColor(new Color(additiveLum, additiveLum, additiveLum));
 				GlobalMembers.gGR.DrawImageCel(g, multImage, GlobalMembers.S(anOfsX), GlobalMembers.S(aFrame), 0);
@@ -11206,7 +11213,7 @@ namespace BejeweledLivePlus
 			if (thePiece.IsFlagSet(512u) && !thePiece.IsShrinking() && thePiece.mOverlay != null && (thePiece.mSpinFrame < 5f || thePiece.mSpinFrame > 15f))
 			{
 				float num10 = thePiece.mSpinFrame * (float)Math.PI * 2f / 20f;
-				float num11 = (float)((double)thePiece.mScale * (double)GlobalMembers.M(0.8f) * (1.0 + (double)thePiece.mOverlayBulge));
+				float num11 = (float)((double)thePiece.mScale * (double)GlobalMembers.M(1f) * (1.0 + (double)thePiece.mOverlayBulge));
 				int num12 = (int)((float)thePiece.mOverlay.mWidth * num11);
 				num12 = (int)((float)num12 * (float)Math.Cos(num10));
 				int num13 = (int)((float)thePiece.mOverlay.mHeight * num11);
@@ -11529,22 +11536,22 @@ namespace BejeweledLivePlus
 			if (mRewinding)
 			{
 				g.SetColor(new Color(GlobalMembers.M(64), GlobalMembers.M(64), GlobalMembers.M(64), GlobalMembers.M(128)));
-				g.FillRect(0, 0, mWidth, mHeight);
+				g.FillRect(0, (int)ConstantsWP.DEVICE_VIRTUAL_NEGATIVE_HEIGHT_F, mWidth, ConstantsWP.DEVICE_VIRTUAL_VISIBLE_HEIGHT);
 				g.SetDrawMode(Graphics.DrawMode.Normal);
 				for (int i = 0; i < (int)mRewindRand.Next() % GlobalMembers.M(10) + GlobalMembers.M(6); i++)
 				{
 					g.SetColor(new Color(255, 255, 255, GlobalMembers.M(64)));
-					g.FillRect(0, (int)(mRewindRand.Next() % mHeight), mWidth, (int)(mRewindRand.Next() % GlobalMembers.M(2) + GlobalMembers.M(1)));
+					g.FillRect(0, (int)((float)ConstantsWP.DEVICE_VIRTUAL_NEGATIVE_HEIGHT_F + mRewindRand.Next() % ConstantsWP.DEVICE_VIRTUAL_VISIBLE_HEIGHT), mWidth, (int)(mRewindRand.Next() % GlobalMembers.M(2) + GlobalMembers.M(1)));
 				}
 			}
 			else if (mInReplay)
 			{
 				g.SetColor(new Color(GlobalMembers.M(64), GlobalMembers.M(64), GlobalMembers.M(64), GlobalMembers.M(70)));
-				g.FillRect(0, 0, mWidth, mHeight);
+				g.FillRect(0, (int)ConstantsWP.DEVICE_VIRTUAL_NEGATIVE_HEIGHT_F, mWidth, ConstantsWP.DEVICE_VIRTUAL_VISIBLE_HEIGHT);
 				for (int j = 0; j < (int)mRewindRand.Next() % GlobalMembers.M(2) + GlobalMembers.M(3); j++)
 				{
 					g.SetColor(new Color(150, 150, 150, GlobalMembers.M(50)));
-					g.FillRect(0, (int)(mRewindRand.Next() % mHeight), mWidth, (int)(mRewindRand.Next() % GlobalMembers.M(2) + GlobalMembers.M(1)));
+					g.FillRect(0, (int)((float)ConstantsWP.DEVICE_VIRTUAL_NEGATIVE_HEIGHT_F + mRewindRand.Next() % ConstantsWP.DEVICE_VIRTUAL_VISIBLE_HEIGHT), mWidth, (int)(mRewindRand.Next() % GlobalMembers.M(2) + GlobalMembers.M(1)));
 				}
 			}
 			MTRand.SetRandAllowed(false);
@@ -11584,11 +11591,9 @@ namespace BejeweledLivePlus
 			}
 			if (mBoardDarken > 0f)
 			{
-				Rect mScreenBounds = GlobalMembers.gApp.mScreenBounds;
-				mScreenBounds.Offset(-mX, -mY);
-				g.SetClipRect(mScreenBounds);
+				g.ClearClipRect();
 				g.SetColor(new Color(0, 0, 0, (int)(GetBoardAlpha() * mBoardDarken * (float)GlobalMembers.M(128))));
-				g.FillRect(-mX, -mY, mWidth, mHeight);
+				g.FillRect(-mX, (int)ConstantsWP.DEVICE_VIRTUAL_NEGATIVE_HEIGHT_F - mY, mWidth, ConstantsWP.DEVICE_VIRTUAL_VISIBLE_HEIGHT);
 				g.SetColor(Color.White);
 				DrawPieces(g, true);
 			}
@@ -11623,15 +11628,15 @@ namespace BejeweledLivePlus
 					g.SetColor(Color.White);
 					if (mShowBoard)
 					{
-						g.DrawImage(GlobalMembersResourcesWP.IMAGE_BOOM_FTOP_WIDGET, (int)GlobalMembers.S(GlobalMembersResourcesWP.ImgXOfs(GlobalMembersResourcesWP.GetIdByImage(GlobalMembersResourcesWP.IMAGE_BOOM_FTOP_WIDGET))), (int)GlobalMembers.S(GlobalMembersResourcesWP.ImgYOfs(GlobalMembersResourcesWP.GetIdByImage(GlobalMembersResourcesWP.IMAGE_BOOM_FTOP_WIDGET))));
-						g.DrawImage(GlobalMembersResourcesWP.IMAGE_BOOM_FBOTTOM_WIDGET, (int)GlobalMembers.S(GlobalMembersResourcesWP.ImgXOfs(GlobalMembersResourcesWP.GetIdByImage(GlobalMembersResourcesWP.IMAGE_BOOM_FBOTTOM_WIDGET))), (int)GlobalMembers.S(GlobalMembersResourcesWP.ImgYOfs(GlobalMembersResourcesWP.GetIdByImage(GlobalMembersResourcesWP.IMAGE_BOOM_FBOTTOM_WIDGET))));
-						g.DrawImage(GlobalMembersResourcesWP.IMAGE_BOOM_BOARD, GlobalMembers.S(GetColScreenX(0) + GlobalMembers.M(0)), GlobalMembers.S(GetRowScreenY(0) + GlobalMembers.M(-20)));
-						g.PushState();
-						g.ClipRect(GlobalMembers.S(GetColScreenX(0) + GlobalMembers.M(0)), GlobalMembers.S(GetRowScreenY(0) + GlobalMembers.M(-20)), GlobalMembers.S(800), GlobalMembers.S(800));
-						g.DrawImage(GlobalMembersResourcesWP.IMAGE_BOOM_CRATER, (int)(GlobalMembers.S(mGameOverPiece.CX()) - (float)(GlobalMembersResourcesWP.IMAGE_BOOM_CRATER.mWidth / 2)), (int)(GlobalMembers.S(mGameOverPiece.CY()) - (float)(GlobalMembersResourcesWP.IMAGE_BOOM_CRATER.mHeight / 2)));
-						g.PopState();
-						g.DrawImage(GlobalMembersResourcesWP.IMAGE_BOOM_FGRIDBAR_TOP, GlobalMembers.S(GetColScreenX(0)) + GlobalMembers.MS(-16), GlobalMembers.S(GetRowScreenY(0)) + GlobalMembers.MS(-33));
-						g.DrawImage(GlobalMembersResourcesWP.IMAGE_BOOM_FGRIDBAR_BOT, GlobalMembers.S(GetColScreenX(0)) + GlobalMembers.MS(-7), GlobalMembers.S(GetRowScreenY(8)) + GlobalMembers.MS(-7));
+						// g.DrawImage(GlobalMembersResourcesWP.IMAGE_BOOM_FTOP_WIDGET, (int)GlobalMembers.S(GlobalMembersResourcesWP.ImgXOfs(GlobalMembersResourcesWP.GetIdByImage(GlobalMembersResourcesWP.IMAGE_BOOM_FTOP_WIDGET))), (int)GlobalMembers.S(GlobalMembersResourcesWP.ImgYOfs(GlobalMembersResourcesWP.GetIdByImage(GlobalMembersResourcesWP.IMAGE_BOOM_FTOP_WIDGET))));
+						// g.DrawImage(GlobalMembersResourcesWP.IMAGE_BOOM_FBOTTOM_WIDGET, (int)GlobalMembers.S(GlobalMembersResourcesWP.ImgXOfs(GlobalMembersResourcesWP.GetIdByImage(GlobalMembersResourcesWP.IMAGE_BOOM_FBOTTOM_WIDGET))), (int)GlobalMembers.S(GlobalMembersResourcesWP.ImgYOfs(GlobalMembersResourcesWP.GetIdByImage(GlobalMembersResourcesWP.IMAGE_BOOM_FBOTTOM_WIDGET))));
+						// g.DrawImage(GlobalMembersResourcesWP.IMAGE_BOOM_BOARD, GlobalMembers.S(GetColScreenX(0) + GlobalMembers.M(0)), GlobalMembers.S(GetRowScreenY(0) + GlobalMembers.M(-20)));
+						// g.PushState();
+						// g.ClipRect(GlobalMembers.S(GetColScreenX(0) + GlobalMembers.M(0)), GlobalMembers.S(GetRowScreenY(0) + GlobalMembers.M(-20)), GlobalMembers.S(800), GlobalMembers.S(800));
+						// g.DrawImage(GlobalMembersResourcesWP.IMAGE_BOOM_CRATER, (int)(GlobalMembers.S(mGameOverPiece.CX()) - (float)(GlobalMembersResourcesWP.IMAGE_BOOM_CRATER.mWidth / 2)), (int)(GlobalMembers.S(mGameOverPiece.CY()) - (float)(GlobalMembersResourcesWP.IMAGE_BOOM_CRATER.mHeight / 2)));
+						// g.PopState();
+						// g.DrawImage(GlobalMembersResourcesWP.IMAGE_BOOM_FGRIDBAR_TOP, GlobalMembers.S(GetColScreenX(0)) + GlobalMembers.MS(-16), GlobalMembers.S(GetRowScreenY(0)) + GlobalMembers.MS(-33));
+						// g.DrawImage(GlobalMembersResourcesWP.IMAGE_BOOM_FGRIDBAR_BOT, GlobalMembers.S(GetColScreenX(0)) + GlobalMembers.MS(-7), GlobalMembers.S(GetRowScreenY(8)) + GlobalMembers.MS(-7));
 					}
 				}
 				graphics3D?.SetMasking(Graphics3D.EMaskMode.MASKMODE_NONE);
@@ -11676,9 +11681,8 @@ namespace BejeweledLivePlus
 			}
 			if ((double)mReplayFadeout != 0.0)
 			{
-				int num = 80;
 				g.SetColor(mReplayFadeout);
-				g.FillRect(GlobalMembers.S(-160), 0, GlobalMembers.S(1920), GlobalMembers.S(1200) + num);
+				g.FillRect(0, (int)ConstantsWP.DEVICE_VIRTUAL_NEGATIVE_HEIGHT_F, mWidth, ConstantsWP.DEVICE_VIRTUAL_VISIBLE_HEIGHT);
 			}
 			if (mRestartPrevImage != null)
 			{
@@ -11994,12 +11998,14 @@ namespace BejeweledLivePlus
 
 		public virtual void DrawButtons(Graphics g)
 		{
+			if (mHyperspace != null && mHyperspace.ShouldHideBoardHUD()) return;
 			if (!mIsWholeGameReplay)
 			{
 				g.SetDrawMode(Graphics.DrawMode.Normal);
 				float mTransX = g.mTransX;
 				float mTransY = g.mTransY;
-				int sideXOff = (mHyperspace is HyperspaceUltra) ? 0 : (int)GlobalMembers.S(mSideXOff);
+				if ((double)mScale < 0.8) return;
+				int sideXOff = (int)GlobalMembers.S(mSideXOff);
 				g.Translate(mHintButton.mX + sideXOff + mOffsetX, mHintButton.mY + mOffsetY);
 				mHintButton.Draw(g);
 				g.SetColor(Color.White);
@@ -12031,10 +12037,12 @@ namespace BejeweledLivePlus
 				int num = (int)((float)GlobalMembersResourcesWP.IMAGE_BOARD_IRIS.mWidth * ConstantsWP.BOARD_IRIS_SCALE);
 				int num2 = (int)((float)GlobalMembersResourcesWP.IMAGE_BOARD_IRIS.mHeight * ConstantsWP.BOARD_IRIS_SCALE);
 				Rect rect = new Rect(theCX - num / 2, theCY - num2 / 2, num, num2);
-				g.FillRect(0, 0, rect.mX, mHeight);
-				g.FillRect(rect.mX + rect.mWidth, 0, mWidth - rect.mX + rect.mWidth, mHeight);
-				g.FillRect(rect.mX, 0, rect.mWidth, rect.mY);
-				g.FillRect(rect.mX, rect.mY + rect.mHeight, rect.mWidth, mHeight - rect.mY + rect.mHeight);
+				int irisBandTop = (int)ConstantsWP.DEVICE_VIRTUAL_NEGATIVE_HEIGHT_F;
+				int irisBandH = ConstantsWP.DEVICE_VIRTUAL_VISIBLE_HEIGHT;
+				g.FillRect(0, irisBandTop, rect.mX, irisBandH);
+				g.FillRect(rect.mX + rect.mWidth, irisBandTop, mWidth - rect.mX + rect.mWidth, irisBandH);
+				g.FillRect(rect.mX, irisBandTop, rect.mWidth, rect.mY - irisBandTop);
+				g.FillRect(rect.mX, rect.mY + rect.mHeight, rect.mWidth, irisBandTop + irisBandH - rect.mY - rect.mHeight);
 				g.SetColor(new Color(255, 255, 255, 255));
 				g.SetScale(ConstantsWP.BOARD_IRIS_SCALE, ConstantsWP.BOARD_IRIS_SCALE, theCX, theCY);
 				Bej3Widget.DrawImageCentered(g, GlobalMembersResourcesWP.IMAGE_BOARD_IRIS, 0, theCX, theCY);
@@ -12139,7 +12147,6 @@ namespace BejeweledLivePlus
 					{
 						mDrawingScaledBoardOnly = false;
 					}
-					g.PopState();
 					if (!mIsWholeGameReplay && WantDrawButtons())
 					{
 						DrawButtons(g);
@@ -12148,6 +12155,7 @@ namespace BejeweledLivePlus
 					{
 						mCurrentHint.Draw(g);
 					}
+					g.PopState();
 				}
 				else
 				{
@@ -12245,6 +12253,7 @@ namespace BejeweledLivePlus
 
 		public virtual void DrawUI(Graphics g)
 		{
+			mBoardSlideYComp = mHyperspace != null ? (int)((double)GlobalMembers.S(mOfsY) * (double)mSlidingHUDCurve.GetOutVal()) : 0;
 			if ((double)mSideAlpha != 1.0)
 			{
 				g.SetColor(mSideAlpha);
@@ -12350,30 +12359,34 @@ namespace BejeweledLivePlus
 
 		public virtual void DrawHUDText(Graphics g)
 		{
-			if (WantExpandedTopWidget() == 0)
+			bool shouldHide = mHyperspace != null && mHyperspace.ShouldHideBoardHUD();
+			if (!shouldHide)
 			{
-				int num = (int)(GlobalMembers.IMG_SXOFS(1094) + (float)GlobalMembersResourcesWP.IMAGE_INGAMEUI_REPLAY_BUTTON.GetCelWidth());
-				int num2 = num + (mWidth - num) / 2;
-				int num3 = (int)((GlobalMembers.IMG_SYOFS(1091) + (float)GlobalMembersResources.FONT_DIALOG.mAscent) / 2f - (float)mTransLevelOffsetY);
-				g.SetFont(GlobalMembersResources.FONT_DIALOG);
-				g.PushState();
-				g.SetScale(ConstantsWP.BOARD_LEVEL_SCORE_SCALE, ConstantsWP.BOARD_LEVEL_SCORE_SCALE, num2, num3 - g.GetFont().GetAscent() / 2);
-				Utils.SetFontLayerColor((ImageFont)g.GetFont(), 0, Color.White);
-				g.WriteString(string.Format(GlobalMembers._ID("Level {0}", 3232), SexyFramework.Common.CommaSeperate(mLevel + 1)), num2, num3);
-				g.PopState();
-			}
-			else
-			{
-				string topWidgetButtonText = GetTopWidgetButtonText();
-				if (topWidgetButtonText != string.Empty)
+				if (WantExpandedTopWidget() == 0)
 				{
+					int num = (int)(GlobalMembers.IMG_SXOFS(1094) + (float)GlobalMembersResourcesWP.IMAGE_INGAMEUI_REPLAY_BUTTON.GetCelWidth());
+					int num2 = num + (mWidth - num) / 2;
+					int num3 = (int)((GlobalMembers.IMG_SYOFS(1091) + (float)GlobalMembersResources.FONT_DIALOG.mAscent) / 2f - (float)mTransLevelOffsetY) - mBoardSlideYComp;
 					g.SetFont(GlobalMembersResources.FONT_DIALOG);
-					g.WriteString(topWidgetButtonText, GlobalMembers.S(GetUICenterX()), GlobalMembers.MS(262));
+					g.PushState();
+					g.SetScale(ConstantsWP.BOARD_LEVEL_SCORE_SCALE, ConstantsWP.BOARD_LEVEL_SCORE_SCALE, num2, num3 - g.GetFont().GetAscent() / 2);
+					Utils.SetFontLayerColor((ImageFont)g.GetFont(), 0, Color.White);
+					g.WriteString(string.Format(GlobalMembers._ID("Level {0}", 3232), SexyFramework.Common.CommaSeperate(mLevel + 1)), num2, num3);
+					g.PopState();
 				}
-			}
-			if (WantDrawScore())
-			{
-				DrawScore(g);
+				else
+				{
+					string topWidgetButtonText = GetTopWidgetButtonText();
+					if (topWidgetButtonText != string.Empty)
+					{
+						g.SetFont(GlobalMembersResources.FONT_DIALOG);
+						g.WriteString(topWidgetButtonText, GlobalMembers.S(GetUICenterX()), GlobalMembers.MS(262));
+					}
+				}
+				if (WantDrawScore())
+				{
+					DrawScore(g);
+				}
 			}
 			if (WantDrawTimer())
 			{
@@ -12946,7 +12959,7 @@ namespace BejeweledLivePlus
 				text = string.Format(GlobalMembers._ID("{0} of {1}", 157), text, SexyFramework.Common.CommaSeperate(GetLevelPoints()));
 			}
 			int num = (int)GlobalMembers.IMG_SXOFS(1094) / 2;
-			int num2 = (int)(GlobalMembers.IMG_SYOFS(1091) + (float)GlobalMembersResources.FONT_DIALOG.mAscent) / 2 - mTransScoreOffsetY;
+			int num2 = (int)(GlobalMembers.IMG_SYOFS(1091) + (float)GlobalMembersResources.FONT_DIALOG.mAscent) / 2 - mTransScoreOffsetY - mBoardSlideYComp;
 			Utils.SetFontLayerColor((ImageFont)g.GetFont(), 0, Color.White);
 			g.PushState();
 			g.SetScale(ConstantsWP.BOARD_LEVEL_SCORE_SCALE, ConstantsWP.BOARD_LEVEL_SCORE_SCALE, num, num2 - g.GetFont().GetAscent() / 2);
@@ -12964,14 +12977,14 @@ namespace BejeweledLivePlus
 			{
 				bool flag = mReplayButton.mIsDown && mReplayButton.mIsOver && !mReplayButton.mDisabled;
 				Rect theRect = ((flag ^ mReplayButton.mInverted) ? mReplayButton.mButtonImage.GetCelRect(1) : mReplayButton.mButtonImage.GetCelRect(0));
-				mReplayButton.DrawButtonImage(g, mReplayButton.mButtonImage, theRect, mReplayButton.mX, mReplayButton.mY);
+				mReplayButton.DrawButtonImage(g, mReplayButton.mButtonImage, theRect, mReplayButton.mX, mReplayButton.mY - mBoardSlideYComp);
 			}
 			if ((double)mReplayPulsePct >= 0.0)
 			{
 				int celWidth = GlobalMembersResourcesWP.IMAGE_DIALOG_REPLAY.GetCelWidth();
 				int celHeight = GlobalMembersResourcesWP.IMAGE_DIALOG_REPLAY.GetCelHeight();
 				int theX = (mWidth - celWidth) / 2;
-				int theY = (int)((GlobalMembers.IMG_SYOFS(1091) - (float)celHeight) / 2f);
+				int theY = (int)((GlobalMembers.IMG_SYOFS(1091) - (float)celHeight) / 2f) - mBoardSlideYComp;
 				g.DrawImageCel(GlobalMembersResourcesWP.IMAGE_DIALOG_REPLAY, theX, theY, 1);
 				if ((double)mReplayPulsePct > 0.0)
 				{
@@ -13113,8 +13126,10 @@ namespace BejeweledLivePlus
 			}
 			int num = (int)((GlobalMembers.IMG_SYOFS(1091) + (float)GlobalMembersResources.FONT_DIALOG.mAscent) / 2f);
 			mTransBoardOffsetX = mSlideBoardComponentsWithHUD ? (int)((double)mWidth * (double)mSlidingHUDCurve) : 0;
-			mTransLevelOffsetY = (mTransScoreOffsetY = (int)((double)(num + GlobalMembersResources.FONT_DIALOG.GetDescent()) * (double)mSlidingHUDCurve));
-			mTransDashboardOffsetY = (int)((double)(GlobalMembers.gApp.mHeight - ConstantsWP.MENU_Y_POS_HIDDEN) * (double)mSlidingHUDCurve);
+			int topBand = (int)(0f - ConstantsWP.DEVICE_VIRTUAL_NEGATIVE_HEIGHT_F);
+			int textClear = (int)((float)GlobalMembersResources.FONT_DIALOG.mHeight * ConstantsWP.BOARD_LEVEL_SCORE_SCALE);
+			mTransLevelOffsetY = (mTransScoreOffsetY = (int)((double)(num + GlobalMembersResources.FONT_DIALOG.GetDescent() + topBand + textClear) * (double)mSlidingHUDCurve));
+			mTransDashboardOffsetY = (int)((double)((float)ConstantsWP.DEVICE_VIRTUAL_HEIGHT_F - (float)ConstantsWP.MENU_Y_POS_HIDDEN) * (double)mSlidingHUDCurve);
 			GlobalMembers.gApp.mMenus[7].SetTargetPosition(ConstantsWP.MENU_Y_POS_HIDDEN + mTransDashboardOffsetY);
 			mTransHintBtnOffsetX = (int)((double)(GlobalMembers.gApp.mWidth - ConstantsWP.BOARD_UI_HINT_BTN_X) * (double)mSlidingHUDCurve);
 			mHintButton.mX = ConstantsWP.BOARD_UI_HINT_BTN_X + mTransHintBtnOffsetX;

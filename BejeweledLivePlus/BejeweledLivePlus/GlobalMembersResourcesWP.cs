@@ -15,7 +15,7 @@ namespace BejeweledLivePlus
 
 		internal static Dictionary<object, int> gVarToIdMap = new Dictionary<object, int>();
 
-		internal static Point[] gImgOffsets = new Point[1830];
+		internal static Point[] gImgOffsets = new Point[1841];
 
 		public static object gVarToIdMapCrit = new object();
 
@@ -1285,6 +1285,8 @@ namespace BejeweledLivePlus
 
 		public static Image IMAGE_INGAMEUI_BUTTERFLIES_WEB;
 
+		public static Image IMAGE_INGAMEUI_BUTTERFLIES_WEB_IP5;
+
 		public static Image IMAGE_ANIMS_SPIDER_SPIDER_26X50;
 
 		public static Image IMAGE_ANIMS_SPIDER_SPIDER_26X52;
@@ -2004,6 +2006,8 @@ namespace BejeweledLivePlus
 		public static Image IMAGE_MULTIPLIER_LARGE_BACK;
 
 		public static Image IMAGE_MULTIPLIER_LARGE_FRONT;
+
+		public static Image IMAGE_INGAMEUI_DIAMOND_MINE_DM_TOP;
 
 		public static Image IMAGE_GEMOUTLINES;
 
@@ -3701,7 +3705,7 @@ namespace BejeweledLivePlus
 
 		public static Image IMAGE_HEATWAVE;
 
-		internal static ResGlobalPtr[] gResources = new ResGlobalPtr[1830];
+		internal static ResGlobalPtr[] gResources = new ResGlobalPtr[1841];
 
 		internal static uint[] gResourceLocales = new uint[6] { 1145390149u, 1162761555u, 1163085139u, 1179797074u, 1230260564u, 0u };
 
@@ -3715,7 +3719,7 @@ namespace BejeweledLivePlus
 			if (!InitResourceManager_sAlreadyRun || forceRun)
 			{
 				InitResourceManager_sAlreadyRun = true;
-				for (int i = 0; i < 1830; i++)
+				for (int i = 0; i < 1841; i++)
 				{
 					ResGlobalPtr resGlobalPtr = theManager.RegisterGlobalPtr(GetStringIdById(i));
 					gResources[i] = resGlobalPtr;
@@ -7191,6 +7195,7 @@ namespace BejeweledLivePlus
 				IMAGE_DIALOG_TEXTBOX = GetImageThrow(theManager, 1376, "IMAGE_DIALOG_TEXTBOX", 960, 0);
 				IMAGE_ALPHA_ALPHA_DOWN = GetImageThrow(theManager, 1377, "IMAGE_ALPHA_ALPHA_DOWN", 960, 0);
 				IMAGE_ALPHA_ALPHA_UP = GetImageThrow(theManager, 1378, "IMAGE_ALPHA_ALPHA_UP", 960, 0);
+				IMAGE_ANGRYBOMB = GetImageThrow(theManager, 1401, "IMAGE_ANGRYBOMB", 960, 0);
 			}
 			catch (ResourceManagerException)
 			{
@@ -8772,6 +8777,7 @@ namespace BejeweledLivePlus
 				IMAGE_INGAMEUI_DIAMOND_MINE_PROGRESS_BAR_FRAME = GetImageThrow(theManager, 875, "IMAGE_INGAMEUI_DIAMOND_MINE_PROGRESS_BAR_FRAME", 960, 0);
 				IMAGE_INGAMEUI_DIAMOND_MINE_SCORE_BAR_BACK = GetImageThrow(theManager, 876, "IMAGE_INGAMEUI_DIAMOND_MINE_SCORE_BAR_BACK", 960, 0);
 				IMAGE_INGAMEUI_DIAMOND_MINE_TIMER = GetImageThrow(theManager, 877, "IMAGE_INGAMEUI_DIAMOND_MINE_TIMER", 960, 0);
+				IMAGE_INGAMEUI_DIAMOND_MINE_DM_TOP = GetImageThrow(theManager, 1838, "IMAGE_INGAMEUI_DIAMOND_MINE_DM_TOP", 960, 0, true);
 				IMAGE_QUEST_DIG_COGS_COGS_113X114 = GetImageThrow(theManager, 878, "IMAGE_QUEST_DIG_COGS_COGS_113X114", 960, 0, true);
 				IMAGE_QUEST_DIG_COGS_COGS_165X165 = GetImageThrow(theManager, 879, "IMAGE_QUEST_DIG_COGS_COGS_165X165", 960, 0, true);
 				IMAGE_QUEST_DIG_COGS_COGS_166X166 = GetImageThrow(theManager, 880, "IMAGE_QUEST_DIG_COGS_COGS_166X166", 960, 0, true);
@@ -9038,6 +9044,7 @@ namespace BejeweledLivePlus
 				IMAGE_INGAMEUI_BUTTERFLIES_SCORE_BG = GetImageThrow(theManager, 909, "IMAGE_INGAMEUI_BUTTERFLIES_SCORE_BG", 960, 0);
 				IMAGE_INGAMEUI_BUTTERFLIES_SCORE_FRAME = GetImageThrow(theManager, 910, "IMAGE_INGAMEUI_BUTTERFLIES_SCORE_FRAME", 960, 0);
 				IMAGE_INGAMEUI_BUTTERFLIES_WEB = GetImageThrow(theManager, 911, "IMAGE_INGAMEUI_BUTTERFLIES_WEB", 960, 0);
+				IMAGE_INGAMEUI_BUTTERFLIES_WEB_IP5 = GetImageThrow(theManager, 1839, "IMAGE_INGAMEUI_BUTTERFLIES_WEB_IP5", 960, 0, true);
 				IMAGE_ANIMS_SPIDER_SPIDER_26X50 = GetImageThrow(theManager, 912, "IMAGE_ANIMS_SPIDER_SPIDER_26X50", 960, 0, true);
 				IMAGE_ANIMS_SPIDER_SPIDER_26X52 = GetImageThrow(theManager, 913, "IMAGE_ANIMS_SPIDER_SPIDER_26X52", 960, 0, true);
 				IMAGE_ANIMS_SPIDER_SPIDER_27X42 = GetImageThrow(theManager, 914, "IMAGE_ANIMS_SPIDER_SPIDER_27X42", 960, 0, true);
@@ -12240,7 +12247,6 @@ namespace BejeweledLivePlus
 			try
 			{
 				ATLASIMAGE_ATLAS_NOMATCH_480_00 = GetImageThrow(theManager, 84, "ATLASIMAGE_ATLAS_NOMATCH_480_00", 480, 0);
-				IMAGE_ANGRYBOMB = GetImageThrow(theManager, 1401, "IMAGE_ANGRYBOMB", 480, 0);
 				IMAGE_ANIMS_100CREST_100CREST = GetImageThrow(theManager, 1402, "IMAGE_ANIMS_100CREST_100CREST", 480, 0, true);
 				IMAGE_ANIMS_BOARDSHATTER_BOTTOM = GetImageThrow(theManager, 1403, "IMAGE_ANIMS_BOARDSHATTER_BOTTOM", 480, 0, true);
 				IMAGE_ANIMS_BOARDSHATTER_GRID = GetImageThrow(theManager, 1404, "IMAGE_ANIMS_BOARDSHATTER_GRID", 480, 0, true);
@@ -12330,7 +12336,6 @@ namespace BejeweledLivePlus
 			try
 			{
 				ATLASIMAGE_ATLAS_NOMATCH_960_00 = GetImageThrow(theManager, 85, "ATLASIMAGE_ATLAS_NOMATCH_960_00", 960, 0);
-				IMAGE_ANGRYBOMB = GetImageThrow(theManager, 1401, "IMAGE_ANGRYBOMB", 960, 0);
 				IMAGE_ANIMS_100CREST_100CREST = GetImageThrow(theManager, 1402, "IMAGE_ANIMS_100CREST_100CREST", 960, 0, true);
 				IMAGE_ANIMS_BOARDSHATTER_BOTTOM = GetImageThrow(theManager, 1403, "IMAGE_ANIMS_BOARDSHATTER_BOTTOM", 960, 0, true);
 				IMAGE_ANIMS_BOARDSHATTER_GRID = GetImageThrow(theManager, 1404, "IMAGE_ANIMS_BOARDSHATTER_GRID", 960, 0, true);
@@ -17995,6 +18000,10 @@ namespace BejeweledLivePlus
                 return "IMAGE_MULTIPLIER_LARGE_BACK";
             case 1829:
                 return "IMAGE_MULTIPLIER_LARGE_FRONT";
+            case 1838:
+                return "IMAGE_INGAMEUI_DIAMOND_MINE_DM_TOP";
+            case 1839:
+                return "IMAGE_INGAMEUI_BUTTERFLIES_WEB_IP5";
             default:
 				return "";
 			}
@@ -18004,7 +18013,7 @@ namespace BejeweledLivePlus
 		{
 			if (GetIdByStringId_aMap.Count == 0)
 			{
-				for (int i = 0; i < 1830; i++)
+				for (int i = 0; i < 1841; i++)
 				{
 					GetIdByStringId_aMap[GetStringIdById(i)] = i;
 				}

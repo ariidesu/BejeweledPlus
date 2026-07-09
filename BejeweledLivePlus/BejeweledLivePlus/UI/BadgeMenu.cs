@@ -247,7 +247,7 @@ namespace BejeweledLivePlus.UI
 				bool colorizeImages = g.GetColorizeImages();
 				g.SetColorizeImages(true);
 				g.SetColor(new Color(0, 0, 0, (int)((double)mBadgeAlpha * (double)mAwardShadowAlpha * (double)ConstantsWP.BADGEMENU_AWARDED_ALPHA)));
-				g.FillRect(-(int)g.mTransX, -(int)g.mTransY, GlobalMembers.gApp.mWidth, GlobalMembers.gApp.mHeight);
+				g.FillRect(-(int)g.mTransX, (int)ConstantsWP.DEVICE_VIRTUAL_NEGATIVE_HEIGHT_F - (int)g.mTransY, GlobalMembers.gApp.mWidth, ConstantsWP.DEVICE_VIRTUAL_VISIBLE_HEIGHT);
 				int num = (mWidth - (int)((float)GlobalMembersResourcesWP.IMAGE_AWARD_GLOW.GetWidth() * ConstantsWP.BOARD_BADGE_AWARD_SCALE)) / 2;
 				int num2 = (mHeight - (int)((float)GlobalMembersResourcesWP.IMAGE_AWARD_GLOW.GetHeight() * ConstantsWP.BOARD_BADGE_AWARD_SCALE)) / 2;
 				g.SetScale(ConstantsWP.BOARD_BADGE_AWARD_SCALE, ConstantsWP.BOARD_BADGE_AWARD_SCALE, num, num2);

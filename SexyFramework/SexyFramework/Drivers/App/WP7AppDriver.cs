@@ -238,9 +238,9 @@ namespace SexyFramework.Drivers.App
 				mApp.mMusicInterface = new CustomBassMusicInterface();
 				mApp.SetMusicVolume(mApp.mMusicVolume);
 				IsScreenSaver();
-				mApp.mScreenBounds.mWidth = mApp.mWidth;
-				mApp.mScreenBounds.mHeight = mApp.mHeight;
-				mApp.mWidgetManager.Resize(mApp.mScreenBounds, mApp.mScreenBounds);
+				mApp.UpdateScreenBounds();
+				Rect designBounds = new Rect(0, 0, mApp.mWidth, mApp.mHeight);
+				mApp.mWidgetManager.Resize(designBounds, designBounds);
 				mApp.mWidgetManager.mImage = mXNAGraphicsDriver.GetScreenImage();
 				mApp.mWidgetManager.MarkAllDirty();
 				mApp.mInitialized = true;
@@ -726,6 +726,7 @@ namespace SexyFramework.Drivers.App
 
 		public override void Draw()
 		{
+			mXNAGraphicsDriver.mXNARenderDevice.SetCurrentContext(null);
 			mXNAGraphicsDriver.ClearColorBuffer(SexyFramework.Graphics.Color.Black);
 			DrawDirtyStuff();
 			mXNAGraphicsDriver.mXNARenderDevice.PresentScreenImage();

@@ -38,6 +38,11 @@ namespace BejeweledLivePlus.Widget
 			return true;
 		}
 
+		public virtual bool ShouldHideBoardHUD()
+		{
+			return false;
+		}
+
 		public virtual void SetBGImage(SharedImageRef inImage)
 		{
 		}

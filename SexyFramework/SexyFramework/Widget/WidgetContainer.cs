@@ -530,7 +530,8 @@ namespace SexyFramework.Widget
 			int screenX = GetScreenX();
 			int screenY = GetScreenY();
 			bool result = true;
-			if (screenX + mWidth < 0 || screenY + mHeight < 0 || screenX > GlobalMembers.gSexyApp.mScreenBounds.mWidth || screenY > GlobalMembers.gSexyApp.mScreenBounds.mHeight)
+			Rect b = GlobalMembers.gSexyApp.mScreenBounds;
+			if (screenX + mWidth < b.mX || screenY + mHeight < b.mY || screenX > b.mX + b.mWidth || screenY > b.mY + b.mHeight)
 			{
 				result = false;
 			}
@@ -553,7 +554,19 @@ namespace SexyFramework.Widget
 			}
 			if (mClip && (theFlags.GetFlags() & 8) != 0)
 			{
-				g.ClipRect(0, 0, mWidth, mHeight);
+				int designW = GlobalMembers.gSexyApp.mWidth;
+				int designH = GlobalMembers.gSexyApp.mHeight;
+				var drv = GlobalMembers.gSexyApp.mGraphicsDriver;
+				if (drv != null && mWidth >= designW && mHeight >= designH)
+				{
+					int targetH = drv.GetScreenHeight();
+					int bandTop = -((targetH - designH) / 2) - (int)g.mTransY;
+					g.ClipRect(0, bandTop, mWidth, targetH);
+				}
+				else
+				{
+					g.ClipRect(0, 0, mWidth, mHeight);
+				}
 			}
 			if (mWidgets.Count == 0)
 			{

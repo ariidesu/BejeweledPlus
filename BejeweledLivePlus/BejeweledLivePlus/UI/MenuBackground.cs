@@ -69,7 +69,7 @@ namespace BejeweledLivePlus.UI
 			if (mInterfaceState == InterfaceState.INTERFACE_STATE_LOADING)
 			{
 				g.SetColor(Color.Black);
-				g.FillRect(0, 0, mWidth, mHeight);
+				g.FillRect((int)ConstantsWP.DEVICE_VIRTUAL_NEGATIVE_WIDTH_F, (int)ConstantsWP.DEVICE_VIRTUAL_NEGATIVE_HEIGHT_F, ConstantsWP.DEVICE_VIRTUAL_VISIBLE_WIDTH, ConstantsWP.DEVICE_VIRTUAL_VISIBLE_HEIGHT);
 			}
 			else
 			{
@@ -94,7 +94,7 @@ namespace BejeweledLivePlus.UI
 				}
 				g.ClearClipRect();
 				g.SetColor(new Color(255, 255, 255, 255));
-				g.DrawImage(GlobalMembersResourcesWP.IMAGE_MAIN_MENU_BACKGROUND, 0, 0, mWidth, mHeight);
+				g.DrawImage(GlobalMembersResourcesWP.IMAGE_MAIN_MENU_BACKGROUND, (int)ConstantsWP.DEVICE_VIRTUAL_NEGATIVE_WIDTH_F, (int)ConstantsWP.DEVICE_VIRTUAL_NEGATIVE_HEIGHT_F, ConstantsWP.DEVICE_VIRTUAL_VISIBLE_WIDTH, ConstantsWP.DEVICE_VIRTUAL_VISIBLE_HEIGHT);
 				if (GlobalMembersResourcesWP.IMAGE_MAIN_MENU_CLOUDS != null)
 				{
 					for (int i = 0; i < 50; i++)

@@ -142,6 +142,8 @@ namespace BejeweledLivePlus.Bej3Graphics
 
 		public bool mStopWhenPieceRelMissing;
 
+		public float mDrawScale = 1f;
+
 		public static Effect alloc()
 		{
 			return alloc(Type.TYPE_NONE);
@@ -186,6 +188,7 @@ namespace BejeweledLivePlus.Bej3Graphics
 			mLightSize = 0f;
 			mLightIntensity = 0f;
 			mScale = 1f;
+			mDrawScale = 1f;
 			mDScale = 0f;
 			mMinScale = 0f;
 			mMaxScale = 10000f;

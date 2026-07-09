@@ -62,6 +62,8 @@ namespace BejeweledLivePlus.Bej3Graphics
 				if (mFXManager.mBoard != null && mFXManager.mBoard.mPostFXManager == mFXManager)
 				{
 					mX += (float)(double)mFXManager.mBoard.mSideXOff * mFXManager.mBoard.mSlideXScale;
+					mX += mFXManager.mBoard.mOfsX;
+					mY += mFXManager.mBoard.mOfsY;
 				}
 				if (piece.mHidePct > 0f)
 				{
@@ -69,15 +71,16 @@ namespace BejeweledLivePlus.Bej3Graphics
 				}
 			}
 			PE_Update_trans.Translate(mX, mY);
+			float drawScale = GlobalMembers.S(1f) * mDrawScale;
 			if (mDoDrawTransform)
 			{
-				PE_Update_trans.Scale(GlobalMembers.S(1f), GlobalMembers.S(1f));
+				PE_Update_trans.Scale(drawScale, drawScale);
 				mPIEffect.mDrawTransform = PE_Update_trans.GetMatrix();
 			}
 			else
 			{
 				mPIEffect.mDrawTransform.LoadIdentity();
-				mPIEffect.mDrawTransform.Scale(GlobalMembers.S(1f), GlobalMembers.S(1f));
+				mPIEffect.mDrawTransform.Scale(drawScale, drawScale);
 				mPIEffect.mEmitterTransform = PE_Update_trans.GetMatrix();
 			}
 			if (mIsFirstUpdate)

@@ -141,6 +141,15 @@ namespace BejeweledLivePlus.UI
 
 		public override void Update()
 		{
+			if (mFinalY != ConstantsWP.MENU_Y_POS_HIDDEN)
+			{
+				bool wasRestingCollapsed = mTargetPos == mFinalY;
+				mFinalY = ConstantsWP.MENU_Y_POS_HIDDEN;
+				if (wasRestingCollapsed)
+				{
+					mTargetPos = mFinalY;
+				}
+			}
 			SetTopButtonType((mTargetPos < 800) ? Bej3ButtonType.TOP_BUTTON_TYPE_DISMISS : Bej3ButtonType.TOP_BUTTON_TYPE_MENU);
 			base.Update();
 			Graphics graphics = new Graphics();

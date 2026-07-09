@@ -463,27 +463,32 @@ namespace BejeweledLivePlus
 		{
 			DigGoal digGoal = (DigGoal)mQuestGoal;
 			Rect mClipRect = g.mClipRect;
-			int num = 100;
-			g.SetClipRect(GlobalMembers.S((int)GlobalMembersResourcesWP.ImgXOfs(ResourceId.IMAGE_INGAMEUI_DIAMOND_MINE_BACKGROUND_ID)), GlobalMembers.S((int)GlobalMembersResourcesWP.ImgYOfs(ResourceId.IMAGE_INGAMEUI_DIAMOND_MINE_BACKGROUND_ID)), GlobalMembersResourcesWP.IMAGE_INGAMEUI_DIAMOND_MINE_BACKGROUND.mWidth, GlobalMembersResourcesWP.IMAGE_INGAMEUI_DIAMOND_MINE_BACKGROUND.mHeight + num);
-			int num2 = (int)GlobalMembers.S(digGoal.GetGridDepthAsDouble() * 100.0);
-			int num3 = GlobalMembersResourcesWP.IMAGE_INGAMEUI_DIAMOND_MINE_BACKGROUND.mHeight;
+			float negH = ConstantsWP.DEVICE_VIRTUAL_NEGATIVE_HEIGHT_F;
+			float virtH = ConstantsWP.DEVICE_VIRTUAL_HEIGHT_F;
+			int bgXofs = (int)GlobalMembers.S(GlobalMembersResourcesWP.ImgXOfs(ResourceId.IMAGE_INGAMEUI_DIAMOND_MINE_BACKGROUND_ID));
+			int bgYofs = (int)GlobalMembers.S(GlobalMembersResourcesWP.ImgYOfs(ResourceId.IMAGE_INGAMEUI_DIAMOND_MINE_BACKGROUND_ID));
+			int bgW = GlobalMembersResourcesWP.IMAGE_INGAMEUI_DIAMOND_MINE_BACKGROUND.mWidth;
+			int bgH = GlobalMembersResourcesWP.IMAGE_INGAMEUI_DIAMOND_MINE_BACKGROUND.mHeight;
+			int clipH = Math.Max((int)((float)bgH - negH), (int)(virtH - (float)bgYofs));
+			g.SetClipRect(bgXofs, bgYofs, bgW, clipH);
+			int num2 = (int)((float)GlobalMembers.S(digGoal.GetGridDepthAsDouble() * 100.0) - negH);
+			int num3 = bgH;
+			int fillDepth = num2 + clipH;
 			int num4 = 0;
-			if (num2 >= num3)
+			if (fillDepth >= num3)
 			{
-				num4 = num2 / num3;
+				num4 = fillDepth / num3;
 			}
-			if (num2 % num3 > 0)
+			if (fillDepth % num3 > 0)
 			{
 				num4++;
 			}
-			g.SetScale(1f, 1.2f, 0f, 0f);
-			g.DrawImage(GlobalMembersResourcesWP.IMAGE_INGAMEUI_DIAMOND_MINE_BACKGROUND, (int)(GlobalMembers.S(GlobalMembersResourcesWP.ImgXOfs(ResourceId.IMAGE_INGAMEUI_DIAMOND_MINE_BACKGROUND_ID)) + 0f), (int)(GlobalMembers.S(GlobalMembersResourcesWP.ImgYOfs(ResourceId.IMAGE_INGAMEUI_DIAMOND_MINE_BACKGROUND_ID)) - (float)num2));
+			g.DrawImage(GlobalMembersResourcesWP.IMAGE_INGAMEUI_DIAMOND_MINE_BACKGROUND, bgXofs, bgYofs - num2);
 			for (int i = 1; i <= num4; i++)
 			{
-				g.DrawImage(GlobalMembersResourcesWP.IMAGE_INGAMEUI_DIAMOND_MINE_BACKGROUND, (int)(GlobalMembers.S(GlobalMembersResourcesWP.ImgXOfs(ResourceId.IMAGE_INGAMEUI_DIAMOND_MINE_BACKGROUND_ID)) + 0f), (int)(GlobalMembers.S(GlobalMembersResourcesWP.ImgYOfs(ResourceId.IMAGE_INGAMEUI_DIAMOND_MINE_BACKGROUND_ID)) + (float)(GlobalMembersResourcesWP.IMAGE_INGAMEUI_DIAMOND_MINE_BACKGROUND.mHeight * i - num2)));
+				g.DrawImage(GlobalMembersResourcesWP.IMAGE_INGAMEUI_DIAMOND_MINE_BACKGROUND, bgXofs, bgYofs + (bgH * i - num2));
 			}
 			g.SetClipRect(mClipRect);
-			g.SetScale(1f, 1f, 0f, 0f);
 			g.DrawImage(GlobalMembersResourcesWP.IMAGE_INGAMEUI_DIAMOND_MINE_HUD_SHADOW, (int)GlobalMembers.S(GlobalMembersResourcesWP.ImgXOfs(ResourceId.IMAGE_INGAMEUI_DIAMOND_MINE_HUD_SHADOW_ID)), (int)GlobalMembers.S(GlobalMembersResourcesWP.ImgYOfs(ResourceId.IMAGE_INGAMEUI_DIAMOND_MINE_HUD_SHADOW_ID)));
 			if (mOffsetY != 0)
 			{
@@ -508,6 +513,18 @@ namespace BejeweledLivePlus
 		public override void Draw(Graphics g)
 		{
 			base.Draw(g);
+			float negH = ConstantsWP.DEVICE_VIRTUAL_NEGATIVE_HEIGHT_F;
+			Image dmTop = GlobalMembersResourcesWP.IMAGE_INGAMEUI_DIAMOND_MINE_DM_TOP;
+			if (negH < 0f && dmTop != null && dmTop.mHeight > 0)
+			{
+				g.PushState();
+				g.Translate(0, (int)negH);
+				float scaleY = (0f - negH) / (float)dmTop.mHeight;
+				Utils.PushScale(g, 1f, scaleY, (float)(dmTop.mWidth / 2), 0f);
+				g.DrawImage(dmTop, (int)GlobalMembers.S(GlobalMembersResourcesWP.ImgXOfs(ResourceId.IMAGE_INGAMEUI_DIAMOND_MINE_DM_TOP_ID)), (int)GlobalMembers.S(GlobalMembersResourcesWP.ImgYOfs(ResourceId.IMAGE_INGAMEUI_DIAMOND_MINE_DM_TOP_ID)));
+				Utils.PopScale(g);
+				g.PopState();
+			}
 			if (mCurrentHint != null)
 			{
 				mCurrentHint.Draw(g);

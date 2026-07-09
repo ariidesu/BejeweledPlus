@@ -90,17 +90,17 @@ namespace SexyFramework.Drivers.Graphics
 
 		public override int GetScreenWidth()
 		{
-			return mWidth;
+			return mXNARenderDevice != null ? mXNARenderDevice.GetScreenTargetWidth() : mWidth;
 		}
 
 		public override int GetScreenHeight()
 		{
-			return mHeight;
+			return mXNARenderDevice != null ? mXNARenderDevice.GetScreenTargetHeight() : mHeight;
 		}
 
 		public override void WindowResize(int theWidth, int theHeight)
 		{
-			throw new NotImplementedException();
+			mXNARenderDevice.ResizeBackBuffer(theWidth, theHeight);
 		}
 
 		public override bool Redraw(Rect theClipRect)
@@ -112,7 +112,9 @@ namespace SexyFramework.Drivers.Graphics
 
 		public override void RemapMouse(ref int theX, ref int theY)
 		{
-			throw new NotImplementedException();
+			Microsoft.Xna.Framework.Point point = mXNARenderDevice.MapViewportPointToLogical(new Microsoft.Xna.Framework.Point(theX, theY));
+			theX = point.X;
+			theY = point.Y;
 		}
 
 		public override bool SetCursorImage(Image theImage)

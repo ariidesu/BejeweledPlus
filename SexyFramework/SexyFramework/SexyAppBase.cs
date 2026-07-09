@@ -582,6 +582,23 @@ namespace SexyFramework
 			mAppDriver.ClearUpdateBacklog(relaxForASecond);
 		}
 
+		public void UpdateScreenBounds()
+		{
+			int visibleHeight = mHeight;
+			if (mGraphicsDriver != null)
+			{
+				int targetH = mGraphicsDriver.GetScreenHeight();
+				if (targetH > 0)
+				{
+					visibleHeight = targetH;
+				}
+			}
+			mScreenBounds.mX = 0;
+			mScreenBounds.mY = -((visibleHeight - mHeight) / 2);
+			mScreenBounds.mWidth = mWidth;
+			mScreenBounds.mHeight = visibleHeight;
+		}
+
 		public virtual bool IsScreenSaver()
 		{
 			return mIsScreenSaver;

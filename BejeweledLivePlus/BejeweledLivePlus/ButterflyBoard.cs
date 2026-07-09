@@ -273,7 +273,22 @@ namespace BejeweledLivePlus
 
 		public override void DrawTopFrame(Graphics g)
 		{
-			g.DrawImage(GlobalMembersResourcesWP.IMAGE_INGAMEUI_BUTTERFLIES_WEB, (int)GlobalMembers.S(GlobalMembersResourcesWP.ImgXOfs(ResourceId.IMAGE_INGAMEUI_BUTTERFLIES_WEB_ID)), (int)GlobalMembers.S(GlobalMembersResourcesWP.ImgYOfs(ResourceId.IMAGE_INGAMEUI_BUTTERFLIES_WEB_ID)));
+			float negH = ConstantsWP.DEVICE_VIRTUAL_NEGATIVE_HEIGHT_F;
+			Image webIp5 = GlobalMembersResourcesWP.IMAGE_INGAMEUI_BUTTERFLIES_WEB_IP5;
+			if (negH < 0f && webIp5 != null && webIp5.mHeight > 0)
+			{
+				g.PushState();
+				g.Translate(0, (int)negH);
+				float scaleY = ((float)GlobalMembers.S(GetBoardY()) - negH) / (float)webIp5.mHeight;
+				Utils.PushScale(g, 1f, scaleY, (float)(webIp5.mWidth / 2), 0f);
+				g.DrawImage(webIp5, (int)GlobalMembers.S(GlobalMembersResourcesWP.ImgXOfs(ResourceId.IMAGE_INGAMEUI_BUTTERFLIES_WEB_IP5_ID)), (int)GlobalMembers.S(GlobalMembersResourcesWP.ImgYOfs(ResourceId.IMAGE_INGAMEUI_BUTTERFLIES_WEB_IP5_ID)));
+				Utils.PopScale(g);
+				g.PopState();
+			}
+			else
+			{
+				g.DrawImage(GlobalMembersResourcesWP.IMAGE_INGAMEUI_BUTTERFLIES_WEB, (int)GlobalMembers.S(GlobalMembersResourcesWP.ImgXOfs(ResourceId.IMAGE_INGAMEUI_BUTTERFLIES_WEB_ID)), (int)GlobalMembers.S(GlobalMembersResourcesWP.ImgYOfs(ResourceId.IMAGE_INGAMEUI_BUTTERFLIES_WEB_ID)));
+			}
 			g.DrawImage(GlobalMembersResourcesWP.IMAGE_INGAMEUI_BUTTERFLIES_BOARD_SEPERATOR_FRAME_TOP, (int)GlobalMembers.S(GlobalMembersResourcesWP.ImgXOfs(ResourceId.IMAGE_INGAMEUI_BUTTERFLIES_BOARD_SEPERATOR_FRAME_TOP_ID)), (int)GlobalMembers.S(GlobalMembersResourcesWP.ImgYOfs(ResourceId.IMAGE_INGAMEUI_BUTTERFLIES_BOARD_SEPERATOR_FRAME_TOP_ID)));
 			if (WantWarningGlow())
 			{

@@ -333,7 +333,7 @@ namespace BejeweledLivePlus.Widget
 				}
 				}
 				num += GlobalMembersResourcesWP.IMAGE_DASHBOARD_DASH_MAIN.mHeight;
-				for (int i = num; i < GlobalMembers.gApp.mHeight; i += GlobalMembersResourcesWP.IMAGE_DASHBOARD_DASH_TILE.mHeight)
+				for (int i = num; i < ConstantsWP.DEVICE_VIRTUAL_VISIBLE_HEIGHT; i += GlobalMembersResourcesWP.IMAGE_DASHBOARD_DASH_TILE.mHeight)
 				{
 					g.DrawImage(GlobalMembersResourcesWP.IMAGE_DASHBOARD_DASH_TILE, 0, i);
 				}

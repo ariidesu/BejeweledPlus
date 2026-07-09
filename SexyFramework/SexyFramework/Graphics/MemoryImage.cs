@@ -334,7 +334,7 @@ namespace SexyFramework.Graphics
 		public virtual void Create(int theWidth, int theHeight)
 		{
 			mBits = null;
-			mBits = null;
+			mRenderData = null;
 			mWidth = theWidth;
 			mHeight = theHeight;
 			mHasTrans = true;

@@ -36,14 +36,6 @@ namespace BejeweledLivePlus
 
 		private DateTime preTime;
 
-		private int mGameOffsetX;
-
-		private int mGameOffsetY;
-
-		private float mGameScaleRatioX = 1.333f;
-		
-		private float mGameScaleRatioY = 1.333f;
-
 		private SexyAppBase.Touch mTouch = new SexyAppBase.Touch();
 
 		private SexyAppBase.MGKeyboard mKeyboard;
@@ -73,6 +65,8 @@ namespace BejeweledLivePlus
 			if (PlatformInfo.MonoGamePlatform != MonoGamePlatform.Android &&
 			    PlatformInfo.MonoGamePlatform != MonoGamePlatform.iOS)
 			{
+				Window.AllowUserResizing = true;
+				Window.ClientSizeChanged += OnClientSizeChanged;
 				mKeyboard = new SexyAppBase.MGKeyboard(Window, theApp);
 			}
 			// mGamerService = new GamerServicesComponent(this);
@@ -108,35 +102,6 @@ namespace BejeweledLivePlus
 				Exit();
 			}
 
-			// We need to apply our "custom" scaling here
-			if (PlatformInfo.MonoGamePlatform == MonoGamePlatform.iOS ||
-			    PlatformInfo.MonoGamePlatform == MonoGamePlatform.Android)
-			{
-				float targetAspect = (float)GraphicsDevice.Viewport.Width / GraphicsDevice.Viewport.Height;
-				float baseAspect = 480f / 800f;
-
-				int newWidth, newHeight;
-				int offsetX = 0, offsetY = 0;
-
-				if (targetAspect > baseAspect)
-				{
-					newHeight = GraphicsDevice.Viewport.Height;
-					newWidth = (int)(newHeight * baseAspect);
-					offsetX = (GraphicsDevice.Viewport.Width - newWidth) / 2;
-					offsetY = 0;
-				}
-				else
-				{
-					newWidth = GraphicsDevice.Viewport.Width;
-					newHeight = (int)(newWidth / baseAspect);
-					offsetX = 0;
-					offsetY = (GraphicsDevice.Viewport.Height - newHeight) / 2;
-				}
-
-				theApp.SetTouchInputOffset(offsetX, offsetY);
-				mGameScaleRatioX = 640f / newWidth;
-				mGameScaleRatioY = 1066f / newHeight;
-			}
 			base.Update(gameTime);
 			// try
 			// {
@@ -209,6 +174,11 @@ namespace BejeweledLivePlus
 			}
 		}
 
+		private void OnClientSizeChanged(object sender, EventArgs args)
+		{
+			theApp.HandleWindowResize(Window.ClientBounds.Width, Window.ClientBounds.Height);
+		}
+
 		protected void OnServiceActivated(object sender, EventArgs args)
 		{
 			theApp.OnServiceActivated();
@@ -236,19 +206,19 @@ namespace BejeweledLivePlus
 				}
 			}
 			
-			theApp.GetTouchInputOffset(ref mGameOffsetX, ref mGameOffsetY);
 			TouchCollection state = TouchPanel.GetState();
-			
+
 			if (!TouchPanel.GetCapabilities().IsConnected)
 			{
 				MouseState mouseState = Mouse.GetState();
-				TouchLocation location = new TouchLocation(1, 
+				TouchLocation location = new TouchLocation(1,
 					mouseState.LeftButton == ButtonState.Pressed ? TouchLocationState.Pressed : TouchLocationState.Released,
 					mouseState.Position.ToVector2());
 				state = new TouchCollection(new [] { location });
-				
-				int actualMouseX = (int)((location.Position.X - mGameOffsetX) * mGameScaleRatioX);
-				int actualMouseY = (int)((location.Position.Y - mGameOffsetY) * mGameScaleRatioY);
+
+				int actualMouseX = (int)location.Position.X;
+				int actualMouseY = (int)location.Position.Y;
+				theApp.mGraphicsDriver.RemapMouse(ref actualMouseX, ref actualMouseY);
 				// If we are in a game and the mouse is hovering inside the board region, we call MouseMove so Board.KeyDown can get the mouse position
 				// This check is in because the interface is not designed for mouse hover
 				if (theApp.mInterfaceState == InterfaceState.INTERFACE_STATE_INGAME && actualMouseY >= theApp.mBoard.GetBoardY() && actualMouseY <= theApp.mBoard.GetBoardY() + theApp.mWidth)
@@ -267,9 +237,10 @@ namespace BejeweledLivePlus
 						mTouchID = item.Id;
 						mTouchX = item.Position.X;
 						mTouchY = item.Position.Y;
-						float num = (mTouchX - (float)mGameOffsetX) * mGameScaleRatioX;
-						float num2 = (mTouchY - (float)mGameOffsetY) * mGameScaleRatioY;
-						mTouch.SetTouchInfo(new SexyFramework.Misc.Point((int)num, (int)num2), _TouchPhase.TOUCH_BEGAN, DateTime.Now.TimeOfDay.TotalMilliseconds);
+						int num = (int)mTouchX;
+						int num2 = (int)mTouchY;
+						theApp.mGraphicsDriver.RemapMouse(ref num, ref num2);
+						mTouch.SetTouchInfo(new SexyFramework.Misc.Point(num, num2), _TouchPhase.TOUCH_BEGAN, DateTime.Now.TimeOfDay.TotalMilliseconds);
 						theApp.TouchBegan(mTouch);
 						break;
 					}
@@ -307,9 +278,10 @@ namespace BejeweledLivePlus
 			{
 				mIsTracking = false;
 			}
-			float num3 = (mTouchX - (float)mGameOffsetX) * mGameScaleRatioX;
-			float num4 = (mTouchY - (float)mGameOffsetY) * mGameScaleRatioY;
-			mTouch.SetTouchInfo(new SexyFramework.Misc.Point((int)num3, (int)num4), (!flag3) ? _TouchPhase.TOUCH_MOVED : _TouchPhase.TOUCH_ENDED, DateTime.Now.TimeOfDay.TotalMilliseconds);
+			int num3 = (int)mTouchX;
+			int num4 = (int)mTouchY;
+			theApp.mGraphicsDriver.RemapMouse(ref num3, ref num4);
+			mTouch.SetTouchInfo(new SexyFramework.Misc.Point(num3, num4), (!flag3) ? _TouchPhase.TOUCH_MOVED : _TouchPhase.TOUCH_ENDED, DateTime.Now.TimeOfDay.TotalMilliseconds);
 			if (flag3)
 			{
 				theApp.TouchEnded(mTouch);

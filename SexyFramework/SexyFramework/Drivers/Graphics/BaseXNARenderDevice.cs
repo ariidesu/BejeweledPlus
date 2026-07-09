@@ -83,6 +83,14 @@ namespace SexyFramework.Drivers.Graphics
 
 		private int mScreenHeight;
 
+		private float mVirtualWidth;
+
+		private float mVirtualNegativeWidth;
+
+		private float mVirtualHeight;
+
+		private float mVirtualNegativeHeight;
+
 		private bool mSceneBegun;
 
 		private VertexPositionColorTexture[] mBatchedTriangleBuffer;
@@ -239,7 +247,7 @@ namespace SexyFramework.Drivers.Graphics
 				if (theContext == null || theContext.GetPointer() == null)
 				{
 					mDevice.GraphicsDevice.SetRenderTarget(mScreenTarget);
-					mStateMgr.SetProjectionTransform(Matrix.CreateOrthographicOffCenter(0f, mScreenTarget.Width, mScreenTarget.Height, 0f, -1000f, 1000f));
+					mStateMgr.SetProjectionTransform(Matrix.CreateOrthographicOffCenter(mVirtualNegativeWidth, mVirtualWidth, mVirtualHeight, mVirtualNegativeHeight, -1000f, 1000f));
 					SetViewport(0, 0, mScreenTarget.Width, mScreenTarget.Height, 0f, 1f);
 					mCurrentContex = theContext;
 				}
@@ -279,6 +287,16 @@ namespace SexyFramework.Drivers.Graphics
 		{
 			mRenderRect = new Rectangle(theX, theY, theWidth, theHeight);
 		}
+		
+		public int GetScreenTargetWidth()
+		{
+			return mScreenTarget != null ? mScreenTarget.Width : mScreenWidth;
+		}
+
+		public int GetScreenTargetHeight()
+		{
+			return mScreenTarget != null ? mScreenTarget.Height : mScreenHeight;
+		}
 
 		public override int Present(Rect theSrcRect, Rect theDestRect)
 		{
@@ -308,6 +326,9 @@ namespace SexyFramework.Drivers.Graphics
 
 		public override void GetBackBufferDimensions(ref uint outWidth, ref uint outHeight)
 		{
+			Microsoft.Xna.Framework.Point size = GetBackBufferSize();
+			outWidth = (uint)size.X;
+			outHeight = (uint)size.Y;
 		}
 
 		public override int SceneBegun()
@@ -554,28 +575,28 @@ namespace SexyFramework.Drivers.Graphics
 		{
 		}
 
+		private readonly TextureAddressMode[] mTexAddressU = { TextureAddressMode.Clamp, TextureAddressMode.Clamp, TextureAddressMode.Clamp };
+		private readonly TextureAddressMode[] mTexAddressV = { TextureAddressMode.Clamp, TextureAddressMode.Clamp, TextureAddressMode.Clamp };
+		private readonly TextureFilter[] mTexFilter = { TextureFilter.Linear, TextureFilter.Linear, TextureFilter.Linear };
+
+		private void ApplyComposedSampler(int stage)
+		{
+			mStateMgr.SetSamplerState(stage, StateCache.GetSampler(mTexAddressU[stage], mTexAddressV[stage], mTexFilter[stage]));
+		}
+
 		public override void SetTextureWrap(int inTextureIndex, bool inWrapU, bool inWrapV)
 		{
-			if (inWrapU || inWrapV)
-			{
-				mStateMgr.SetSamplerState(inTextureIndex, SamplerState.LinearWrap);
-			}
-			else
-			{
-				mStateMgr.SetSamplerState(inTextureIndex, SamplerState.LinearClamp);
-			}
+			if (inTextureIndex < 0 || inTextureIndex >= mTexAddressU.Length) return;
+			mTexAddressU[inTextureIndex] = inWrapU ? TextureAddressMode.Wrap : TextureAddressMode.Clamp;
+			mTexAddressV[inTextureIndex] = inWrapV ? TextureAddressMode.Wrap : TextureAddressMode.Clamp;
+			ApplyComposedSampler(inTextureIndex);
 		}
 
 		public override void SetTextureLinearFilter(int inTextureIndex, bool inLinear)
 		{
-			if (!inLinear)
-			{
-				mStateMgr.SetSamplerState(inTextureIndex, SamplerState.PointClamp);
-			}
-			else
-			{
-				mStateMgr.SetSamplerState(inTextureIndex, SamplerState.LinearClamp);
-			}
+			if (inTextureIndex < 0 || inTextureIndex >= mTexFilter.Length) return;
+			mTexFilter[inTextureIndex] = inLinear ? TextureFilter.Linear : TextureFilter.Point;
+			ApplyComposedSampler(inTextureIndex);
 		}
 
 		public override void SetTextureCoordSource(int inTextureIndex, int inUVComponent, Graphics3D.ETexCoordGen inTexGen)
@@ -1513,24 +1534,23 @@ namespace SexyFramework.Drivers.Graphics
 
 		public void Init(int width, int height)
 		{
+			mWidth = width;
+			mHeight = height;
 			if (PlatformInfo.MonoGamePlatform == MonoGamePlatform.iOS ||
 			    PlatformInfo.MonoGamePlatform == MonoGamePlatform.Android)
 			{
-				mScreenWidth = width;
-				mScreenHeight = height;
+				mDevice.PreferredBackBufferWidth = Math.Max(1, mDevice.GraphicsDevice.Viewport.Width);
+				mDevice.PreferredBackBufferHeight = Math.Max(1, mDevice.GraphicsDevice.Viewport.Height);
 			}
 			else
 			{
-				mScreenWidth = 640;
-				mScreenHeight = 1066;
 				mDevice.PreferredBackBufferWidth = 480;
 				mDevice.PreferredBackBufferHeight = 800;
 			}
-			mWidth = width;
-			mHeight = height;
 			mDevice.PreferMultiSampling = false;
 			mDevice.SupportedOrientations = DisplayOrientation.Portrait;
 			mDevice.ApplyChanges();
+			UpdateVirtualBounds();
 			mTmpVPCTBuffer = new VertexPositionColorTexture[4];
 			mTmpVPCBuffer = new VertexPositionColor[4];
 			try
@@ -1560,30 +1580,113 @@ namespace SexyFramework.Drivers.Graphics
 			mScreenTarget = new RenderTarget2D(mDevice.GraphicsDevice, mScreenWidth, mScreenHeight, false, 0, DepthFormat.Depth24, 0,  RenderTargetUsage.PreserveContents);
 		}
 
-		public void SetDefaultState(Image theImage, bool isInScene)
+		private Microsoft.Xna.Framework.Point GetBackBufferSize()
 		{
-			int num = mWidth;
-			int num2 = mHeight;
-			if (theImage != null)
+			PresentationParameters pp = mDevice.GraphicsDevice.PresentationParameters;
+			int width = pp.BackBufferWidth;
+			int height = pp.BackBufferHeight;
+			if (width <= 0 || height <= 0)
 			{
-				num = theImage.mWidth;
-				num2 = theImage.mHeight;
+				Viewport viewport = mDevice.GraphicsDevice.Viewport;
+				width = viewport.Width;
+				height = viewport.Height;
+			}
+			return new Microsoft.Xna.Framework.Point(Math.Max(1, width), Math.Max(1, height));
+		}
+
+		private void UpdateVirtualBounds()
+		{
+			Microsoft.Xna.Framework.Point size = GetBackBufferSize();
+			mVirtualWidth = mWidth;
+			mVirtualNegativeWidth = 0f;
+			mVirtualHeight = mHeight;
+			mVirtualNegativeHeight = 0f;
+
+			float scaledHeight = (float)size.Y / (float)size.X * mWidth;
+			float minVisibleHeight = mHeight;
+			if (scaledHeight < minVisibleHeight)
+			{
+				scaledHeight = minVisibleHeight;
+			}
+			float heightDelta = scaledHeight - mHeight;
+			mVirtualHeight = mHeight + heightDelta / 2f;
+			mVirtualNegativeHeight = -heightDelta / 2f;
+
+			mScreenWidth = Math.Max(1, (int)Math.Round(mVirtualWidth - mVirtualNegativeWidth));
+			mScreenHeight = Math.Max(1, (int)Math.Round(mVirtualHeight - mVirtualNegativeHeight));
+		}
+
+		public void ResizeBackBuffer(int width, int height)
+		{
+			if (width <= 0 || height <= 0)
+			{
+				return;
 			}
 
-			SetViewport(0, 0, 480, 800, 0f, 1f);
-			mStateMgr.SetProjectionTransform(Matrix.CreateOrthographicOffCenter(0f, num, num2, 0f, -1000f, 1000f));
+			mDevice.PreferredBackBufferWidth = Math.Max(1, width);
+			mDevice.PreferredBackBufferHeight = Math.Max(1, height);
+			mDevice.ApplyChanges();
+			UpdateVirtualBounds();
+			if (mScreenTarget == null || mScreenTarget.Width != mScreenWidth || mScreenTarget.Height != mScreenHeight)
+			{
+				RenderTarget2D oldTarget = mScreenTarget;
+				mScreenTarget = new RenderTarget2D(mDevice.GraphicsDevice, mScreenWidth, mScreenHeight, false, 0, DepthFormat.Depth24, 0, RenderTargetUsage.PreserveContents);
+				oldTarget?.Dispose();
+			}
+			mCurrentContex = null;
+			SetDefaultState(null, false);
+		}
+
+		public Microsoft.Xna.Framework.Point MapViewportPointToLogical(Microsoft.Xna.Framework.Point point)
+		{
+			Microsoft.Xna.Framework.Point size = GetBackBufferSize();
+			Rectangle rect = ComputePresentRect(size);
+			float scaleX = (float)rect.Width / mScreenWidth;
+			float scaleY = (float)rect.Height / mScreenHeight;
+			if (scaleX <= 0f) scaleX = 1f;
+			if (scaleY <= 0f) scaleY = 1f;
+			float x = (point.X - rect.X) / scaleX + mVirtualNegativeWidth;
+			float y = (point.Y - rect.Y) / scaleY + mVirtualNegativeHeight;
+			return new Microsoft.Xna.Framework.Point((int)x, (int)y);
+		}
+
+		public void SetDefaultState(Image theImage, bool isInScene)
+		{
+			float left = mVirtualNegativeWidth;
+			float right = mVirtualWidth;
+			float top = mVirtualNegativeHeight;
+			float bottom = mVirtualHeight;
+			int vpWidth = mScreenWidth;
+			int vpHeight = mScreenHeight;
+			if (theImage != null)
+			{
+				left = 0f;
+				right = theImage.mWidth;
+				top = 0f;
+				bottom = theImage.mHeight;
+				vpWidth = theImage.mWidth;
+				vpHeight = theImage.mHeight;
+			}
+
+			SetViewport(0, 0, vpWidth, vpHeight, 0f, 1f);
+			mStateMgr.SetProjectionTransform(Matrix.CreateOrthographicOffCenter(left, right, bottom, top, -1000f, 1000f));
 			mStateMgr.SetViewTransform(Matrix.CreateLookAt(new Vector3(0f, 0f, 300f), Vector3.Zero, Vector3.Up));
+			mStateMgr.SetWorldTransform(Matrix.Identity);
+		}
+
+		public void SetBillboardDepthState()
+		{
+			SetViewport(0, 0, mScreenWidth, mScreenHeight, 0f, 1f);
+			mStateMgr.SetProjectionTransform(Matrix.CreateOrthographicOffCenter(
+				mVirtualNegativeWidth, mVirtualWidth, mVirtualHeight, mVirtualNegativeHeight, 0f, 1f));
+			mStateMgr.SetViewTransform(Matrix.Identity);
 			mStateMgr.SetWorldTransform(Matrix.Identity);
 		}
 
 		public override void SetViewport(int theX, int theY, int theWidth, int theHeight, float theMinZ, float theMaxZ)
 		{
-			if (PlatformInfo.MonoGamePlatform != MonoGamePlatform.iOS &&
-			    PlatformInfo.MonoGamePlatform != MonoGamePlatform.Android)
-			{
-				mStateMgr.SetViewport(theX, theY, theWidth, theHeight, theMinZ, theMaxZ);
-				mDevice.GraphicsDevice.Viewport = mStateMgr.mXNAViewPort;
-			}
+			mStateMgr.SetViewport(theX, theY, theWidth, theHeight, theMinZ, theMaxZ);
+			mDevice.GraphicsDevice.Viewport = mStateMgr.mXNAViewPort;
 		}
 
 		public void SetTextureDirect(int theStage, Texture2D theTexture)
@@ -2344,6 +2447,22 @@ namespace SexyFramework.Drivers.Graphics
 			}
 		}
 
+		private Rectangle ComputePresentRect(Microsoft.Xna.Framework.Point windowSize)
+		{
+			int tw = mScreenTarget != null ? mScreenTarget.Width : mScreenWidth;
+			int th = mScreenTarget != null ? mScreenTarget.Height : mScreenHeight;
+			if (tw <= 0 || th <= 0 || windowSize.X <= 0 || windowSize.Y <= 0)
+			{
+				return new Rectangle(0, 0, Math.Max(1, windowSize.X), Math.Max(1, windowSize.Y));
+			}
+			float scale = Math.Min((float)windowSize.X / tw, (float)windowSize.Y / th);
+			int w = Math.Max(1, (int)Math.Round(tw * scale));
+			int h = Math.Max(1, (int)Math.Round(th * scale));
+			int x = (windowSize.X - w) / 2;
+			int y = (windowSize.Y - h) / 2;
+			return new Rectangle(x, y, w, h);
+		}
+
 		public void PresentScreenImage()
 		{
 			if (mBatchedTriangleIndex > 0)
@@ -2356,35 +2475,13 @@ namespace SexyFramework.Drivers.Graphics
 			{
 				mDevice.GraphicsDevice.SetRenderTarget(null);
 
-				Rectangle aRenderRect = new Rectangle(0, 0, mDevice.GraphicsDevice.Viewport.Width, mDevice.GraphicsDevice.Viewport.Height);
-				// We render with the predetermined ratio and center it for mobile
-				if (PlatformInfo.MonoGamePlatform == MonoGamePlatform.iOS ||
-				    PlatformInfo.MonoGamePlatform == MonoGamePlatform.Android)
+				Microsoft.Xna.Framework.Point size = GetBackBufferSize();
+				Rectangle aRenderRect = ComputePresentRect(size);
+				if (aRenderRect.Width != size.X || aRenderRect.Height != size.Y)
 				{
-					float targetAspect = (float)mDevice.GraphicsDevice.Viewport.Width / (float)mDevice.GraphicsDevice.Viewport.Height;
-					float baseAspect = (float)mScreenTarget.Width / (float)mScreenTarget.Height;
-
-					int newWidth, newHeight;
-					int offsetX = 0, offsetY = 0;
-
-					if (targetAspect > baseAspect)
-					{
-						newHeight = mDevice.GraphicsDevice.Viewport.Height;
-						newWidth = (int)(newHeight * baseAspect);
-						offsetX = (mDevice.GraphicsDevice.Viewport.Width - newWidth) / 2;
-						offsetY = 0;
-					}
-					else
-					{
-						newWidth = mDevice.GraphicsDevice.Viewport.Width;
-						newHeight = (int)(newWidth / baseAspect);
-						offsetX = 0;
-						offsetY = (mDevice.GraphicsDevice.Viewport.Height - newHeight) / 2;
-					}
-
-					aRenderRect = new Rectangle(offsetX, offsetY, newWidth, newHeight);
+					mDevice.GraphicsDevice.Clear(Microsoft.Xna.Framework.Color.Black);
 				}
-				
+
 				mSpriteBatch.Begin();
 				mSpriteBatch.Draw(mScreenTarget, aRenderRect, Microsoft.Xna.Framework.Color.White);
 				mSpriteBatch.End();

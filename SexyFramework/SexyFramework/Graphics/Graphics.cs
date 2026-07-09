@@ -273,7 +273,7 @@ namespace SexyFramework.Graphics
 			mFastStretch = false;
 			mWriteColoredString = true;
 			mLinearBlend = false;
-			mClipRect = new Rect(0, 0, GlobalMembers.gSexyApp.mGraphicsDriver.GetScreenWidth(), GlobalMembers.gSexyApp.mGraphicsDriver.GetScreenHeight());
+			ClearClipRect();
 			InitRenderInfo(null);
 		}
 
@@ -291,14 +291,7 @@ namespace SexyFramework.Graphics
 			mFastStretch = false;
 			mWriteColoredString = true;
 			mLinearBlend = false;
-			if (mDestImage == null)
-			{
-				mClipRect = new Rect(0, 0, GlobalMembers.gSexyApp.mGraphicsDriver.GetScreenWidth(), GlobalMembers.gSexyApp.mGraphicsDriver.GetScreenHeight());
-			}
-			else
-			{
-				mClipRect = new Rect(0, 0, mDestImage.GetWidth(), mDestImage.GetHeight());
-			}
+			ClearClipRect();
 			InitRenderInfo(null);
 		}
 
@@ -975,48 +968,47 @@ namespace SexyFramework.Graphics
 
 		public void ClearClipRect()
 		{
+			int cw;
+			int ch;
 			if (mDestImage != null)
 			{
-				mClipRect.mX = 0;
-				mClipRect.mY = 0;
-				mClipRect.mWidth = mDestImage.GetWidth();
-				mClipRect.mHeight = mDestImage.GetHeight();
+				cw = mDestImage.GetWidth();
+				ch = mDestImage.GetHeight();
 			}
 			else
 			{
-				mClipRect.mX = 0;
-				mClipRect.mY = 0;
-				mClipRect.mWidth = GlobalMembers.gSexyAppBase.mWidth;
-				mClipRect.mHeight = GlobalMembers.gSexyAppBase.mHeight;
+				cw = GlobalMembers.gSexyApp.mGraphicsDriver.GetScreenWidth();
+				ch = GlobalMembers.gSexyApp.mGraphicsDriver.GetScreenHeight();
 			}
+			mClipRect.mX = (1 - cw) >> 1;
+			mClipRect.mY = (1 - ch) >> 1;
+			mClipRect.mWidth = cw * 2;
+			mClipRect.mHeight = ch * 2;
 		}
 
 		public void SetClipRect(int theX, int theY, int theWidth, int theHeight)
 		{
+			int cw;
+			int ch;
 			if (mDestImage != null)
 			{
-				mClipRect.mX = 0;
-				mClipRect.mY = 0;
-				mClipRect.mWidth = mDestImage.GetWidth();
-				mClipRect.mHeight = mDestImage.GetHeight();
-				mDestRect.mX = theX + (int)mTransX;
-				mDestRect.mY = theY + (int)mTransY;
-				mDestRect.mWidth = theWidth;
-				mDestRect.mHeight = theHeight;
-				mClipRect = mClipRect.Intersection(mDestRect);
+				cw = mDestImage.GetWidth();
+				ch = mDestImage.GetHeight();
 			}
 			else
 			{
-				mClipRect.mX = 0;
-				mClipRect.mY = 0;
-				mClipRect.mWidth = GlobalMembers.gSexyAppBase.mWidth;
-				mClipRect.mHeight = GlobalMembers.gSexyAppBase.mHeight;
-				mDestRect.mX = theX + (int)mTransX;
-				mDestRect.mY = theY + (int)mTransY;
-				mDestRect.mWidth = theWidth;
-				mDestRect.mHeight = theHeight;
-				mClipRect = mClipRect.Intersection(mDestRect);
+				cw = GlobalMembers.gSexyApp.mGraphicsDriver.GetScreenWidth();
+				ch = GlobalMembers.gSexyApp.mGraphicsDriver.GetScreenHeight();
 			}
+			mClipRect.mX = (1 - cw) >> 1;
+			mClipRect.mY = (1 - ch) >> 1;
+			mClipRect.mWidth = cw * 2;
+			mClipRect.mHeight = ch * 2;
+			mDestRect.mX = theX + (int)mTransX;
+			mDestRect.mY = theY + (int)mTransY;
+			mDestRect.mWidth = theWidth;
+			mDestRect.mHeight = theHeight;
+			mClipRect = mClipRect.Intersection(mDestRect);
 		}
 
 		public void SetClipRect(Rect theRect)

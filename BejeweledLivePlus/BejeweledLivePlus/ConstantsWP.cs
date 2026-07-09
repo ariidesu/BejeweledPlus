@@ -1,3 +1,5 @@
+using System;
+
 namespace BejeweledLivePlus
 {
 	public static class ConstantsWP
@@ -99,6 +101,22 @@ namespace BejeweledLivePlus
 		public static float DEVICE_WIDTH_F = 640f;
 
 		public static float DEVICE_HEIGHT_F = 1066f;
+
+		public static float DEVICE_VIRTUAL_WIDTH_F = DEVICE_WIDTH_F;
+
+		public static float DEVICE_VIRTUAL_HEIGHT_F = DEVICE_HEIGHT_F;
+
+		public static float DEVICE_VIRTUAL_NEGATIVE_WIDTH_F = 0f;
+
+		public static float DEVICE_VIRTUAL_NEGATIVE_HEIGHT_F = 0f;
+
+		public static int DEVICE_VIRTUAL_TOP_INSET => (int)(0f - DEVICE_VIRTUAL_NEGATIVE_HEIGHT_F);
+
+		public static int DEVICE_VIRTUAL_LEFT_INSET => (int)(0f - DEVICE_VIRTUAL_NEGATIVE_WIDTH_F);
+
+		public static int DEVICE_VIRTUAL_VISIBLE_HEIGHT => Math.Max(1, (int)(DEVICE_VIRTUAL_HEIGHT_F - DEVICE_VIRTUAL_NEGATIVE_HEIGHT_F));
+
+		public static int DEVICE_VIRTUAL_VISIBLE_WIDTH => Math.Max(1, (int)(DEVICE_VIRTUAL_WIDTH_F - DEVICE_VIRTUAL_NEGATIVE_WIDTH_F));
 
 		public static int MENU_Y_POS_HIDDEN = (int)(DEVICE_HEIGHT_F - 130f);
 
@@ -3078,6 +3096,35 @@ namespace BejeweledLivePlus
 			SPEEDBOARD_TIMEDRAW_Y_OFFSET = 4;
 			MENU_INLAY_OFFSET_MAGIC_BOTTOM = 0;
 			BUTTERFLY_SPIDER_X_OFFSET = -100;
+		}
+
+		public static void CalculateDeviceSpecificConstants(int backbufferWidth, int backbufferHeight)
+		{
+			DEVICE_VIRTUAL_WIDTH_F = DEVICE_WIDTH_F;
+			DEVICE_VIRTUAL_NEGATIVE_WIDTH_F = 0f;
+			DEVICE_VIRTUAL_HEIGHT_F = DEVICE_HEIGHT_F;
+			DEVICE_VIRTUAL_NEGATIVE_HEIGHT_F = 0f;
+
+			if (backbufferWidth > 0 && backbufferHeight > 0)
+			{
+				float scaledHeight = (float)backbufferHeight / (float)backbufferWidth * DEVICE_WIDTH_F;
+				float minVisibleHeight = DEVICE_HEIGHT_F;
+				if (scaledHeight < minVisibleHeight)
+				{
+					scaledHeight = minVisibleHeight;
+				}
+				float heightDelta = scaledHeight - DEVICE_HEIGHT_F;
+				DEVICE_VIRTUAL_HEIGHT_F = DEVICE_HEIGHT_F + heightDelta / 2f;
+				DEVICE_VIRTUAL_NEGATIVE_HEIGHT_F = -heightDelta / 2f;
+			}
+
+			ReCalculateDeviceSpecificConstants();
+		}
+
+		private static void ReCalculateDeviceSpecificConstants()
+		{
+			MENU_Y_POS_HIDDEN = (int)(DEVICE_VIRTUAL_HEIGHT_F - 130f);
+			MAINMENU_OPTIONSMENU_EXPANDED_POS = (int)(DEVICE_VIRTUAL_HEIGHT_F - 460f);
 		}
 
 		static ConstantsWP()

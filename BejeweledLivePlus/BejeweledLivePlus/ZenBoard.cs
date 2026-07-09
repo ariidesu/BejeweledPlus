@@ -794,8 +794,13 @@ namespace BejeweledLivePlus
 
 		public override void DrawButtons(Graphics g)
 		{
+			if (mHyperspace != null && mHyperspace.ShouldHideBoardHUD()) return;
 			if (!mIsWholeGameReplay)
 			{
+				if ((double)mScale < 0.8)
+				{
+					return;
+				}
 				g.SetDrawMode(Graphics.DrawMode.Normal);
 				float mTransX = g.mTransX;
 				float mTransY = g.mTransY;

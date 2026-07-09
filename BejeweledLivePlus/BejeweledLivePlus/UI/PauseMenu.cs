@@ -54,7 +54,7 @@ namespace BejeweledLivePlus.UI
 			mHelpButton = new Bej3Button(3, this, Bej3ButtonType.BUTTON_TYPE_LONG);
 			mHelpButton.SetLabel(GlobalMembers._ID("HELP", 3423));
 			AddWidget(mHelpButton);
-			mFinalY = 106;
+			mFinalY = (int)(0f - ConstantsWP.DEVICE_VIRTUAL_NEGATIVE_HEIGHT_F);
 			SetMode(GameMode.MODE_CLASSIC);
 			base.SystemButtonPressed += OnSystemButtonPressed;
 		}
@@ -241,6 +241,25 @@ namespace BejeweledLivePlus.UI
 		public override void ShowCompleted()
 		{
 			base.ShowCompleted();
+		}
+
+		private int _lastHidden = int.MinValue;
+
+		public override void Update()
+		{
+			int newHidden = ConstantsWP.MENU_Y_POS_HIDDEN;
+			int newFinalY = (int)(0f - ConstantsWP.DEVICE_VIRTUAL_NEGATIVE_HEIGHT_F);
+			if (_lastHidden == int.MinValue)
+			{
+				_lastHidden = newHidden;
+			}
+			if (mTargetPos == mFinalY) mTargetPos = newFinalY;
+			if (mY == mFinalY) mY = newFinalY;
+			if (mTargetPos == _lastHidden) mTargetPos = newHidden;
+			if (mY == _lastHidden) mY = newHidden;
+			mFinalY = newFinalY;
+			_lastHidden = newHidden;
+			base.Update();
 		}
 
 		public override void Resize(int theX, int theY, int theWidth, int theHeight)

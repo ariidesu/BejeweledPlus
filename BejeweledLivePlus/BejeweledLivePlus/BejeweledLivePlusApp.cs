@@ -56,7 +56,7 @@ namespace BejeweledLivePlus
 
 		private bool mDisplayTitleUpdate;
 
-		public string[] initialLoadGroups = new string[44]
+		public string[] initialLoadGroups =
 		{
 			"Common", "Fonts", "MainMenu", "GamePlay", "HyperspaceWhirlpool_Common", "HyperspaceWhirlpool_Normal", "AwardGlow", "GamePlay_UI_Normal", "GamePlay_UI_Dig_Common", "GamePlay_UI_Dig",
 			"GamePlayQuest_Lightning", "GamePlayQuest_Dig", "GamePlayQuest_Butterfly_Common", "GamePlayQuest_Butterfly", "Badges", "BADGES_BIG_ELITE", "BADGES_BIG_BRONZE", "BADGES_BIG_SILVER", "BADGES_BIG_GOLD", "BADGES_BIG_PLATINUM",
@@ -371,6 +371,7 @@ namespace BejeweledLivePlus
 		public override void Init()
 		{
 			base.Init();
+			InitDeviceSpecificConstants();
 			InitStepLocalization();
 			InitStepLoadResources();
 			InitStepPrepareCurvedVal();
@@ -403,6 +404,35 @@ namespace BejeweledLivePlus
 			mMenus[0] = new MenuBackground();
 			mWidgetManager.AddWidget(mMenus[0]);
 			GoToInterfaceState(InterfaceState.INTERFACE_STATE_LOADING);
+		}
+
+		private void InitDeviceSpecificConstants()
+		{
+			RecalculateDeviceSpecificConstants();
+		}
+
+		public void RecalculateDeviceSpecificConstants()
+		{
+			if (mGraphicsDriver == null)
+			{
+				return;
+			}
+			uint backbufferWidth = 0;
+			uint backbufferHeight = 0;
+			mGraphicsDriver.GetRenderDevice3D().GetBackBufferDimensions(ref backbufferWidth, ref backbufferHeight);
+			ConstantsWP.CalculateDeviceSpecificConstants((int)backbufferWidth, (int)backbufferHeight);
+		}
+		
+		public void HandleWindowResize(int width, int height)
+		{
+			if (width <= 0 || height <= 0 || mGraphicsDriver == null)
+			{
+				return;
+			}
+			mGraphicsDriver.WindowResize(width, height);
+			RecalculateDeviceSpecificConstants();
+			UpdateScreenBounds();
+			mWidgetManager?.MarkAllDirty();
 		}
 
 		private void InitStepLocalization()
@@ -647,6 +677,7 @@ namespace BejeweledLivePlus
 				resExtract_["IMAGE_WALLROCKS_SMALL_BROWN"] = GlobalMembersResourcesWP.ExtractGamePlayQuest_Dig_960Resources;
 				resExtract_["POPANIM_ANIMS_LARGE_SPIDER"] = GlobalMembersResourcesWP.ExtractGamePlayQuest_Butterfly_CommonResources;
 				resExtract_["IMAGE_ANIMS_LARGE_SPIDER_LARGE_SPIDER_71X36"] = GlobalMembersResourcesWP.ExtractGamePlayQuest_Butterfly_960Resources;
+				resExtract_["IMAGE_BOMBGEMS"] = GlobalMembersResourcesWP.ExtractGamePlayQuest_TimeBomb_960Resources;
 				resExtract_["SOUND_VOICE_WELCOMETOBEJEWELED"] = GlobalMembersResourcesWP.ExtractCommon_ENUSResources;
 				resExtract_["IMAGE_BADGES_SMALL_UNKNOWN"] = GlobalMembersResourcesWP.ExtractBadges_960Resources;
 				resExtract_["IMAGE_BADGES_BIG_ELITE"] = GlobalMembersResourcesWP.ExtractBADGES_BIG_ELITE_960Resources;
@@ -888,18 +919,6 @@ namespace BejeweledLivePlus
 			}
 			handlers.Clear();
 			handlers.AddRange(array);
-		}
-
-		public void GetTouchInputOffset(ref int x, ref int y)
-		{
-			x = mTouchOffsetX;
-			y = mTouchOffsetY;
-		}
-
-		public void SetTouchInputOffset(int x, int y)
-		{
-			mTouchOffsetX = x;
-			mTouchOffsetY = y;
 		}
 
 		public void PopAnimPlaySample(string theSampleName, int thePan, double theVolume, double theNumSteps)
@@ -1542,7 +1561,7 @@ namespace BejeweledLivePlus
 
 		public int ModeHeadingToGameMode(string theHeading)
 		{
-			for (int i = 0; i < 8; i++)
+			for (int i = 0; i < (int)GameMode.MODE_MAX; i++)
 			{
 				string modeHeading = GetModeHeading((GameMode)i);
 				string highScoreTableId = GetHighScoreTableId(modeHeading);
@@ -1551,7 +1570,7 @@ namespace BejeweledLivePlus
 					return i;
 				}
 			}
-			return 8;
+			return (int)GameMode.MODE_MAX;
 		}
 
 		public string GetHighScoreTableId(string theLocalisedTableName)

@@ -207,25 +207,21 @@ namespace BejeweledLivePlus.Misc
 			{
 				g.SetColorizeImages(true);
 				g.SetColor(mImageOverlayAlpha);
-				if (mImage.mHeight == mHeight)
+				if (mAllowRealign)
 				{
 					if (mHasRenderTargetFlatImage && mImage.GetImage().GetRenderData() == null)
 					{
 						GetBackgroundImage();
 					}
-					if (mAllowRealign)
-					{
-						g.DrawImage(mImage.GetImage(), (GlobalMembers.S(1920) - mImage.mWidth) / 2, 0);
-					}
-					else
-					{
-						g.DrawImage(mImage.GetImage(), 0, 0);
-					}
+					g.DrawImage(mImage.GetImage(), (GlobalMembers.S(1920) - mImage.mWidth) / 2, 0);
 				}
 				else
 				{
-					int num = mHeight / mImage.mHeight;
-					g.DrawImage(mImage.GetImage(), 0, 0, mWidth, mHeight);
+					if (mHasRenderTargetFlatImage && mImage.GetImage().GetRenderData() == null)
+					{
+						GetBackgroundImage();
+					}
+					g.DrawImage(mImage.GetImage(), 0, (int)ConstantsWP.DEVICE_VIRTUAL_NEGATIVE_HEIGHT_F, ConstantsWP.DEVICE_VIRTUAL_VISIBLE_WIDTH, ConstantsWP.DEVICE_VIRTUAL_VISIBLE_HEIGHT);
 				}
 				flag = true;
 			}

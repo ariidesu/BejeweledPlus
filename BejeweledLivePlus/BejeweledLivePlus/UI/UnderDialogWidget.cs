@@ -67,7 +67,7 @@ namespace BejeweledLivePlus.UI
 			g.mPushedColorVector.RemoveAt(0);
 			GlobalMembers.gApp.mWidgetManager.FlushDeferredOverlayWidgets(int.MaxValue);
 			g.SetColorizeImages(true);
-			g.FillRect(SexyFramework.GlobalMembers.gSexyAppBase.mScreenBounds);
+			g.FillRect(new Rect((int)ConstantsWP.DEVICE_VIRTUAL_NEGATIVE_WIDTH_F, (int)ConstantsWP.DEVICE_VIRTUAL_NEGATIVE_HEIGHT_F, ConstantsWP.DEVICE_VIRTUAL_VISIBLE_WIDTH, ConstantsWP.DEVICE_VIRTUAL_VISIBLE_HEIGHT));
 		}
 
 		public override void DrawAll(ModalFlags theFlags, Graphics g)

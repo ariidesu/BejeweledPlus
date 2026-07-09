@@ -151,6 +151,11 @@ namespace BejeweledLivePlus.Widget
 			return mState < HyperSpaceState.FadeTo3D || mState >= HyperSpaceState.LandOnBoard;
 		}
 
+		public override bool ShouldHideBoardHUD()
+		{
+			return mState >= HyperSpaceState.FadeTo3D && mState < HyperSpaceState.SlideBack;
+		}
+
 		public override void SetBGImage(SharedImageRef inImage)
 		{
 			mBGImage = inImage;
@@ -604,6 +609,11 @@ namespace BejeweledLivePlus.Widget
 			SexyMatrix4 matWVP;
 			matView = BuildTubeViewMatrix();
 			GetSceneProjectionMatrix(matProj);
+			
+			SexyMatrix4 matViewGem = BuildTubeViewMatrix();
+			matViewGem.m[0, 0] += 0.003f;
+			matViewGem.m[3, 0] += 3.0f;
+			matViewGem.m[1, 1] += 0.003f;
 
 			float[] mapIndexToScaleFactor = new[] { 1.14f, 1.04f, 1.17f, 1.04f, 1.1f, 1.09f, 1.1f, 1.0f };
 
@@ -649,12 +659,19 @@ namespace BejeweledLivePlus.Widget
 					gi.mPos = pos;
 
 					gemCoords.GetOutboundMatrix(matWorld);
-					matWVP = MulMatrix(MulMatrix(matWorld, matView), matProj);
+					matWVP = MulMatrix(MulMatrix(matWorld, matViewGem), matProj);
 					gi.mPosScreen = new SexyVector3(matWVP.m[3, 0], matWVP.m[3, 1], matWVP.m[3, 2]);
 					float w = matWVP.m[3, 3];
 					float scaleFactor = gi.mPosScreen.z;
 					if (w != 0f) gi.mPosScreen = new SexyVector3(gi.mPosScreen.x / w, gi.mPosScreen.y / w, gi.mPosScreen.z / w);
 					gi.mScaleScreen = (scaleFactor < 500f ? 3f : 3225f / scaleFactor) * sSceneScale;
+					if (gi.mPiece != null)
+					{
+						foreach (Effect boundEffect in gi.mPiece.mBoundEffects)
+						{
+							boundEffect.mDrawScale = gi.mScaleScreen;
+						}
+					}
 					float dx = cameraCoords.t.x - gemCoords.t.x;
 					float dy = cameraCoords.t.y - gemCoords.t.y;
 					float dz = cameraCoords.t.z - gemCoords.t.z;
@@ -686,8 +703,9 @@ namespace BejeweledLivePlus.Widget
 				float invScale = 1f / Math.Max(0.001f, GlobalMembers.S(1f));
 				float screenCenterX = GlobalMembers.gApp.mWidth * 0.5f;
 				float screenCenterY = GlobalMembers.gApp.mHeight * 0.5f;
+				float halfVisH = (ConstantsWP.DEVICE_VIRTUAL_HEIGHT_F - ConstantsWP.DEVICE_VIRTUAL_NEGATIVE_HEIGHT_F) * 0.5f;
 				float projX = screenCenterX + mBoardScreenPos.x * screenCenterX;
-				float projY = screenCenterY - mBoardScreenPos.y * screenCenterY;
+				float projY = screenCenterY - mBoardScreenPos.y * halfVisH;
 				mBoard.mOfsX = (projX - GlobalMembers.S(mBoard.GetBoardCenterX())) * invScale;
 				mBoard.mOfsY = (projY - GlobalMembers.S(mBoard.GetBoardCenterY())) * invScale;
 			}
@@ -747,7 +765,7 @@ namespace BejeweledLivePlus.Widget
 
 		private void UpdateSounds()
 		{
-			if (mAnimSeq.GetCurFrame() == 68 || mAnimSeq.GetCurFrame() == 76)
+			if (mBoard.GetHyperspaceTransType() != HYPERSPACETRANS.HYPERSPACETRANS_Zen && (mAnimSeq.GetCurFrame() == 68 || mAnimSeq.GetCurFrame() == 76))
 			{
 				GlobalMembers.gApp.PlaySample(GlobalMembersResourcesWP.SOUND_HYPERSPACE_SHATTER_2);
 			}
@@ -771,11 +789,22 @@ namespace BejeweledLivePlus.Widget
 			return r;
 		}
 
+		private float GetSceneHeightComp()
+		{
+			return (float)GlobalMembers.gApp.mHeight / (float)ConstantsWP.DEVICE_VIRTUAL_VISIBLE_HEIGHT;
+		}
+
 		private void GetSceneProjectionMatrix(SexyMatrix4 outM)
 		{
 			mCameraPersp.GetProjectionMatrix(outM);
 			outM.m[0, 0] *= sSceneScale;
-			outM.m[1, 1] *= sSceneScale;
+			outM.m[1, 1] *= sSceneScale * GetSceneHeightComp();
+		}
+
+		private void GetTubeProjectionMatrix(SexyMatrix4 outM)
+		{
+			mCameraPersp.GetProjectionMatrix(outM);
+			outM.m[1, 1] *= GetSceneHeightComp();
 		}
 		
 		public override void DrawBackground(Graphics g)
@@ -863,7 +892,7 @@ namespace BejeweledLivePlus.Widget
 					SexyMatrix4 matView = BuildTubeViewMatrix();
 					g3d.SetViewTransform(matView);
 					SexyMatrix4 matProj = new SexyMatrix4();
-					mCameraPersp.GetProjectionMatrix(matProj);
+					GetTubeProjectionMatrix(matProj);
 					g3d.SetProjectionTransform(matProj);
 
 					SexyCoords3 coords = new SexyCoords3();
@@ -916,7 +945,7 @@ namespace BejeweledLivePlus.Widget
 					SexyMatrix4 matView = new SexyMatrix4();
 					SexyMatrix4 matProj = new SexyMatrix4();
 					matView = BuildTubeViewMatrix();
-					mCameraPersp.GetProjectionMatrix(matProj);
+					GetTubeProjectionMatrix(matProj);
 					g3d.SetViewTransform(matView);
 					g3d.SetProjectionTransform(matProj);
 
@@ -980,93 +1009,124 @@ namespace BejeweledLivePlus.Widget
 				fx.SetParameter("diffuseLightColor", diffuseLightColor, 4u);
 				fx.SetParameter("specularLightColor", specularLightColor, 4u);
 				fx.SetParameter("lightingCamOffest", new[] { 0f, 0f, 0f, 0f }, 4u);
-				float frontFade = Math.Min(mFadeTo3D, 1f);
-				fx.SetParameter("globalFade", new[] { frontFade, frontFade, frontFade, frontFade }, 4u);
+			}
+			float frontFade = Math.Min(mFadeTo3D, 1f);
+			float outlineFade = (mState == HyperSpaceState.FadeTo3D) ? (1f - (float)mPieceAlpha.GetOutVal()) : Math.Min(mFadeTo3D, 1f);
 
+			foreach (GemInfo gi in mGemRenderOrder)
+			{
+				if (!gi.mDraw3D) continue;
+
+				SetupBillboard2DState(g3d, renderDev);
+				DrawBillboardEffects(g, gi, false);
+				
+				int colorIndex = GetGemColor(gi);
+				if (colorIndex >= 0 && colorIndex < 7 && GlobalMembers.gApp.mGems3D[colorIndex] != null)
+				{
+					DrawGemMesh(g, renderDev, stateMgr, fx, gi, colorIndex, xnaView, xnaProj, frontFade, outlineFade);
+				}
+
+				SetupBillboard2DState(g3d, renderDev);
+				DrawBillboardEffects(g, gi, true);
+			}
+
+			renderDev.SetDefaultState(null, false);
+			g3d.SetDepthState(Graphics3D.ECompareFunc.COMPARE_ALWAYS, false);
+			g3d.SetBltDepth(0f);
+		}
+
+		private void SetupBillboard2DState(Graphics3D g3d, SexyFramework.Drivers.Graphics.BaseXNARenderDevice renderDev)
+		{
+			renderDev.SetBillboardDepthState();
+			g3d.SetDepthState(Graphics3D.ECompareFunc.COMPARE_LESS, false);
+			g3d.SetTextureWrap(0, false);
+			g3d.SetTextureWrap(1, false);
+			g3d.SetBackfaceCulling(0, 0);
+		}
+
+		private void DrawGemMesh(Graphics g, SexyFramework.Drivers.Graphics.BaseXNARenderDevice renderDev,
+			SexyFramework.Drivers.Graphics.BaseXNAStateManager stateMgr, RenderEffect fx, GemInfo gi,
+			int colorIndex, Microsoft.Xna.Framework.Matrix xnaView, Microsoft.Xna.Framework.Matrix xnaProj,
+			float frontFade, float outlineFade)
+		{
+			Graphics3D g3d = g.Get3D();
+			using (RenderEffectAutoState autoFx = new RenderEffectAutoState(g, fx))
+			{
 				stateMgr.SetViewTransform(xnaView);
 				stateMgr.SetProjectionTransform(xnaProj);
 				g3d.SetDepthState(Graphics3D.ECompareFunc.COMPARE_LESS, true);
 				g3d.SetBackfaceCulling(1, 0);
 
-				foreach (GemInfo gi in mGemRenderOrder)
-				{
-					if (!gi.mDraw3D) continue;
-					int colorIndex = GetGemColor(gi);
-					if (colorIndex < 0 || colorIndex >= 7) continue;
-					if (GlobalMembers.gApp.mGems3D[colorIndex] == null) continue;
+				SexyVector3 lp = new SexyVector3(
+					gi.mCoords.t.x + mapColorIndexToLightOffset[colorIndex].x,
+					gi.mCoords.t.y + mapColorIndexToLightOffset[colorIndex].y,
+					gi.mCoords.t.z + mapColorIndexToLightOffset[colorIndex].z);
+				fx.SetParameter("lightPosition", new[] { lp.x, lp.y, lp.z, 1f }, 4u);
+				HyperMaterial m = mapColorIndexToMaterial[colorIndex];
+				fx.SetParameter("ambientMaterialColor", m.ambient, 4u);
+				fx.SetParameter("diffuseMaterialColor", m.diffuse, 4u);
+				fx.SetParameter("specularMaterialColor", m.specular, 4u);
+				fx.SetParameter("specularPower", new[] { m.power, m.power, m.power, m.power }, 4u);
+				fx.SetParameter("globalFade", new[] { frontFade, frontFade, frontFade, frontFade }, 4u);
 
-					SexyVector3 lp = new SexyVector3(
-						gi.mCoords.t.x + mapColorIndexToLightOffset[colorIndex].x,
-						gi.mCoords.t.y + mapColorIndexToLightOffset[colorIndex].y,
-						gi.mCoords.t.z + mapColorIndexToLightOffset[colorIndex].z);
-					fx.SetParameter("lightPosition", new[] { lp.x, lp.y, lp.z, 1f }, 4u);
-					HyperMaterial m = mapColorIndexToMaterial[colorIndex];
-					fx.SetParameter("ambientMaterialColor", m.ambient, 4u);
-					fx.SetParameter("diffuseMaterialColor", m.diffuse, 4u);
-					fx.SetParameter("specularMaterialColor", m.specular, 4u);
-					fx.SetParameter("specularPower", new[] { m.power, m.power, m.power, m.power }, 4u);
-
-					SexyMatrix4 mWorld = new SexyMatrix4();
-					gi.mCoords.GetOutboundMatrix(mWorld);
-					renderDev.RenderMeshSinglePass(GlobalMembers.gApp.mGems3D[colorIndex], mWorld, 1);
-				}
+				SexyMatrix4 mWorld = new SexyMatrix4();
+				gi.mCoords.GetOutboundMatrix(mWorld);
+				renderDev.RenderMeshSinglePass(GlobalMembers.gApp.mGems3D[colorIndex], mWorld, 1);
 
 				Microsoft.Xna.Framework.Matrix outlineProj = xnaProj;
 				outlineProj.M43 += 1.0f;
 				stateMgr.SetProjectionTransform(outlineProj);
-				float outlineFade = (mState == HyperSpaceState.FadeTo3D) ? (1f - (float)mPieceAlpha.GetOutVal()) : Math.Min(mFadeTo3D, 1f);
 				fx.SetParameter("globalFade", new[] { outlineFade, outlineFade, outlineFade, outlineFade }, 4u);
 				g3d.SetDepthState(Graphics3D.ECompareFunc.COMPARE_LESS, false);
 				g3d.SetBackfaceCulling(1, 0);
 
-				foreach (GemInfo gi in mGemRenderOrder)
-				{
-					if (!gi.mDraw3D) continue;
-					int colorIndex = GetGemColor(gi);
-					if (colorIndex < 0 || colorIndex >= 7) continue;
-					if (GlobalMembers.gApp.mGems3D[colorIndex] == null) continue;
-
-					float distScale = Math.Max(Math.Min(gi.mDistToCamera / 3425.0f, 1f), 0.5f);
-					float outlineScale = 0.99f + distScale * 0.1f;
-					SexyMatrix4 mWorldOutline = new SexyMatrix4();
-					SexyCoords3 outlineCoords = new SexyCoords3();
-					outlineCoords.CopyFrom(gi.mCoords);
-					outlineCoords.Scale(outlineScale, outlineScale, outlineScale);
-					outlineCoords.GetOutboundMatrix(mWorldOutline);
-					renderDev.RenderMeshSinglePass(GlobalMembers.gApp.mGems3D[colorIndex], mWorldOutline, 0);
-				}
-
-				stateMgr.SetProjectionTransform(xnaProj);
-				fx.SetParameter("globalFade", new[] { frontFade, frontFade, frontFade, frontFade }, 4u);
-			}
-
-			foreach (GemInfo gi in mGemRenderOrder)
-			{
-				if (gi.mDraw3D)
-				{
-					DrawBillboardEffects(g, gi);
-				}
+				float distScale = Math.Max(Math.Min(gi.mDistToCamera / 3425.0f, 1f), 0.5f);
+				float outlineScale = 0.99f + distScale * 0.1f;
+				SexyMatrix4 mWorldOutline = new SexyMatrix4();
+				SexyCoords3 outlineCoords = new SexyCoords3();
+				outlineCoords.CopyFrom(gi.mCoords);
+				outlineCoords.Scale(outlineScale, outlineScale, outlineScale);
+				outlineCoords.GetOutboundMatrix(mWorldOutline);
+				renderDev.RenderMeshSinglePass(GlobalMembers.gApp.mGems3D[colorIndex], mWorldOutline, 0);
 			}
 		}
-
-		private void DrawBillboardEffects(Graphics g, GemInfo gi)
+		
+		private void DrawBillboardEffects(Graphics g, GemInfo gi, bool theFront)
 		{
 			if (gi.mPosScreen.z >= 1f) return;
 			Piece piece = gi.mPiece;
-			if (piece == null || piece.mBoundEffects.Count == 0) return;
+			if (piece == null) return;
+			bool isHypercube = piece.IsFlagSet(2u);
+			bool drawHypercube = isHypercube && theFront;
+			if (!drawHypercube && piece.mBoundEffects.Count == 0) return;
 
-			float screenX = mWidth * 0.5f + gi.mPosScreen.x * mWidth * 0.5f;
-			float screenY = mHeight * 0.5f - gi.mPosScreen.y * mHeight * 0.5f;
-			foreach (Effect effect in piece.mBoundEffects)
+			g.Get3D()?.SetBltDepth(gi.mPosScreen.z);
+			float negH = ConstantsWP.DEVICE_VIRTUAL_NEGATIVE_HEIGHT_F;
+			float virtH = ConstantsWP.DEVICE_VIRTUAL_HEIGHT_F;
+			float visH = virtH - negH;
+			float halfVisH = visH * 0.5f;
+			float screenX = (gi.mPosScreen.x * 0.5f + 0.5f) * ConstantsWP.DEVICE_VIRTUAL_WIDTH_F;
+			float screenY = negH + (0.5f - gi.mPosScreen.y * 0.5f) * visH;
+			if (drawHypercube)
 			{
-				if (effect.mFXManager != mBoard.mPreFXManager && effect.mFXManager != mBoard.mPostFXManager)
-				{
-					continue;
-				}
 				g.PushState();
 				g.Translate((int)screenX, (int)screenY);
-				g.SetScale(gi.mScaleScreen, gi.mScaleScreen, 0f, 0f);
-				g.Translate((int)(-effect.mX), (int)(-effect.mY));
+				g.Translate((int)(-GlobalMembers.S(piece.CX())), (int)(-GlobalMembers.S(piece.CY())));
+				float prevHcAlpha = (float)piece.mAlpha.GetOutVal();
+				piece.mAlpha.SetConstant(1.0);
+				mBoard.DrawPiece(g, piece, gi.mScaleScreen / sSceneScale);
+				piece.mAlpha.SetConstant(prevHcAlpha);
+				g.PopState();
+			}
+			foreach (Effect effect in piece.mBoundEffects)
+			{
+				bool isFrontFx = effect.mFXManager == mBoard.mPostFXManager;
+				bool isBackFx = effect.mFXManager == mBoard.mPreFXManager;
+				if (!isFrontFx && !isBackFx) continue;
+				if (theFront != isFrontFx) continue;
+				g.PushState();
+				g.Translate((int)screenX, (int)screenY);
+				g.Translate((int)(-GlobalMembers.S(effect.mX) * gi.mScaleScreen), (int)(-GlobalMembers.S(effect.mY) * gi.mScaleScreen));
 				float prevAlpha = (float)piece.mAlpha.GetOutVal();
 				piece.mAlpha.SetConstant(1.0);
 				effect.Draw(g);
