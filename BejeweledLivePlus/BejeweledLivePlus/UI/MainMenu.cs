@@ -408,8 +408,8 @@ namespace BejeweledLivePlus.UI
 				g.SetColor(mBJ3LogoAlpha);
 				g.SetColor(new Color(255, 255, 255, 255));
 				Transform transform = new Transform();
-				transform.Scale(1.35f, 1.1f);
-				g.DrawImageTransform(GlobalMembersResourcesWP.IMAGE_MAIN_MENU_LOGO, transform, (int)GlobalMembers.S(GlobalMembersResourcesWP.ImgXOfs(ResourceId.IMAGE_MAIN_MENU_LOGO_ID)) + 290, (int)GlobalMembers.S(GlobalMembersResourcesWP.ImgXOfs(ResourceId.IMAGE_MAIN_MENU_LOGO_ID)) + 90);
+				transform.Scale(1.35f, 1.35f);
+				g.DrawImageTransform(GlobalMembersResourcesWP.IMAGE_MAIN_MENU_LOGO, transform, (int)GlobalMembers.S(GlobalMembersResourcesWP.ImgXOfs(ResourceId.IMAGE_MAIN_MENU_LOGO_ID)) + 290, (int)GlobalMembers.S(GlobalMembersResourcesWP.ImgXOfs(ResourceId.IMAGE_MAIN_MENU_LOGO_ID)) + 95);
 			}
 		}
 
