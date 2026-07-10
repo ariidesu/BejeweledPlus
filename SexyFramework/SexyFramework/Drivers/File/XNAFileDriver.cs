@@ -32,6 +32,14 @@ namespace SexyFramework.Drivers.File
 			return $"ariidesu\\{mApp.mProdName}\\";
 		}
 
+		public static string GetStoragePath(string thePath)
+		{
+			string basePath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+			string safePath = thePath.Replace('\\', Path.DirectorySeparatorChar)
+				.Replace('/', Path.DirectorySeparatorChar);
+			return Path.Combine(basePath, safePath);
+		}
+
 		public override string GetCurPath()
 		{
 			return string.Empty;
@@ -81,8 +89,7 @@ namespace SexyFramework.Drivers.File
 			// 	isFolder = true;
 			// 	flag = true;
 			// }
-			string basePath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-			string fullPath = Path.Combine(basePath, thePath);
+			string fullPath = GetStoragePath(thePath);
 			if (System.IO.File.Exists(fullPath))
 			{
 				isFolder = false;
@@ -126,17 +133,14 @@ namespace SexyFramework.Drivers.File
 			// }
 			// return userStoreForApplication.DirectoryExists(theFolder);
 			
-			string basePath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-			string safeFolder = theFolder.Replace('\\', Path.DirectorySeparatorChar)
-				.Replace('/', Path.DirectorySeparatorChar);
-			string fullPath = Path.Combine(basePath, safeFolder);
+			string fullPath = GetStoragePath(theFolder);
 			try
 			{
 				Directory.CreateDirectory(fullPath);
 			}
 			catch
 			{
-				
+
 			}
 			return Directory.Exists(fullPath);
 		}
@@ -163,8 +167,7 @@ namespace SexyFramework.Drivers.File
 				// 	userStoreForApplication.DeleteFile(thePath + "\\" + text2);
 				// }
 				// userStoreForApplication.DeleteDirectory(thePath);
-				string basePath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-				string fullPath = Path.Combine(basePath, thePath);
+				string fullPath = GetStoragePath(thePath);
 				if (Directory.Exists(fullPath))
 				{
 					Directory.Delete(fullPath, recursive: true);
@@ -184,8 +187,7 @@ namespace SexyFramework.Drivers.File
 			{
 				// IsolatedStorageFile userStoreForApplication = IsolatedStorageFile.GetUserStoreForApplication();
 				// userStoreForApplication.DeleteFile(thePath);
-				string basePath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-				string fullPath = Path.Combine(basePath, thePath);
+				string fullPath = GetStoragePath(thePath);
 				if (System.IO.File.Exists(fullPath))
 				{
 					System.IO.File.Delete(fullPath);
@@ -205,9 +207,8 @@ namespace SexyFramework.Drivers.File
 			{
 				// IsolatedStorageFile userStoreForApplication = IsolatedStorageFile.GetUserStoreForApplication();
 				// userStoreForApplication.MoveFile(thePathSrc, thePathDest);
-				string basePath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-				string fullSrc = Path.Combine(basePath, thePathSrc);
-				string fullDest = Path.Combine(basePath, thePathDest);
+				string fullSrc = GetStoragePath(thePathSrc);
+				string fullDest = GetStoragePath(thePathDest);
 				if (System.IO.File.Exists(fullSrc))
 				{
 					Directory.CreateDirectory(Path.GetDirectoryName(fullDest)!);

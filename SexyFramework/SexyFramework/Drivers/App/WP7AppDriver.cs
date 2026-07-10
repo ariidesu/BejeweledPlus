@@ -652,10 +652,7 @@ namespace SexyFramework.Drivers.App
 				// 		theBuffer.SetData(array, array.Length);
 				// 	}
 				// }
-				string storagePath = Path.Combine(
-					Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-					theFileName
-				);
+				string storagePath = SexyFramework.Drivers.File.XNAFileDriver.GetStoragePath(theFileName);
 
 				using (var fs = System.IO.File.Open(storagePath, FileMode.Open, FileAccess.Read))
 				using (var br = new BinaryReader(fs))
@@ -686,10 +683,7 @@ namespace SexyFramework.Drivers.App
 				// 		binaryWriter.Write(theData);
 				// 	}
 				// }
-				string storagePath = Path.Combine(
-					Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-					theFileName
-				);
+				string storagePath = SexyFramework.Drivers.File.XNAFileDriver.GetStoragePath(theFileName);
 
 				using (var fs = System.IO.File.Open(storagePath, FileMode.Create, FileAccess.Write))
 				using (var br = new BinaryWriter(fs))
