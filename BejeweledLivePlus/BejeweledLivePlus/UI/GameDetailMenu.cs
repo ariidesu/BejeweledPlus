@@ -500,6 +500,13 @@ namespace BejeweledLivePlus.UI
 				mHeadingLabel.SetText(Common.CommaSeperate(mPoints));
 				break;
 			}
+			case GameMode.MODE_TIMEBOMB:
+			case GameMode.MODE_REALTIMEBOMB:
+			{
+				int mPoints = theBoard.mPoints;
+				mHeadingLabel.SetText(Common.CommaSeperate(mPoints));
+				break;
+			}
 			}
 			GlobalMembers.gApp.mProfile.UpdateRank(theBoard);
 		}

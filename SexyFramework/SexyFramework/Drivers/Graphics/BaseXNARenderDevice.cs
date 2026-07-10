@@ -130,6 +130,7 @@ namespace SexyFramework.Drivers.Graphics
 		// Scratch buffers reused by per-call paths so we don't allocate on the hot path.
 		private VertexPositionColorTexture[] mScratchTri = new VertexPositionColorTexture[3];
 		private VertexPositionColorTexture[] mScratchPoly = new VertexPositionColorTexture[64];
+		private VertexPositionColorDualTexture[] mScratchPolyDual = new VertexPositionColorDualTexture[64];
 		private VertexPositionColor[] mScratchLine = new VertexPositionColor[2];
 
 		private BlendState mNormalState;
@@ -472,6 +473,26 @@ namespace SexyFramework.Drivers.Graphics
 					}
 				}
 			}
+			if ((theVertexFormat & 0x200) != 0)
+			{
+				if (mScratchPolyDual.Length < num) mScratchPolyDual = new VertexPositionColorDualTexture[num];
+				VertexPositionColorDualTexture[] dualArray = mScratchPolyDual;
+				for (int j = 0; j < num; j++)
+				{
+					dualArray[j].Position.X = theVertices[j].x;
+					dualArray[j].Position.Y = theVertices[j].y;
+					dualArray[j].Position.Z = mBltDepth;
+					dualArray[j].TextureCoordinate = mImage.mVectorBase + mImage.mVectorU * theVertices[j].u + mImage.mVectorV * theVertices[j].v;
+					dualArray[j].TextureCoordinate1 = new Vector2(theVertices[j].u2, theVertices[j].v2);
+					dualArray[j].Color = (theVertices[j].color == SexyFramework.Graphics.Color.Zero) ? color : GetXNAColor(theVertices[j].color);
+				}
+				mStateMgr.SetWorldTransform(Matrix.Identity);
+				mStateMgr.mStateDirty = true;
+				DrawPrimitiveInternal((int)thePrimitiveType, thePrimitiveCount, dualArray, 0uL, theVertexFormat, true, Matrix.Identity);
+				mStateMgr.mStateDirty = false;
+				mStateMgr.PopState();
+				return;
+			}
 			for (int j = 0; j < num; j++)
 			{
 				array[j].Position.X = theVertices[j].x;
@@ -682,6 +703,22 @@ namespace SexyFramework.Drivers.Graphics
 				new VertexElement(12, VertexElementFormat.Vector3, VertexElementUsage.Normal, 0),
 				new VertexElement(24, VertexElementFormat.Color, VertexElementUsage.Color, 0),
 				new VertexElement(28, VertexElementFormat.Vector2, VertexElementUsage.TextureCoordinate, 0));
+
+			VertexDeclaration IVertexType.VertexDeclaration => VertexDeclaration;
+		}
+
+		public struct VertexPositionColorDualTexture : IVertexType
+		{
+			public Vector3 Position;
+			public Microsoft.Xna.Framework.Color Color;
+			public Vector2 TextureCoordinate;
+			public Vector2 TextureCoordinate1;
+
+			public static readonly VertexDeclaration VertexDeclaration = new VertexDeclaration(
+				new VertexElement(0, VertexElementFormat.Vector3, VertexElementUsage.Position, 0),
+				new VertexElement(12, VertexElementFormat.Color, VertexElementUsage.Color, 0),
+				new VertexElement(16, VertexElementFormat.Vector2, VertexElementUsage.TextureCoordinate, 0),
+				new VertexElement(24, VertexElementFormat.Vector2, VertexElementUsage.TextureCoordinate, 1));
 
 			VertexDeclaration IVertexType.VertexDeclaration => VertexDeclaration;
 		}
@@ -2418,7 +2455,9 @@ namespace SexyFramework.Drivers.Graphics
 			}
 
 			mDevice.GraphicsDevice.SetRenderTarget(newTarget);
-			mDevice.GraphicsDevice.Clear(Microsoft.Xna.Framework.Color.Black);
+			mSpriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Opaque);
+			mSpriteBatch.Draw(oldTarget, new Rectangle(0, 0, newTarget.Width, newTarget.Height), Microsoft.Xna.Framework.Color.White);
+			mSpriteBatch.End();
 
 			mScreenTarget = newTarget;
 			return ioSrcImage;

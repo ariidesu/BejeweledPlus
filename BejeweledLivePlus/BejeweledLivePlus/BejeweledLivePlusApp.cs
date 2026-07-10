@@ -59,7 +59,7 @@ namespace BejeweledLivePlus
 		public string[] initialLoadGroups =
 		{
 			"Common", "Fonts", "MainMenu", "GamePlay", "HyperspaceWhirlpool_Common", "HyperspaceWhirlpool_Normal", "AwardGlow", "GamePlay_UI_Normal", "GamePlay_UI_Dig_Common", "GamePlay_UI_Dig",
-			"GamePlayQuest_Lightning", "GamePlayQuest_Dig", "GamePlayQuest_Butterfly_Common", "GamePlayQuest_Butterfly", "Badges", "BADGES_BIG_ELITE", "BADGES_BIG_BRONZE", "BADGES_BIG_SILVER", "BADGES_BIG_GOLD", "BADGES_BIG_PLATINUM",
+			"GamePlayQuest_Lightning", "GamePlayQuest_Dig", "GamePlayQuest_Butterfly_Common", "GamePlayQuest_Butterfly", "GamePlayQuest_TimeBomb", "Badges", "BADGES_BIG_ELITE", "BADGES_BIG_BRONZE", "BADGES_BIG_SILVER", "BADGES_BIG_GOLD", "BADGES_BIG_PLATINUM",
 			"BADGES_BIG_LEVELORD", "BADGES_BIG_BEJEWELER", "BADGES_BIG_DIAMOND_MINE", "BADGES_BIG_RELIC_HUNTER", "BADGES_BIG_ELECTRIFIER", "BADGES_BIG_HIGH_VOLTAGE", "BADGES_BIG_BUTTERFLY_MONARCH", "BADGES_BIG_BUTTERFLY_BONANZA", "BADGES_BIG_CHROMATIC", "BADGES_BIG_STELLAR",
 			"BADGES_BIG_BLASTER", "BADGES_BIG_SUPERSTAR", "BADGES_BIG_CHAIN_REACTION", "BADGES_BIG_LUCKY_STREAK", "Help_Basic", "Help_Bfly", "Help_DiamondMine", "Help_Lightning", "Help_Bfly", "ProfilePic_0",
 			"ZenOptions", "BadgesGrayIcon", "AtlasEx", null
@@ -1147,6 +1147,41 @@ namespace BejeweledLivePlus
 				mNeedMusicStart = true;
 			}
 		}
+		
+		// TODO: Unify with secret.cfg
+		private void DoNewTimeBombGame(bool realTime)
+		{
+			GlobalMembers.KILL_WIDGET_NOW(mBoard);
+			TimeBombBoard timeBombBoard = new TimeBombBoard(realTime);
+			mBoard = timeBombBoard;
+			mBoard.mParams["Title"] = (realTime ? "RealTimeBomb" : "TimeBomb");
+			mBoard.mParams["Description"] = string.Empty;
+			mBoard.mParams["BombCountdown"] = (realTime ? "60" : "20");
+			mBoard.mParams["DropCountdown"] = "4";
+			mBoard.mParams["MaxBombs"] = "3";
+			mBoard.mParams["MaxBombsPerUpdate"] = "1";
+			mBoard.mParams["DropCountDownPerUpdate"] = "1";
+			mBoard.mParams["MaxBombsUpdateScore"] = (realTime ? "250000" : "200000");
+			mBoard.mParams["DropCountDownUpdateScore"] = "200000";
+			mBoard.mParams["BombCountDownUpdateScore"] = "500000";
+			mBoard.mParams["MaxBombsAmount"] = "15";
+			mBoard.mParams["MinDropCountDownAmount"] = "1";
+			mBoard.mParams["BombCountDownAmount"] = (realTime ? "45" : "15");
+			mBoard.mParams["BombCountDown2ndAmount"] = (realTime ? "30" : "10");
+			mBoard.mParams["BombCountDown3rdAmount"] = (realTime ? "15" : "5");
+			mBoard.Resize(0, 0, mWidth, mHeight);
+			timeBombBoard.mIsPerpetual = true;
+			timeBombBoard.mShowLevelPoints = false;
+			mBoard.Init();
+			if (!DoSavedGameCheck())
+			{
+				DoGameDetailMenu(mCurrentGameMode, GameDetailMenu.GAMEDETAILMENU_STATE.STATE_PRE_GAME);
+			}
+			else
+			{
+				mNeedMusicStart = true;
+			}
+		}
 
 		private void DoNewQuest(int theId)
 		{
@@ -1506,6 +1541,10 @@ namespace BejeweledLivePlus
 				return GlobalMembers._ID("ICESTORM", 3214);
 			case GameMode.MODE_BLITZ:
 				return GlobalMembers._ID("BLITZ", 3363);
+			case GameMode.MODE_TIMEBOMB:
+				return GlobalMembers._ID("MATCH BOMB", 3364);
+			case GameMode.MODE_REALTIMEBOMB:
+				return GlobalMembers._ID("TIME BOMB", 137);
 			default:
 				return "";
 			}
@@ -1555,6 +1594,12 @@ namespace BejeweledLivePlus
 			case GameMode.MODE_BLITZ:
 				result = 0;
 				break;
+			case GameMode.MODE_TIMEBOMB:
+				result = 0;
+				break;
+			case GameMode.MODE_REALTIMEBOMB:
+				result = 0;
+				break;
 			}
 			return result;
 		}
@@ -1598,6 +1643,14 @@ namespace BejeweledLivePlus
 			if (theLocalisedTableName == GlobalMembers._ID("BLITZ", 3363))
 			{
 				return "BLITZ";
+			}
+			if (theLocalisedTableName == GlobalMembers._ID("MATCH BOMB", 3364))
+			{
+				return "MATCH BOMB";
+			}
+			if (theLocalisedTableName == GlobalMembers._ID("TIME BOMB", 137))
+			{
+				return "TIME BOMB";
 			}
 			return theLocalisedTableName;
 		}
@@ -1866,6 +1919,12 @@ namespace BejeweledLivePlus
 				break;
 			case GameMode.MODE_BLITZ:
 				DoNewBlitzGame(1);
+				break;
+			case GameMode.MODE_TIMEBOMB:
+				DoNewTimeBombGame(false);
+				break;
+			case GameMode.MODE_REALTIMEBOMB:
+				DoNewTimeBombGame(true);
 				break;
 			}
 		}

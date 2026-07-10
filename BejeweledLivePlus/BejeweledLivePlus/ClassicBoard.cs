@@ -63,8 +63,6 @@ namespace BejeweledLivePlus
 		{
 			new Announcement(this, GlobalMembers._ID("NO MORE\nMOVES", 164));
 			GlobalMembers.gApp.PlayVoice(GlobalMembersResourcesWP.SOUND_VOICE_NOMOREMOVES);
-			(GlobalMembers.gApp.mMusicInterface as CustomBassMusicInterface).QueueEvent("Play", "Classic_lose", true);
-			// GlobalMembers.gApp.mMusic.PlaySongNoDelay(3, false);
 		}
 
 		public override void HyperspaceEvent(HYPERSPACEEVENT inEvent)
@@ -116,26 +114,6 @@ namespace BejeweledLivePlus
 		{
 			base.Draw(g);
 			base.DrawGameElements(g);
-		}
-
-		public override void Update()
-		{
-			CustomBassMusicInterface theMusicInterface =
-				(CustomBassMusicInterface)(GlobalMembers.gApp.mMusicInterface);
-			theMusicInterface.SetTempo("Classic", 110);
-			base.Update();
-		}
-
-		public override void PlayMenuMusic(bool isRestart = false)
-		{
-			CustomBassMusicInterface theMusicInterface =
-				(CustomBassMusicInterface)(GlobalMembers.gApp.mMusicInterface);
-			if (isRestart || (theMusicInterface.mSongName != "Classic" && theMusicInterface.mSongName != "Classic_lose"))
-			{
-				theMusicInterface.QueueEvent("FadeOut", theMusicInterface.mSongName, false);
-				theMusicInterface.QueueEvent("Play", "Classic", true);
-			}
-			// GlobalMembers.gApp.mMusic.PlaySongNoDelay(2, true);
 		}
 
 		public override void SubmitHighscore()

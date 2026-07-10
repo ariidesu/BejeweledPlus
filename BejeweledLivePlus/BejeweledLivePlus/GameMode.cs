@@ -10,6 +10,8 @@ namespace BejeweledLivePlus
 		MODE_ICESTORM,
 		MODE_POKER,
 		MODE_BLITZ,
+		MODE_TIMEBOMB,
+		MODE_REALTIMEBOMB,
 		MODE_MAX
 	}
 }

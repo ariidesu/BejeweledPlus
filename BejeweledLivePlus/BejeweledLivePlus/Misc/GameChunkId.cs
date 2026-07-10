@@ -12,6 +12,7 @@ namespace BejeweledLivePlus.Misc
 		eChunkQuestBoard,
 		eChunkQuestGoal,
 		eChunkSpeedBoard,
+		eChunkTimeBombBoard,
 		eNumberChunkTypes,
 		eChunkUnknown
 	}

@@ -25,7 +25,9 @@ namespace BejeweledLivePlus.UI
 			BTN_MORE_2_ID,
 			BTN_MORE_3_ID,
 			BTN_MORE_4_ID,
-			BTN_MORE_5_ID
+			BTN_MORE_5_ID,
+			BTN_TIMEBOMB_ID,
+			BTN_REALTIMEBOMB_ID
 		}
 
 		public enum PAGE_NUM
@@ -61,6 +63,10 @@ namespace BejeweledLivePlus.UI
 		private CrystalBall mLightningButton;
 
 		private CrystalBall mBlitzButton;
+
+		private CrystalBall mMatchBombButton;
+
+		private CrystalBall mRealTimeBombButton;
 
 		private CrystalBall mComingSoonButton;
 
@@ -106,6 +112,12 @@ namespace BejeweledLivePlus.UI
 			mButterflyButton = new CrystalBall(GlobalMembers._ID("BUTTERFLIES", 3378), GlobalMembers._ID("", 3379), GlobalMembers._ID("", 3380), 5, this, Bej3Widget.COLOR_CRYSTALBALL_FONT, ConstantsWP.MAIN_MENU_BUTTON_BUTTERFLIES_SCALE + 0.1f);
 			mButtons.Add(mButterflyButton);
 			AddWidget(mButterflyButton);
+			mMatchBombButton = new CrystalBall(GlobalMembers._ID("MATCH", 3410), GlobalMembers._ID("BOMB", 3412), GlobalMembers._ID("", 3386), (int)MAINMENU_BUTTON_IDS.BTN_TIMEBOMB_ID, this, Bej3Widget.COLOR_CRYSTALBALL_FONT, ConstantsWP.MAIN_MENU_BUTTON_BLITZ_SCALE);
+			mButtons.Add(mMatchBombButton);
+			AddWidget(mMatchBombButton);
+			mRealTimeBombButton = new CrystalBall(GlobalMembers._ID("TIME", 3411), GlobalMembers._ID("BOMB", 3412), GlobalMembers._ID("", 3386), (int)MAINMENU_BUTTON_IDS.BTN_REALTIMEBOMB_ID, this, Bej3Widget.COLOR_CRYSTALBALL_FONT, ConstantsWP.MAIN_MENU_BUTTON_BLITZ_SCALE);
+			mButtons.Add(mRealTimeBombButton);
+			AddWidget(mRealTimeBombButton);
 			mLeaderBoardButton = new CrystalBall(GlobalMembers._ID("LeaderBoards", 3381), GlobalMembers._ID("", 3382), GlobalMembers._ID("", 3383), 7, this, Bej3Widget.COLOR_CRYSTALBALL_FONT, ConstantsWP.MAIN_MENU_BUTTON_BUTTERFLIES_SCALE - 0.3f);
 			mButtons.Add(mLeaderBoardButton);
 			AddWidget(mLeaderBoardButton);
@@ -152,9 +164,11 @@ namespace BejeweledLivePlus.UI
 			Bej3Widget.CenterWidgetAt(ConstantsWP.MAIN_MENU_BUTTON_CLASSIC_X, ConstantsWP.MAIN_MENU_BUTTON_BLITZ_Y + 410 + num, mBuyFullGameButton);
 			Bej3Widget.CenterWidgetAt(ConstantsWP.MAIN_MENU_BUTTON_CLASSIC_X, ConstantsWP.MAIN_MENU_BUTTON_BLITZ_Y + 250 + num, mAchievementButton);
 			Bej3Widget.CenterWidgetAt(ConstantsWP.MAIN_MENU_BUTTON_CLASSIC_X, ConstantsWP.MAIN_MENU_BUTTON_BLITZ_Y + 120 + num, mLeaderBoardButton);
-			Bej3Widget.CenterWidgetAt(ConstantsWP.MAIN_MENU_BUTTON_BUTTERFLIES_X + (int)(1.5f * ConstantsWP.MAIN_MENU_BUTTON_CLASSIC_X), ConstantsWP.MAIN_MENU_BUTTON_BUTTERFLIES_Y, mButterflyButton);
+			Bej3Widget.CenterWidgetAt(ConstantsWP.MAIN_MENU_BUTTON_BUTTERFLIES_X + (int)(1.55f * ConstantsWP.MAIN_MENU_BUTTON_CLASSIC_X), ConstantsWP.MAIN_MENU_BUTTON_BUTTERFLIES_Y + 30, mButterflyButton);
 			Bej3Widget.CenterWidgetAt(ConstantsWP.MAIN_MENU_BUTTON_BLITZ_X, ConstantsWP.MAIN_MENU_BUTTON_BLITZ_Y + num, mLightningButton);
-			Bej3Widget.CenterWidgetAt(ConstantsWP.MAIN_MENU_BUTTON_BUTTERFLIES_X + (int)(2.5f * ConstantsWP.MAIN_MENU_BUTTON_CLASSIC_X), ConstantsWP.MAIN_MENU_BUTTON_BUTTERFLIES_Y, mBlitzButton);
+			Bej3Widget.CenterWidgetAt(ConstantsWP.MAIN_MENU_BUTTON_BUTTERFLIES_X + (int)(2.45f * ConstantsWP.MAIN_MENU_BUTTON_CLASSIC_X), ConstantsWP.MAIN_MENU_BUTTON_BUTTERFLIES_Y + 30, mBlitzButton);
+			Bej3Widget.CenterWidgetAt(ConstantsWP.MAIN_MENU_BUTTON_BUTTERFLIES_X + (int)(1.35f * ConstantsWP.MAIN_MENU_BUTTON_CLASSIC_X), ConstantsWP.MAIN_MENU_BUTTON_BUTTERFLIES_Y - 160, mMatchBombButton);
+			Bej3Widget.CenterWidgetAt(ConstantsWP.MAIN_MENU_BUTTON_BUTTERFLIES_X + (int)(2.65f * ConstantsWP.MAIN_MENU_BUTTON_CLASSIC_X), ConstantsWP.MAIN_MENU_BUTTON_BUTTERFLIES_Y - 160, mRealTimeBombButton);
 			Bej3Widget.CenterWidgetAt(ConstantsWP.MAIN_MENU_BUTTON_CLASSIC_X, ConstantsWP.MAIN_MENU_BUTTON_CLASSIC_Y + num, mClassicButton);
 			Bej3Widget.CenterWidgetAt(ConstantsWP.MAIN_MENU_BUTTON_DIAMONDMINE_X, ConstantsWP.MAIN_MENU_BUTTON_DIAMONDMINE_Y + num, mDiamondMineButton);
 			Bej3Widget.CenterWidgetAt(ConstantsWP.MAIN_MENU_BUTTON_ZEN_X + 2 * ConstantsWP.MAIN_MENU_BUTTON_CLASSIC_X, ConstantsWP.MAIN_MENU_BUTTON_ZEN_Y + num + num2, mZenButton);
@@ -305,12 +319,18 @@ namespace BejeweledLivePlus.UI
 				break;
 			case 4:
 			{
-				GlobalMembers.gApp.GoToBlitz();
+				GlobalMembers.gApp.DoNewGame(GameMode.MODE_BLITZ);
 				Bej3Dialog bej3Dialog = (Bej3Dialog)GlobalMembers.gApp.GetDialog(48);
 				break;
 			}
 			case 5:
 				GlobalMembers.gApp.DoNewGame(GameMode.MODE_BUTTERFLY);
+				break;
+			case (int)MAINMENU_BUTTON_IDS.BTN_TIMEBOMB_ID:
+				GlobalMembers.gApp.DoNewGame(GameMode.MODE_TIMEBOMB);
+				break;
+			case (int)MAINMENU_BUTTON_IDS.BTN_REALTIMEBOMB_ID:
+				GlobalMembers.gApp.DoNewGame(GameMode.MODE_REALTIMEBOMB);
 				break;
 			case 6:
 			{

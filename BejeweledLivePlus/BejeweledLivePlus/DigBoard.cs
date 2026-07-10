@@ -195,9 +195,6 @@ namespace BejeweledLivePlus
 			if (mIsPerpetual && !flag && mGameOverCount > 0)
 			{
 				GlobalMembers.gApp.PlaySample(GlobalMembersResourcesWP.SOUND_DIAMOND_MINE_DEATH, 0, GlobalMembers.M(1.0));
-				(GlobalMembers.gApp.mMusicInterface as CustomBassMusicInterface).QueueEvent("FadeOut", $"{GetMusicName()}", false);
-				(GlobalMembers.gApp.mMusicInterface as CustomBassMusicInterface).QueueEvent("Play", $"{GetMusicName()}_lose", true);
-				// GlobalMembers.gApp.mMusic.PlaySongNoDelay(14, false);
 			}
 		}
 
@@ -787,22 +784,6 @@ namespace BejeweledLivePlus
 				mPowerGemThreshold = digGoal.mPowerGemThresholdDepth0;
 			}
 			Bej3Widget.SetOverlayType(OVERLAY_TYPE.OVERLAY_RUSTY);
-		}
-
-		public override void PlayMenuMusic(bool isRestart = false)
-		{
-			if (mGameOverCount == 0)
-			{
-				// GlobalMembers.gApp.mMusic.PlaySongNoDelay(13, true);
-				CustomBassMusicInterface theMusicInterface =
-					(CustomBassMusicInterface)(GlobalMembers.gApp.mMusicInterface);
-				if (isRestart || (theMusicInterface.mSongName != GetMusicName() &&
-				                  theMusicInterface.mSongName != $"{GetMusicName()}_lose"))
-				{
-					theMusicInterface.QueueEvent("FadeOut", theMusicInterface.mSongName, false);
-					theMusicInterface.QueueEvent("Play", GetMusicName(), true);
-				}
-			}
 		}
 
 		public override float GetGravityFactor()

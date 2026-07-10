@@ -731,18 +731,6 @@ namespace BejeweledLivePlus
 			base.KeyChar(theChar);
 		}
 
-		public override void PlayMenuMusic(bool isRestart = false)
-		{
-			CustomBassMusicInterface theMusicInterface =
-				(CustomBassMusicInterface)(GlobalMembers.gApp.mMusicInterface);
-			if (isRestart || theMusicInterface.mSongName != GetMusicName())
-			{
-				theMusicInterface.QueueEvent("FadeOut", theMusicInterface.mSongName, false);
-				theMusicInterface.QueueEvent("Play", GetMusicName(), true);
-			}
-			// GlobalMembers.gApp.mMusic.PlaySongNoDelay(4, true);
-		}
-
 		public override void InitUI()
 		{
 			base.InitUI();

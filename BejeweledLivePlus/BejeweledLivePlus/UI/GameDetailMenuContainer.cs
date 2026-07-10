@@ -190,6 +190,14 @@ namespace BejeweledLivePlus.UI
 				mStatsHeadingLabels[2].SetText(GlobalMembers._ID("Longest Cascade:", 3319));
 				mSpecialGemsHeadingLabel.SetText(GlobalMembers._ID("SPECIAL GEMS", 3301));
 				break;
+			case GameMode.MODE_TIMEBOMB:
+			case GameMode.MODE_REALTIMEBOMB:
+				mStatsHeadingLabels[0].SetText(GlobalMembers._ID("Bombs Defused:", 172));
+				mStatsHeadingLabels[1].SetText(GlobalMembers._ID("Best Move:", 160));
+				mStatsHeadingLabels[2].SetText(GlobalMembers._ID("Best Bomb Combo:", 173));
+				mStatsHeadingLabels[3].SetText(GlobalMembers._ID("Total Time:", 162));
+				mSpecialGemsHeadingLabel.SetText(GlobalMembers._ID("SPECIAL GEMS", 3301));
+				break;
 			}
 		}
 
@@ -216,6 +224,8 @@ namespace BejeweledLivePlus.UI
 			case GameMode.MODE_LIGHTNING:
 			case GameMode.MODE_BUTTERFLY:
 			case GameMode.MODE_POKER:
+			case GameMode.MODE_TIMEBOMB:
+			case GameMode.MODE_REALTIMEBOMB:
 			{
 				Bej3Widget.DrawImageCentered(g, GlobalMembersResourcesWP.IMAGE_DIALOG_ICON_FLAME_LRG, 0, ConstantsWP.GAMEDETAILMENU_POST_GAME_INLAY_1_GEM_POS_1_X + gAMEDETAILMENU_POST_GAME_TAB_WIDTH, ConstantsWP.GAMEDETAILMENU_POST_GAME_INLAY_FLAME_GEM_POS_Y);
 				Bej3Widget.DrawImageCentered(g, GlobalMembersResourcesWP.IMAGE_DIALOG_ICON_STAR_LRG, 0, ConstantsWP.GAMEDETAILMENU_POST_GAME_INLAY_1_GEM_POS_2_X + gAMEDETAILMENU_POST_GAME_TAB_WIDTH, ConstantsWP.GAMEDETAILMENU_POST_GAME_INLAY_STAR_GEM_POS_Y);
@@ -386,6 +396,16 @@ namespace BejeweledLivePlus.UI
 				mSpecialStatsStrings[0] = string.Format(GlobalMembers._ID("x {0}", 3331), theBoard.mGameStats[17]);
 				mSpecialStatsStrings[1] = string.Format(GlobalMembers._ID("x {0}", 3332), theBoard.mGameStats[18]);
 				mSpecialStatsStrings[2] = string.Format(GlobalMembers._ID("x {0}", 3333), theBoard.mGameStats[19]);
+				break;
+			case GameMode.MODE_TIMEBOMB:
+			case GameMode.MODE_REALTIMEBOMB:
+				mStatsLabels[0].SetText(SexyFramework.Common.CommaSeperate(theBoard.mGameStats[38]));
+				mStatsLabels[1].SetText(SexyFramework.Common.CommaSeperate(theBoard.mGameStats[25]));
+				mStatsLabels[2].SetText(SexyFramework.Common.CommaSeperate(theBoard.mGameStats[39]));
+				mStatsLabels[3].SetText(Utils.GetTimeString(theBoard.mGameStats[0]));
+				mSpecialStatsStrings[0] = string.Format(GlobalMembers._ID("x {0}", 3325), theBoard.mGameStats[17]);
+				mSpecialStatsStrings[1] = string.Format(GlobalMembers._ID("x {0}", 3326), theBoard.mGameStats[18]);
+				mSpecialStatsStrings[2] = string.Format(GlobalMembers._ID("x {0}", 3327), theBoard.mGameStats[19]);
 				break;
 			}
 			mRankBarWidget1.Shown(theBoard);

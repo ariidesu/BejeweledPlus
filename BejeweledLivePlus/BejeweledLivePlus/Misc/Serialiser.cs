@@ -208,7 +208,14 @@ namespace BejeweledLivePlus.Misc
 			GameSessionIdClassic,
 			GameSessionIdZen,
 			GameSessionIdDiamondMine,
-			GameSessionIdButterfly
+			GameSessionIdButterfly,
+			TimeBombMaxBombs,
+			TimeBombCurMaxBombsPerUpdate,
+			TimeBombDropCountdown,
+			TimeBombCurDropCountDownPerUpdate,
+			TimeBombBombCount,
+			TimeBombBombDropCountdown,
+			TimeBombBombCountdown
 		}
 
 		public enum Platforms

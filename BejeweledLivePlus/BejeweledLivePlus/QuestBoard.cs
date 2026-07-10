@@ -433,7 +433,7 @@ namespace BejeweledLivePlus
 			{
 				return mQuestGoal.WantWarningGlow();
 			}
-			return base.WantWarningGlow();
+			return base.WantWarningGlow(forSound);
 		}
 
 		public virtual void DoEndLevelDialog()

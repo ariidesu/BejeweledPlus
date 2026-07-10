@@ -304,18 +304,6 @@ namespace BejeweledLivePlus
 		{
 		}
 
-		public override void PlayMenuMusic(bool isRestart = false)
-		{
-			CustomBassMusicInterface theMusicInterface =
-				(CustomBassMusicInterface)(GlobalMembers.gApp.mMusicInterface);
-			if (isRestart || theMusicInterface.mSongName != GetMusicName())
-			{
-				theMusicInterface.QueueEvent("FadeOut", theMusicInterface.mSongName, false);
-				theMusicInterface.QueueEvent("Play", GetMusicName(), true);
-			}
-			// GlobalMembers.gApp.mMusic.PlaySongNoDelay(5, true);
-		}
-
 		public override void SetupBackground(int theDeltaIdx)
 		{
 			string empty = string.Empty;
@@ -438,9 +426,6 @@ namespace BejeweledLivePlus
 		{
 			if (!mCountingForGameOver)
 			{
-				(GlobalMembers.gApp.mMusicInterface as CustomBassMusicInterface).QueueEvent("FadeOut", GetMusicName(), false);
-				(GlobalMembers.gApp.mMusicInterface as CustomBassMusicInterface).QueueEvent("Play", $"{GetMusicName()}_lose", true);
-				// GlobalMembers.gApp.mMusic.PlaySongNoDelay(6, false);
 				mSpotOnSpider = true;
 				mCountingForGameOver = true;
 				mGameOverCountdown = 200;

@@ -862,8 +862,8 @@ namespace BejeweledLivePlus
 		public void StampOverlay()
 		{
 			string theString = $"{mCounter}";
-			ImageFont imageFont = (ImageFont)GlobalMembersResources.FONT_SCORE;
-			Utils.SetFontLayerColor(imageFont, "Layer_3", new Color(0, 0, 0, 128));
+			ImageFont imageFont = (ImageFont)GlobalMembersResources.FONT_SUBHEADER;
+			// Utils.SetFontLayerColor(imageFont, "Layer_3", new Color(0, 0, 0, 128));
 			int num = (int)((float)imageFont.StringWidth(theString) * GlobalMembers.M(1.5f));
 			int num2 = Math.Max(GlobalMembers.S(100), imageFont.mHeight - imageFont.mAscent) + GlobalMembers.S(18);
 			if (mOverlay == null)
@@ -878,11 +878,8 @@ namespace BejeweledLivePlus
 				mOverlayGlow.SetImageMode(true, true);
 				mOverlayGlow.ReplaceImageFlags(128u);
 			}
-			if (num > mOverlay.mWidth || num2 > mOverlay.mHeight)
-			{
-				mOverlay.Create(num, num2);
-				mOverlayGlow.Create(num, num2);
-			}
+			mOverlay.Create(num, num2);
+			mOverlayGlow.Create(num, num2);
 			Graphics graphics = new Graphics(mOverlay);
 			graphics.SetColorizeImages(true);
 			Color color = default(Color);
@@ -890,32 +887,37 @@ namespace BejeweledLivePlus
 			color.mRed /= 2;
 			color.mGreen /= 2;
 			color.mBlue /= 2;
+			color.mAlpha = 190;
 			graphics.SetFont(imageFont);
-			imageFont.PushLayerColor(0, Color.Black);
-			imageFont.PushLayerColor(1, color);
-			imageFont.PushLayerColor(2, Color.White);
-			imageFont.PushLayerColor(3, Color.White);
-			int theX = (mOverlay.mWidth - graphics.StringWidth(theString)) / 2 + GlobalMembers.MS(0);
-			int theY = mOverlay.mHeight / 2 + graphics.GetFont().mHeight - graphics.GetFont().mAscent + GlobalMembers.MS(28);
+			// imageFont.PushLayerColor(0, Color.Black);
+			// imageFont.PushLayerColor(1, color);
+			// imageFont.PushLayerColor(2, Color.White);
+			// imageFont.PushLayerColor(3, Color.White);
+			Utils.SetFontLayerColor(imageFont, 1, Color.White);
+			Utils.SetFontLayerColor(imageFont, 0, color);
+			int theX = (mOverlay.mWidth - graphics.StringWidth(theString)) / 2 + GlobalMembers.MS(4);
+			int theY = mOverlay.mHeight / 2 + graphics.GetFont().mHeight - graphics.GetFont().mAscent + GlobalMembers.MS(21);
 			graphics.SetColor(new Color(255, 255, 255));
 			graphics.DrawString(theString, theX, theY);
-			imageFont.PopLayerColor(0);
-			imageFont.PopLayerColor(1);
-			imageFont.PopLayerColor(2);
-			imageFont.PopLayerColor(3);
-			imageFont.PushLayerColor(0, Color.Black);
-			imageFont.PushLayerColor(1, Color.White);
-			imageFont.PushLayerColor(2, new Color(255, 0, 0));
-			imageFont.PushLayerColor(3, new Color(255, 0, 0));
+			// imageFont.PopLayerColor(0);
+			// imageFont.PopLayerColor(1);
+			// imageFont.PopLayerColor(2);
+			// imageFont.PopLayerColor(3);
+			// imageFont.PushLayerColor(0, Color.Black);
+			// imageFont.PushLayerColor(1, Color.White);
+			// imageFont.PushLayerColor(2, new Color(255, 0, 0));
+			// imageFont.PushLayerColor(3, new Color(255, 0, 0));
+			Utils.SetFontLayerColor(imageFont, 1, Color.Red);
+			Utils.SetFontLayerColor(imageFont, 0, Color.White);
 			Graphics graphics2 = new Graphics(mOverlayGlow);
 			graphics2.SetColorizeImages(true);
 			graphics2.SetFont(imageFont);
 			graphics2.SetColor(new Color(255, 255, 255));
 			graphics2.DrawString(theString, theX, theY);
-			imageFont.PopLayerColor(0);
-			imageFont.PopLayerColor(1);
-			imageFont.PopLayerColor(2);
-			imageFont.PopLayerColor(3);
+			// imageFont.PopLayerColor(0);
+			// imageFont.PopLayerColor(1);
+			// imageFont.PopLayerColor(2);
+			// imageFont.PopLayerColor(3);
 			if (mCounter <= 8)
 			{
 				float num3 = Math.Max(1, 8 - mCounter);

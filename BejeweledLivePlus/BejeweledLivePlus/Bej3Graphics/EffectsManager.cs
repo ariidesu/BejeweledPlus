@@ -77,6 +77,12 @@ namespace BejeweledLivePlus.Bej3Graphics
 			base.Dispose();
 		}
 
+		public Image GetHeightImage(Graphics g)
+		{
+			CreateDistortionMap(g);
+			return mHeightImage;
+		}
+
 		public void CreateDistortionMap(Graphics g)
 		{
 			if (mHeightImage != null && (mHeightImage.mWidth != GlobalMembers.gApp.mScreenBounds.mWidth / 2 || mHeightImage.mHeight != GlobalMembers.gApp.mScreenBounds.mHeight / 2))
@@ -561,7 +567,7 @@ namespace BejeweledLivePlus.Bej3Graphics
 
 		public override void DrawOverlay(Graphics g)
 		{
-			if (mBoard != null && mAlpha > 0f && !mBoard.mKilling && !mBoard.mIsWholeGameReplay && !mBoard.mSuspendingGame && (mDistortEffectList.Count > 0 || (mHeightImageDirty && mWidgetManager.mImage == g.mDestImage)))
+			if (mBoard != null && mAlpha > 0f && !mBoard.mKilling && !mBoard.mIsWholeGameReplay && !mBoard.mSuspendingGame && (mDistortEffectList.Count > 0 || (mHeightImageDirty && (mWidgetManager == null || mWidgetManager.mImage == g.mDestImage))))
 			{
 				Graphics3D graphics3D = g.Get3D();
 				if (graphics3D != null && graphics3D.SupportsPixelShaders())
@@ -1129,10 +1135,10 @@ namespace BejeweledLivePlus.Bej3Graphics
 			float pv4 = (theSrcRect.mY + theSrcRect.mHeight - negH) / visH;
 			SexyVertex2D[] theVertices = new SexyVertex2D[4]
 			{
-				new SexyVertex2D(theDestRect.mX + g.mTransX - 0.5f, theDestRect.mY - 0.5f, pu3, pv3, pu, pv),
-				new SexyVertex2D(theDestRect.mX + g.mTransX + theDestRect.mWidth - 0.5f, theDestRect.mY - 0.5f, pu4, pv3, pu2, pv),
-				new SexyVertex2D(theDestRect.mX + g.mTransX - 0.5f, theDestRect.mY + theDestRect.mHeight - 0.5f, pu3, pv4, pu, pv2),
-				new SexyVertex2D(theDestRect.mX + g.mTransX + theDestRect.mWidth - 0.5f, theDestRect.mY + theDestRect.mHeight - 0.5f, pu4, pv4, pu2, pv2)
+				new SexyVertex2D(theDestRect.mX + g.mTransX, theDestRect.mY, pu3, pv3, pu, pv),
+				new SexyVertex2D(theDestRect.mX + g.mTransX + theDestRect.mWidth, theDestRect.mY, pu4, pv3, pu2, pv),
+				new SexyVertex2D(theDestRect.mX + g.mTransX, theDestRect.mY + theDestRect.mHeight, pu3, pv4, pu, pv2),
+				new SexyVertex2D(theDestRect.mX + g.mTransX + theDestRect.mWidth, theDestRect.mY + theDestRect.mHeight, pu4, pv4, pu2, pv2)
 			};
 			g.Get3D().SetTexture(0, theImage);
 			g.Get3D().DrawPrimitive(708u, Graphics3D.EPrimitiveType.PT_TriangleStrip, theVertices, 2, theColor, 0, 0f, 0f, true, 0u);
@@ -1140,9 +1146,6 @@ namespace BejeweledLivePlus.Bej3Graphics
 
 		public void RenderDistortEffects(Graphics g)
 		{
-			if (mDistortEffectList.Count == 0)
-				return;
-
 			CreateDistortionMap(g);
 			if (mHeightImage == null)
 			{
@@ -1163,8 +1166,6 @@ namespace BejeweledLivePlus.Bej3Graphics
 			graphics3D2.SetTextureLinearFilter(1, true);
 			graphics3D2.SetTextureWrap(0, true);
 			graphics3D2.SetTextureWrap(1, true);
-			graphics3D2.ClearColorBuffer(new Color(128, 128, 128, 255));
-			graphics.FillRect(0, 0, mHeightImage.mWidth, mHeightImage.mHeight);
 			graphics.SetColorizeImages(true);
 			graphics.SetColor(Color.White);
 			RenderEffect effect = graphics3D.GetEffect(GlobalMembersResourcesWP.EFFECT_WAVE);
@@ -1239,6 +1240,8 @@ namespace BejeweledLivePlus.Bej3Graphics
 			}
 			SharedRenderTarget sharedRenderTarget2 = new SharedRenderTarget();
 			Image theImage = sharedRenderTarget2.LockScreenImage("DistortQuadA");
+			g.SetColor(Color.White);
+			graphics3D.SetBlend(Graphics3D.EBlendMode.BLEND_ONE, Graphics3D.EBlendMode.BLEND_ZERO);
 			graphics3D.SetTextureLinearFilter(0, true);
 			graphics3D.SetTextureLinearFilter(1, true);
 			effect = graphics3D.GetEffect(GlobalMembersResourcesWP.EFFECT_SCREEN_DISTORT);
@@ -1251,6 +1254,7 @@ namespace BejeweledLivePlus.Bej3Graphics
 			{
 				while (!renderEffectAutoState3.IsDone())
 				{
+					renderEffectAutoState3.MG_StartPass();
 					for (int i = 0; i < num5; i++)
 					{
 						Board.DistortionQuad distortionQuad = mBoard.mDistortionQuads[i];

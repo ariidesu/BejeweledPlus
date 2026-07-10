@@ -976,6 +976,16 @@ namespace BejeweledLivePlus
 			mSuspendingGame = false;
 		}
 
+		public override void PlayMenuMusic(bool isRestart = false)
+		{
+			CustomBassMusicInterface theMusicInterface = (CustomBassMusicInterface)GlobalMembers.gApp.mMusicInterface;
+			if (isRestart || (theMusicInterface.mSongName != GetMusicName() && theMusicInterface.mSongName != GetMusicName() + "_lose"))
+			{
+				theMusicInterface.QueueEvent("FadeOut", theMusicInterface.mSongName, false);
+				theMusicInterface.QueueEvent("Play", GetMusicName(), true);
+			}
+		}
+
 		public virtual void UnloadContent()
 		{
 			mContentLoaded = false;
@@ -3499,6 +3509,9 @@ namespace BejeweledLivePlus
 				HideReplayWidget();
 				mHasReplayData = false;
 				mGameOverCount = 1;
+				CustomBassMusicInterface theMusicInterface = (CustomBassMusicInterface)GlobalMembers.gApp.mMusicInterface;
+				theMusicInterface.QueueEvent("Break", "", false);
+				theMusicInterface.QueueEvent("Play", GetMusicName() + "_lose", false);
 				CalcBadges();
 				GlobalMembers.gApp.mProfile.mTotalGamesPlayed++;
 				GlobalMembers.gApp.mProfile.WriteProfile();
@@ -7192,7 +7205,8 @@ namespace BejeweledLivePlus
 				{
 					mNOfIntentionalMatchesDuringCascade++;
 				}
-				MaxStat(39, mNOfIntentionalMatchesDuringCascade);
+				// unused, plus 39 is for TimeBomb already
+				// MaxStat(39, mNOfIntentionalMatchesDuringCascade);
 				AddToStat(26, 1, matchSet2.mMoveCreditId);
 				int num50 = Math.Max(1, GetMoveStat(matchSet2.mMoveCreditId, 26));
 				num49 = 50 * num50 + (count - 3) * 50;
@@ -10665,7 +10679,7 @@ namespace BejeweledLivePlus
 			}
 			if (mHintButton != null)
 			{
-				mHintButton.mVisible = (double)mSideXOff == 0.0 && (double)mScale >= 0.8;
+				mHintButton.mVisible = (double)mSideXOff == 0.0 && (double)mScale >= 0.8 && mGameOverPiece == null;
 			}
 			if ((double)mAlpha == 0.0 && mKilling && GlobalMembers.gApp.mBoard == this)
 			{
@@ -11219,7 +11233,7 @@ namespace BejeweledLivePlus
 				int num13 = (int)((float)thePiece.mOverlay.mHeight * num11);
 				g.SetDrawMode(Graphics.DrawMode.Normal);
 				g.SetColorizeImages(true);
-				int num14 = (int)((double)(GlobalMembers.S(num5 + 50) - num12 / 2) + (double)thePiece.mScale * (double)GlobalMembers.MS(0));
+				int num14 = (int)((double)(GlobalMembers.S(num5 + 49) - num12 / 2) + (double)thePiece.mScale * (double)GlobalMembers.MS(0));
 				int theY = (int)((float)GlobalMembers.S(num6 + 50) - (float)num13 * GlobalMembers.M(0.65f));
 				int num15 = (int)((double)GlobalMembers.M(255) * (double)thePiece.mAlpha);
 				g.SetColor(Color.White);
@@ -11622,24 +11636,25 @@ namespace BejeweledLivePlus
 			}
 			if (mGameOverPiece != null)
 			{
-				if (graphics3D != null)
+				if (graphics3D != null && mShowBoard)
 				{
-					graphics3D.SetMasking(Graphics3D.EMaskMode.MASKMODE_TEST_INSIDE);
 					g.SetColor(Color.White);
-					if (mShowBoard)
-					{
-						// g.DrawImage(GlobalMembersResourcesWP.IMAGE_BOOM_FTOP_WIDGET, (int)GlobalMembers.S(GlobalMembersResourcesWP.ImgXOfs(GlobalMembersResourcesWP.GetIdByImage(GlobalMembersResourcesWP.IMAGE_BOOM_FTOP_WIDGET))), (int)GlobalMembers.S(GlobalMembersResourcesWP.ImgYOfs(GlobalMembersResourcesWP.GetIdByImage(GlobalMembersResourcesWP.IMAGE_BOOM_FTOP_WIDGET))));
-						// g.DrawImage(GlobalMembersResourcesWP.IMAGE_BOOM_FBOTTOM_WIDGET, (int)GlobalMembers.S(GlobalMembersResourcesWP.ImgXOfs(GlobalMembersResourcesWP.GetIdByImage(GlobalMembersResourcesWP.IMAGE_BOOM_FBOTTOM_WIDGET))), (int)GlobalMembers.S(GlobalMembersResourcesWP.ImgYOfs(GlobalMembersResourcesWP.GetIdByImage(GlobalMembersResourcesWP.IMAGE_BOOM_FBOTTOM_WIDGET))));
-						// g.DrawImage(GlobalMembersResourcesWP.IMAGE_BOOM_BOARD, GlobalMembers.S(GetColScreenX(0) + GlobalMembers.M(0)), GlobalMembers.S(GetRowScreenY(0) + GlobalMembers.M(-20)));
-						// g.PushState();
-						// g.ClipRect(GlobalMembers.S(GetColScreenX(0) + GlobalMembers.M(0)), GlobalMembers.S(GetRowScreenY(0) + GlobalMembers.M(-20)), GlobalMembers.S(800), GlobalMembers.S(800));
-						// g.DrawImage(GlobalMembersResourcesWP.IMAGE_BOOM_CRATER, (int)(GlobalMembers.S(mGameOverPiece.CX()) - (float)(GlobalMembersResourcesWP.IMAGE_BOOM_CRATER.mWidth / 2)), (int)(GlobalMembers.S(mGameOverPiece.CY()) - (float)(GlobalMembersResourcesWP.IMAGE_BOOM_CRATER.mHeight / 2)));
-						// g.PopState();
-						// g.DrawImage(GlobalMembersResourcesWP.IMAGE_BOOM_FGRIDBAR_TOP, GlobalMembers.S(GetColScreenX(0)) + GlobalMembers.MS(-16), GlobalMembers.S(GetRowScreenY(0)) + GlobalMembers.MS(-33));
-						// g.DrawImage(GlobalMembersResourcesWP.IMAGE_BOOM_FGRIDBAR_BOT, GlobalMembers.S(GetColScreenX(0)) + GlobalMembers.MS(-7), GlobalMembers.S(GetRowScreenY(8)) + GlobalMembers.MS(-7));
-					}
+					g.SetDrawMode(Graphics.DrawMode.Normal);
+					graphics3D.ClearMask();
+					graphics3D.SetMasking(Graphics3D.EMaskMode.MASKMODE_WRITE_MASKONLY, 0, 0.25f, 0.5f);
+					Transform maskTransform = new Transform();
+					maskTransform.Scale((float)((double)mNovaRadius * (double)GlobalMembers.M(0.93f)), (float)((double)mNovaRadius * (double)GlobalMembers.M(0.93f)));
+					g.SetColor(Color.White);
+					g.DrawImageTransform(GlobalMembersResourcesWP.IMAGE_BOOM_NUKE, maskTransform, (int)GlobalMembers.S(mGameOverPiece.CX()), (int)GlobalMembers.S(mGameOverPiece.CY()));
+					graphics3D.SetMasking(Graphics3D.EMaskMode.MASKMODE_TEST_INSIDE, 0, 0.25f, 0.5f);
+					g.SetColor(Color.White);
+					g.DrawImage(GlobalMembersResourcesWP.IMAGE_BOOM_FBOTTOM_WIDGET, mHintButton.mX + GlobalMembers.MS(30), mHintButton.mY + GlobalMembers.MS(-20));
+					g.DrawImage(GlobalMembersResourcesWP.IMAGE_BOOM_BOARD, GlobalMembers.S(GetColScreenX(0)), GlobalMembers.S(GetRowScreenY(0)));
+					g.DrawImage(GlobalMembersResourcesWP.IMAGE_BOOM_CRATER, (int)(GlobalMembers.S(mGameOverPiece.CX()) - (float)(GlobalMembersResourcesWP.IMAGE_BOOM_CRATER.mWidth / 2)), (int)(GlobalMembers.S(mGameOverPiece.CY()) - (float)(GlobalMembersResourcesWP.IMAGE_BOOM_CRATER.mHeight / 2)));
+					g.DrawImage(GlobalMembersResourcesWP.IMAGE_BOOM_FGRIDBAR_TOP, GlobalMembers.S(GetColScreenX(0)), GlobalMembers.S(GetRowScreenY(0)) + GlobalMembers.MS(-7));
+					g.DrawImage(GlobalMembersResourcesWP.IMAGE_BOOM_FGRIDBAR_BOT, GlobalMembers.S(GetColScreenX(0)), GlobalMembers.S(GetRowScreenY(8)) + GlobalMembers.MS(-7));
+					graphics3D.SetMasking(Graphics3D.EMaskMode.MASKMODE_NONE, 0, 0.25f, 0.5f);
 				}
-				graphics3D?.SetMasking(Graphics3D.EMaskMode.MASKMODE_NONE);
 				if (mShowBoard)
 				{
 					DrawPiece(g, mGameOverPiece, (float)(double)mGameOverPieceScale);
@@ -11848,6 +11863,141 @@ namespace BejeweledLivePlus
 		public void DrawDistortion(Graphics g)
 		{
 			mDistortionPieces.Clear();
+			mDistortionQuads.Clear();
+			if (mSuspendingGame || mKilling)
+			{
+				return;
+			}
+			Graphics3D graphics3D = g.Get3D();
+			if (graphics3D == null || !graphics3D.SupportsPixelShaders())
+			{
+				return;
+			}
+			foreach (Piece piece in mBoard)
+			{
+				if (piece != null && piece != mGameOverPiece && piece.IsFlagSet(512u) && piece.mCounter <= 8)
+				{
+					mDistortionPieces.Add(piece);
+				}
+			}
+			if (mDistortionPieces.Count == 0)
+			{
+				return;
+			}
+			Image image = mPostFXManager.GetHeightImage(g);
+			if (image == null)
+			{
+				return;
+			}
+			Graphics graphics = new Graphics(image);
+			Graphics3D graphics3D2 = graphics.Get3D();
+			graphics.PushState();
+			graphics.mTransX = 0f;
+			graphics.mTransY = 0f;
+			graphics3D2.SetTextureWrap(0, true);
+			graphics3D2.SetTextureLinearFilter(0, true);
+			graphics3D2.SetTextureLinearFilter(1, true);
+			graphics.SetColorizeImages(true);
+			float sx = (float)image.mWidth / (float)GlobalMembers.gApp.mScreenBounds.mWidth;
+			float sy = (float)image.mHeight / (float)GlobalMembers.gApp.mScreenBounds.mHeight;
+			int tick = (int)GlobalMembers.gApp.mUpdateCount;
+			Image heatImage = GlobalMembersResourcesWP.IMAGE_HEAT_DISTORTION;
+			Image maskImage = GlobalMembersResourcesWP.IMAGE_SHADER_TEST;
+			float shTestH = (float)maskImage.mHeight;
+			RenderEffect effect = graphics3D2.GetEffect(GlobalMembersResourcesWP.EFFECT_MASK);
+			using (RenderEffectAutoState renderEffectAutoState = new RenderEffectAutoState(graphics, effect))
+			{
+				while (!renderEffectAutoState.IsDone())
+				{
+					renderEffectAutoState.MG_StartPass();
+					graphics3D2.SetTexture(0, heatImage);
+					graphics3D2.SetTexture(1, maskImage);
+					foreach (Piece piece2 in mDistortionPieces)
+					{
+						float v20 = (float)piece2.mCounter / 9f;
+						float v21 = 1f - v20;
+						int num2 = (int)(v21 * 28f + 10f);
+						if (num2 < 0)
+						{
+							num2 = 0;
+						}
+						if (num2 > 255)
+						{
+							num2 = 255;
+						}
+						uint color = (uint)((num2 << 24) | 0xFFFFFF);
+						int v22 = (int)(v20 * 85f);
+						if (v22 < 55)
+						{
+							v22 = 55;
+						}
+						float v217 = 1f - (float)(tick % v22) / (float)v22;
+						float cx = GlobalMembers.S(piece2.CX());
+						float cy = GlobalMembers.S(piece2.CY());
+						float rInner = GlobalMembers.S(100f);
+						float f226 = Math.Min(3.15f, 2f * v21 + 2f);
+						float f224 = Math.Min(4.4f, 2f * v21 + 2.5f);
+						for (int seg = 0; seg < 4; seg++)
+						{
+							float baseAng = (float)seg * 1.57079633f + 0.785398163f;
+							float aOutHi = baseAng + 0.471238917f;
+							float aInHi = baseAng + 0.251327407f;
+							float aInLo = baseAng - 0.251327407f;
+							float aOutLo = baseAng - 0.471238917f;
+							SexyVertex2D[] theVertices = new SexyVertex2D[5]
+							{
+								new SexyVertex2D((cx + (float)Math.Cos(aOutHi) * f226 * shTestH) * sx - 0.5f, (cy + (float)Math.Sin(aOutHi) * f226 * shTestH) * sy - 0.5f, color, 1f, v217 + 1f, 1f, 1f),
+								new SexyVertex2D((cx + (float)Math.Cos(aInHi) * rInner) * sx - 0.5f, (cy + (float)Math.Sin(aInHi) * rInner) * sy - 0.5f, color, 0.7f, v217, 1f, 0f),
+								new SexyVertex2D((cx + (float)Math.Cos(baseAng) * f224 * shTestH) * sx - 0.5f, (cy + (float)Math.Sin(baseAng) * f224 * shTestH) * sy - 0.5f, color, 0.5f, v217 + 1f, 0.5f, 1f),
+								new SexyVertex2D((cx + (float)Math.Cos(aInLo) * rInner) * sx - 0.5f, (cy + (float)Math.Sin(aInLo) * rInner) * sy - 0.5f, color, 0.3f, v217, 0f, 0f),
+								new SexyVertex2D((cx + (float)Math.Cos(aOutLo) * f226 * shTestH) * sx - 0.5f, (cy + (float)Math.Sin(aOutLo) * f226 * shTestH) * sy - 0.5f, color, 0f, v217 + 1f, 0f, 1f)
+							};
+							graphics3D2.DrawPrimitiveEx(708u, Graphics3D.EPrimitiveType.PT_TriangleStrip, theVertices, 3, Color.White, 0, 0f, 0f, true, 0u);
+						}
+					}
+					renderEffectAutoState.NextPass();
+				}
+			}
+			graphics.PopState();
+			mPostFXManager.mHeightImageDirty = true;
+			bool[,] grid = new bool[8, 8];
+			foreach (Piece piece3 in mDistortionPieces)
+			{
+				for (int dr = -1; dr <= 1; dr++)
+				{
+					for (int dc = -1; dc <= 1; dc++)
+					{
+						int r = piece3.mRow + dr;
+						int c = piece3.mCol + dc;
+						if (r >= 0 && r < 8 && c >= 0 && c < 8)
+						{
+							grid[r, c] = true;
+						}
+					}
+				}
+			}
+			for (int row = 0; row < 8; row++)
+			{
+				int col = 0;
+				while (col < 8)
+				{
+					if (!grid[row, col])
+					{
+						col++;
+						continue;
+					}
+					int start = col;
+					while (col < 8 && grid[row, col])
+					{
+						col++;
+					}
+					mDistortionQuads.Add(new DistortionQuad(
+						GlobalMembers.S(GetColScreenX(start)),
+						GlobalMembers.S(GetRowScreenY(row)),
+						GlobalMembers.S(GetColScreenX(col)),
+						GlobalMembers.S(GetRowScreenY(row + 1))));
+				}
+			}
 		}
 
 		public virtual void DrawPieces(Graphics g)
@@ -11979,6 +12129,7 @@ namespace BejeweledLivePlus
 					DrawPiece(g, swapData.mPiece2, 1f - num5);
 				}
 			}
+			DrawDistortion(g);
 			if (mCursorSelectPos.mX != -1 && GetSelectedPiece() == null)
 			{
 				g.SetColorizeImages(true);
@@ -12078,7 +12229,7 @@ namespace BejeweledLivePlus
 			{
 				return;
 			}
-			Graphics3D graphics3D = null;
+			Graphics3D graphics3D = g.Get3D();
 			if (mNeedsMaskCleared)
 			{
 				graphics3D?.ClearMask();

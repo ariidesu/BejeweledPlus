@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using SexyFramework.Graphics;
 using SexyFramework.Misc;
@@ -15,7 +15,7 @@ namespace BejeweledLivePlus
 
 		internal static Dictionary<object, int> gVarToIdMap = new Dictionary<object, int>();
 
-		internal static Point[] gImgOffsets = new Point[1841];
+		internal static Point[] gImgOffsets = new Point[1843];
 
 		public static object gVarToIdMapCrit = new object();
 
@@ -1143,6 +1143,8 @@ namespace BejeweledLivePlus
 
 		public static Image IMAGE_SHADER_TEST;
 
+		public static Image IMAGE_HEAT_DISTORTION;
+
 		public static Image IMAGE_LIGHTNING;
 		
 		public static Image IMAGE_LIGHTNING_CLONE;
@@ -2108,6 +2110,8 @@ namespace BejeweledLivePlus
 		public static Image IMAGE_BOMBGLOWS_DANGERGLOW;
 
 		public static Image IMAGE_BOMBGLOWS_GLOW;
+
+		public static Image IMAGE_INGAMEUI_TIMEBOMB_BOMB;
 
 		public static Image ATLASIMAGE_ATLAS_GAMEPLAYQUEST_TIMEBOMB_960_00;
 
@@ -3705,7 +3709,7 @@ namespace BejeweledLivePlus
 
 		public static Image IMAGE_HEATWAVE;
 
-		internal static ResGlobalPtr[] gResources = new ResGlobalPtr[1841];
+		internal static ResGlobalPtr[] gResources = new ResGlobalPtr[1843];
 
 		internal static uint[] gResourceLocales = new uint[6] { 1145390149u, 1162761555u, 1163085139u, 1179797074u, 1230260564u, 0u };
 
@@ -3719,7 +3723,7 @@ namespace BejeweledLivePlus
 			if (!InitResourceManager_sAlreadyRun || forceRun)
 			{
 				InitResourceManager_sAlreadyRun = true;
-				for (int i = 0; i < 1841; i++)
+				for (int i = 0; i < 1843; i++)
 				{
 					ResGlobalPtr resGlobalPtr = theManager.RegisterGlobalPtr(GetStringIdById(i));
 					gResources[i] = resGlobalPtr;
@@ -8636,6 +8640,11 @@ namespace BejeweledLivePlus
 				IMAGE_FLAMEGEMEXPLODE_FLAMEEXPLODETEST_LAYER_1 = GetImageThrow(theManager, 832, "IMAGE_FLAMEGEMEXPLODE_FLAMEEXPLODETEST_LAYER_1", 960, 0, true);
 				IMAGE_BOOM_NOVA = GetImageThrow(theManager, 833, "IMAGE_BOOM_NOVA", 960, 0);
 				IMAGE_BOOM_NUKE = GetImageThrow(theManager, 834, "IMAGE_BOOM_NUKE", 960, 0);
+				IMAGE_BOOM_BOARD = GetImageThrow(theManager, 1406, "IMAGE_BOOM_BOARD", 960, 0);
+				IMAGE_BOOM_CRATER = GetImageThrow(theManager, 1407, "IMAGE_BOOM_CRATER", 960, 0);
+				IMAGE_BOOM_FBOTTOM_WIDGET = GetImageThrow(theManager, 1408, "IMAGE_BOOM_FBOTTOM_WIDGET", 960, 0);
+				IMAGE_BOOM_FGRIDBAR_BOT = GetImageThrow(theManager, 1409, "IMAGE_BOOM_FGRIDBAR_BOT", 960, 0);
+				IMAGE_BOOM_FGRIDBAR_TOP = GetImageThrow(theManager, 1410, "IMAGE_BOOM_FGRIDBAR_TOP", 960, 0);
 				IMAGE_BOARD_IRIS = GetImageThrow(theManager, 835, "IMAGE_BOARD_IRIS", 960, 0);
 				IMAGE_GEMS_SHADOWED = GetImageThrow(theManager, 836, "IMAGE_GEMS_SHADOWED", 960, 0);
 				IMAGE_GEM_FRUIT_SPARK = GetImageThrow(theManager, 837, "IMAGE_GEM_FRUIT_SPARK", 960, 0);
@@ -8655,6 +8664,7 @@ namespace BejeweledLivePlus
 				IMAGE_HYPERCUBE_COLORGLOW = GetImageThrow(theManager, 851, "IMAGE_HYPERCUBE_COLORGLOW", 960, 0);
 				IMAGE_HYPERCUBE_FRAME = GetImageThrow(theManager, 852, "IMAGE_HYPERCUBE_FRAME", 960, 0);
 				IMAGE_SHADER_TEST = GetImageThrow(theManager, 853, "IMAGE_SHADER_TEST", 960, 0);
+				IMAGE_HEAT_DISTORTION = GetImageThrow(theManager, 1841, "IMAGE_HEAT_DISTORTION", 960, 0);
 				IMAGE_LIGHTNING = GetImageThrow(theManager, 854, "IMAGE_LIGHTNING", 960, 0);
 				IMAGE_GRITTYBLURRY = GetImageThrow(theManager, 855, "IMAGE_GRITTYBLURRY", 960, 0);
 				IMAGE_LIGHTNING_CENTER = GetImageThrow(theManager, 856, "IMAGE_LIGHTNING_CENTER", 960, 0);
@@ -10097,6 +10107,7 @@ namespace BejeweledLivePlus
 				IMAGE_BOMBGEMS = GetImageThrow(theManager, 1108, "IMAGE_BOMBGEMS", 960, 0);
 				IMAGE_BOMBGLOWS_DANGERGLOW = GetImageThrow(theManager, 1109, "IMAGE_BOMBGLOWS_DANGERGLOW", 960, 0);
 				IMAGE_BOMBGLOWS_GLOW = GetImageThrow(theManager, 1110, "IMAGE_BOMBGLOWS_GLOW", 960, 0);
+				IMAGE_INGAMEUI_TIMEBOMB_BOMB = GetImageThrow(theManager, 1840, "IMAGE_INGAMEUI_TIMEBOMB_BOMB", 960, 0);
 			}
 			catch (ResourceManagerException)
 			{
@@ -12340,11 +12351,6 @@ namespace BejeweledLivePlus
 				IMAGE_ANIMS_BOARDSHATTER_BOTTOM = GetImageThrow(theManager, 1403, "IMAGE_ANIMS_BOARDSHATTER_BOTTOM", 960, 0, true);
 				IMAGE_ANIMS_BOARDSHATTER_GRID = GetImageThrow(theManager, 1404, "IMAGE_ANIMS_BOARDSHATTER_GRID", 960, 0, true);
 				IMAGE_ANIMS_BOARDSHATTER_TOP = GetImageThrow(theManager, 1405, "IMAGE_ANIMS_BOARDSHATTER_TOP", 960, 0, true);
-				IMAGE_BOOM_BOARD = GetImageThrow(theManager, 1406, "IMAGE_BOOM_BOARD", 960, 0);
-				IMAGE_BOOM_CRATER = GetImageThrow(theManager, 1407, "IMAGE_BOOM_CRATER", 960, 0);
-				IMAGE_BOOM_FBOTTOM_WIDGET = GetImageThrow(theManager, 1408, "IMAGE_BOOM_FBOTTOM_WIDGET", 960, 0);
-				IMAGE_BOOM_FGRIDBAR_BOT = GetImageThrow(theManager, 1409, "IMAGE_BOOM_FGRIDBAR_BOT", 960, 0);
-				IMAGE_BOOM_FGRIDBAR_TOP = GetImageThrow(theManager, 1410, "IMAGE_BOOM_FGRIDBAR_TOP", 960, 0);
 				IMAGE_BOOM_FTOP_WIDGET = GetImageThrow(theManager, 1411, "IMAGE_BOOM_FTOP_WIDGET", 960, 0);
 				IMAGE_BROWSER_BACKBTN = GetImageThrow(theManager, 1412, "IMAGE_BROWSER_BACKBTN", 960, 0);
 				IMAGE_CHECKPOINT_MARKER = GetImageThrow(theManager, 1413, "IMAGE_CHECKPOINT_MARKER", 960, 0);
@@ -18004,6 +18010,10 @@ namespace BejeweledLivePlus
                 return "IMAGE_INGAMEUI_DIAMOND_MINE_DM_TOP";
             case 1839:
                 return "IMAGE_INGAMEUI_BUTTERFLIES_WEB_IP5";
+            case 1840:
+                return "IMAGE_INGAMEUI_TIMEBOMB_BOMB";
+            case 1841:
+                return "IMAGE_HEAT_DISTORTION";
             default:
 				return "";
 			}
@@ -18013,7 +18023,7 @@ namespace BejeweledLivePlus
 		{
 			if (GetIdByStringId_aMap.Count == 0)
 			{
-				for (int i = 0; i < 1841; i++)
+				for (int i = 0; i < 1843; i++)
 				{
 					GetIdByStringId_aMap[GetStringIdById(i)] = i;
 				}

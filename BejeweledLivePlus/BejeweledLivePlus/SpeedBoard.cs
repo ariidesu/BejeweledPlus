@@ -1172,18 +1172,6 @@ namespace BejeweledLivePlus
 			return ConstantsWP.SPEEDBOARD_TIMEDRAW_Y_OFFSET;
 		}
 
-		public override void PlayMenuMusic(bool isRestart = false)
-		{
-			CustomBassMusicInterface theMusicInterface = (CustomBassMusicInterface)GlobalMembers.gApp.mMusicInterface;
-			if (isRestart || (theMusicInterface.mSongName != GetMusicName() &&
-			                  theMusicInterface.mSongName != $"{GetMusicName()}_lose"))
-			{
-				theMusicInterface.QueueEvent("FadeOut", theMusicInterface.mSongName, false);
-				theMusicInterface.QueueEvent("Play", GetMusicName(), true);
-			}
-			// GlobalMembers.gApp.mMusic.PlaySongNoDelay(11, true);
-		}
-
 		public override Color GetWarningGlowColor()
 		{
 			int ticksLeft = GetTicksLeft();

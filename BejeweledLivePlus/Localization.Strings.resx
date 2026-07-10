@@ -410,6 +410,8 @@ Please contact Customer Support at http://www.popcap.com/support.</value></data>
   <data name="IDS_162" xml:space="preserve"><value>Total Time</value></data>
   <data name="IDS_161" xml:space="preserve"><value>Best Butterfly Combo</value></data>
   <data name="IDS_160" xml:space="preserve"><value>Best Move</value></data>
+  <data name="IDS_172" xml:space="preserve"><value>Bombs Defused</value></data>
+  <data name="IDS_173" xml:space="preserve"><value>Best Bomb Combo</value></data>
   <data name="IDS_167" xml:space="preserve"><value>Longest Cascade</value></data>
   <data name="IDS_166" xml:space="preserve"><value>Best Move</value></data>
   <data name="IDS_165" xml:space="preserve"><value>Level Achieved</value></data>
@@ -777,6 +779,10 @@ or relax body and mind in ^7514BB^Zen^700443^ mode.</value></data>
   <data name="IDS_3378" xml:space="preserve"><value>BUTTERFLIES</value></data>
   <data name="IDS_3362" xml:space="preserve"><value>If you wish to send anonymous game play information to PopCap, check the box and we will enable the transmission of such information.</value></data>
   <data name="IDS_3363" xml:space="preserve"><value>BLITZ</value></data>
+  <data name="IDS_3364" xml:space="preserve"><value>MATCH BOMB</value></data>
+  <data name="IDS_3410" xml:space="preserve"><value>MATCH</value></data>
+  <data name="IDS_3411" xml:space="preserve"><value>TIME</value></data>
+  <data name="IDS_3412" xml:space="preserve"><value>BOMB</value></data>
   <data name="IDS_3360" xml:space="preserve"><value>USER SHARING</value></data>
   <data name="IDS_3361" xml:space="preserve"><value>If you no longer wish to send anonymous game play information to PopCap, uncheck the box and we will disable the transmission of such information.</value></data>
   <data name="IDS_3366" xml:space="preserve"><value>ZEN</value></data>
