@@ -235,7 +235,7 @@ namespace SexyFramework
                                    (curSong.mTempo.mRamp == 6 && !curSong.mTempo.HasBeenTriggered());
                 mCurCommandDone &= !curSong.mTempo.IncInVal();
 
-                if (updateTempo)
+                if (updateTempo && curSong.mTempo.mRamp == 6)
                 {
                     double tempo = curSong.mTempo.GetOutVal();
                     Bass_MusicSetBPM(curMusic.mHMusic, tempo);

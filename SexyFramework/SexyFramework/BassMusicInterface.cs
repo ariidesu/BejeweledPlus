@@ -37,20 +37,41 @@ namespace SexyFramework
             mMusicMap = new Dictionary<int, BassMusicInfo>();
         }
 
-        public static bool Bass_MusicPlayEx(int handle, int pos, BassFlags flags, bool reset)
+        public static bool Bass_MusicPlayEx(int handle, int pos, BassFlags flags, bool reset, long startPos = 0)
         {
-            long anOffset = BitHelper.MakeLong((short)pos, 0);
-            Bass.ChannelStop(handle);
-            Bass.ChannelSetPosition(handle, anOffset, PositionFlags.MusicOrders);
-            Bass.ChannelFlags(handle, flags, flags);
+            long offset;
+            PositionFlags mode;
 
-            Bass.ChannelPlay(handle, false /*reset*/);
-            return true;
+            if (startPos != 0)
+            {
+                if ((startPos & 0x80000000L) == 0)
+                {
+                    offset = startPos & 0x7FFFFFFFL;
+                    mode = PositionFlags.MusicOrders;
+                }
+                else
+                {
+                    offset = startPos;
+                    mode = 0;
+                }
+            }
+            else
+            {
+                offset = pos;
+                mode = PositionFlags.MusicOrders;
+            }
+
+            Bass.ChannelStop(handle);
+            Bass.ChannelFlags(handle, flags, unchecked((BassFlags)(-1)));
+            if (!Bass.ChannelSetPosition(handle, offset, mode))
+                Bass.ChannelSetPosition(handle, 0, mode);
+
+            return Bass.ChannelPlay(handle, false);
         }
 
         public static bool Bass_StreamPlay(int handle, bool flush, BassFlags flags)
         {
-            Bass.ChannelFlags(handle, flags, flags);
+            Bass.ChannelFlags(handle, flags, unchecked((BassFlags)(-1)));
             return Bass.ChannelPlay(handle, flush);
         }
 
@@ -101,7 +122,106 @@ namespace SexyFramework
             return Bass_MusicSetChannelVolumeFloat(theHandle, theChannel, aVolume);
         }
 
-        // what this is literally just changing the volume
+        public static bool Bass_MusicPlay(int theHandle)
+        {
+            return Bass.ChannelPlay(theHandle, true);
+        }
+
+        public static bool Bass_ChannelResume(int theHandle)
+        {
+            return Bass.ChannelPlay(theHandle, false);
+        }
+
+        public static bool Bass_MusicSetAmplify(int theHandle, int value)
+        {
+            return Bass.ChannelSetAttribute(theHandle, ChannelAttribute.MusicAmplify, value);
+        }
+
+        public static double Bass_MusicGetAmplify(int theHandle)
+        {
+            return Bass.ChannelGetAttribute(theHandle, ChannelAttribute.MusicAmplify);
+        }
+
+        public static bool Bass_MusicSetPanSep(int theHandle, int value)
+        {
+            return Bass.ChannelSetAttribute(theHandle, ChannelAttribute.MusicPanSeparation, value);
+        }
+
+        public static double Bass_MusicGetPanSep(int theHandle)
+        {
+            return Bass.ChannelGetAttribute(theHandle, ChannelAttribute.MusicPanSeparation);
+        }
+
+        public static bool Bass_MusicSetPScaler(int theHandle, int value)
+        {
+            return Bass.ChannelSetAttribute(theHandle, ChannelAttribute.MusicPositionScaler, value);
+        }
+
+        public static double Bass_MusicGetPScaler(int theHandle)
+        {
+            return Bass.ChannelGetAttribute(theHandle, ChannelAttribute.MusicPositionScaler);
+        }
+
+        public static bool Bass_MusicSetSpeed(int theHandle, int value)
+        {
+            return Bass.ChannelSetAttribute(theHandle, ChannelAttribute.MusicSpeed, value);
+        }
+
+        public static double Bass_MusicGetSpeed(int theHandle)
+        {
+            return Bass.ChannelGetAttribute(theHandle, ChannelAttribute.MusicSpeed);
+        }
+
+        public static bool Bass_MusicSetGlobalVolume(int theHandle, int value)
+        {
+            return Bass.ChannelSetAttribute(theHandle, ChannelAttribute.MusicVolumeGlobal, value);
+        }
+
+        public static double Bass_MusicGetGlobalVolume(int theHandle)
+        {
+            return Bass.ChannelGetAttribute(theHandle, ChannelAttribute.MusicVolumeGlobal);
+        }
+
+        public static bool Bass_MusicSetInstrumentVolumeFloat(int theHandle, int inst, double value)
+        {
+            return Bass.ChannelSetAttribute(theHandle, ChannelAttribute.MusicVolumeInstrument + inst, value);
+        }
+
+        public static double Bass_MusicGetInstrumentVolumeFloat(int theHandle, int inst)
+        {
+            return Bass.ChannelGetAttribute(theHandle, ChannelAttribute.MusicVolumeInstrument + inst);
+        }
+
+        public static bool Bass_MusicSetInstrumentVolumeInt(int theHandle, int inst, int value)
+        {
+            return Bass_MusicSetInstrumentVolumeFloat(theHandle, inst, value / 100.0);
+        }
+
+        public static int Bass_MusicGetInstrumentVolumeInt(int theHandle, int inst)
+        {
+            return (int)(Bass_MusicGetInstrumentVolumeFloat(theHandle, inst) * 100.0);
+        }
+
+        public static long Bass_ChannelGetPosition(int theHandle)
+        {
+            return Bass.ChannelGetPosition(theHandle, PositionFlags.Bytes);
+        }
+
+        public static long Bass_ChannelGetLength(int theHandle)
+        {
+            return Bass.ChannelGetLength(theHandle, PositionFlags.Bytes);
+        }
+
+        public static int Bass_MusicGetOrders(int theHandle)
+        {
+            return (int)Bass.ChannelGetLength(theHandle, PositionFlags.MusicOrders);
+        }
+
+        public static int Bass_MusicGetOrderPosition(int theHandle)
+        {
+            return (int)Bass.ChannelGetPosition(theHandle, PositionFlags.MusicOrders);
+        }
+
         public static bool Bass_ChannelSetAttributes(int theHandle, int theVolume)
         {
             if (theVolume >= 0)
@@ -158,7 +278,7 @@ namespace SexyFramework
             return true;
         }
 
-        public override void PlayMusic(int theSongId, int theOffset, bool noLoop)
+        public override void PlayMusic(int theSongId, int theOffset, bool noLoop, long theStartPos)
         {
             if (!mMusicMap.TryGetValue(theSongId, out var info)) return;
             info.mVolume = info.mVolumeCap;
@@ -166,16 +286,16 @@ namespace SexyFramework
             info.mStopOnFade = noLoop;
             var handle = info.GetHandle();
 
-            Bass.ChannelSetAttribute(handle, ChannelAttribute.Volume, info.mVolume);
+            Bass_ChannelSetAttributes(handle, (int)(info.mVolume * 100));
             Bass.ChannelStop(handle);
 
             if (info.mHMusic != 0)
             {
-                Bass_MusicPlayEx(handle, theOffset, mMusicLoadFlags & ~BassFlags.Loop, true);
+                Bass_MusicPlayEx(handle, theOffset, BassFlags.MusicPositionResetEx | BassFlags.MusicRamp | (noLoop ? 0 : BassFlags.Loop), true, theStartPos);
             }
             else
             {
-                Bass_StreamPlay(handle, theOffset >= 0, mMusicLoadFlags & ~BassFlags.Loop);
+                Bass_StreamPlay(handle, theOffset != -1, noLoop ? 0 : BassFlags.Loop);
                 if (theOffset > 0)
                     Bass.ChannelSetPosition(handle, theOffset);
             }
@@ -262,14 +382,19 @@ namespace SexyFramework
             info.mStopOnFade = noLoop;
             var handle      = info.GetHandle();
 
-            Bass.ChannelStop(handle); 
+            Bass.ChannelStop(handle);
             Bass_ChannelSetAttributes(handle, (int)(info.mVolume * 100));
 
             if (info.mHMusic != 0)
-                Bass_MusicPlayEx(handle, theOffset, mMusicLoadFlags & ~BassFlags.Loop, true);
+            {
+                if (theOffset == -1)
+                    Bass.ChannelPlay(info.mHMusic, true);
+                else
+                    Bass_MusicPlayEx(info.mHMusic, theOffset, BassFlags.MusicRamp | (noLoop ? 0 : BassFlags.Loop), true);
+            }
             else
             {
-                Bass_StreamPlay(handle, theOffset >= 0, mMusicLoadFlags & ~BassFlags.Loop);
+                Bass_StreamPlay(handle, theOffset != -1, noLoop ? 0 : BassFlags.Loop);
                 if (theOffset > 0)
                     Bass_ChannelSetPosition(handle, theOffset, (PositionFlags)(theOffset >> 31));
             }
@@ -294,7 +419,6 @@ namespace SexyFramework
 
         public override void SetVolume(double theVolume)
         {
-            int aVolume = (int) (theVolume * mMaxMusicVolume);
             Bass.Configure(Configuration.GlobalMusicVolume, (int)(theVolume * 100));
             Bass.Configure(Configuration.GlobalStreamVolume, (int)(theVolume * 100));
         }
@@ -304,7 +428,7 @@ namespace SexyFramework
             if (mMusicMap.TryGetValue(theSongId, out var info))
             {
                 info.mVolume = theVolume;
-                Bass.ChannelSetAttribute(info.GetHandle(), ChannelAttribute.Volume, theVolume);
+                Bass_ChannelSetAttributes(info.GetHandle(), (int)(info.mVolume * 100));
             }
         }
 
@@ -314,7 +438,7 @@ namespace SexyFramework
             {
                 info.mVolumeCap = theMaxVolume;
                 info.mVolume    = Math.Min(info.mVolume, theMaxVolume);
-                Bass.ChannelSetAttribute(info.GetHandle(), ChannelAttribute.Volume, info.mVolume);
+                Bass_ChannelSetAttributes(info.GetHandle(), (int)(info.mVolume * 100));
             }
         }
 
@@ -351,9 +475,16 @@ namespace SexyFramework
                         if (info.mStopOnFade)
                             Bass.ChannelStop(info.GetHandle());
                     }
-                    Bass.ChannelSetAttribute(info.GetHandle(), ChannelAttribute.Volume, info.mVolume);
+                    Bass_ChannelSetAttributes(info.GetHandle(), (int)(info.mVolume * 100));
                 }
             }
+        }
+
+        public override int GetMusicOrder(int theSongId)
+        {
+            if (mMusicMap.TryGetValue(theSongId, out var info))
+                return Bass_MusicGetOrderPosition(info.GetHandle());
+            return -1;
         }
     }
 }
