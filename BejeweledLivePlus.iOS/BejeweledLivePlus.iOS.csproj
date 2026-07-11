@@ -1,0 +1,37 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net9.0-ios</TargetFramework>
+        <SupportedOSPlatformVersion>13.0</SupportedOSPlatformVersion>
+        <OutputType>Exe</OutputType>
+        <ApplicationId>com.ariidesu.BejeweledPlus</ApplicationId>
+        <ApplicationVersion>1</ApplicationVersion>
+        <ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
+        <CodesignKey>iPhone Developer</CodesignKey>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <MonoGameContentReference Include="..\BejeweledLivePlus\Content\Content.mgcb" Link="Content\Content.mgcb" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <BundleResource Include="..\BejeweledLivePlus\Content\effects\*.fx" Link="Content\effects\%(Filename)%(Extension)" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <NativeReference Include="bass.xcframework">
+            <Kind>Framework</Kind>
+            <ForceLoad>True</ForceLoad>
+        </NativeReference>
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="MonoGame.Framework.iOS" Version="3.8.4.1" />
+        <PackageReference Include="MonoGame.Content.Builder.Task" Version="3.8.4.1" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\BejeweledLivePlus\BejeweledLivePlus.csproj" />
+    </ItemGroup>
+
+</Project>
