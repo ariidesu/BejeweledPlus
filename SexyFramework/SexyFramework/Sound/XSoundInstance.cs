@@ -130,7 +130,13 @@ namespace SexyFramework.Sound
 				{
 				}
 			}
-			m_SoundInstance.Play();
+			try
+			{
+				m_SoundInstance.Play();
+			}
+			catch (InstancePlayLimitException)
+			{
+			}
 			return true;
 		}
 
