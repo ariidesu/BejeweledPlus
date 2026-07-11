@@ -628,6 +628,10 @@ namespace BejeweledLivePlus.Widget
 						gi.mPiece.mAlpha.SetConstant(1.0);
 						gi.mDraw3D = false;
 						gi.mPiece.ClearHyperspaceEffects();
+						foreach (Effect boundEffect in gi.mPiece.mBoundEffects)
+						{
+							boundEffect.mDrawScale = 1f;
+						}
 						if (mAnimSeq.GetCurFrame() > 270 && mTicks - mGemHitTick > 2)
 						{
 							int[] aHitCountToSound = mBoard.GetHyperspaceTransType() == HYPERSPACETRANS.HYPERSPACETRANS_Zen ? mapHitCountToZenSound : mapHitCountToSound;
