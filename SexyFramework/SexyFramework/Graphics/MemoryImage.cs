@@ -367,9 +367,18 @@ namespace SexyFramework.Graphics
 				}
 				else if (mNativeAlphaData == null)
 				{
-					if (GetRenderData() != null && (GetRenderData() as XNATextureData).mTextures[0].mTexture != null)
+					XNATextureData xNATextureData = GetRenderData() as XNATextureData;
+					if (xNATextureData != null && xNATextureData.mTextures[0].mTexture != null)
 					{
-						(GetRenderData() as XNATextureData).mTextures[0].mTexture.GetData(mBits);
+						BaseXNARenderDevice renderDevice = (GlobalMembers.gSexyAppBase.mGraphicsDriver as XNAGraphicsDriver)?.mXNARenderDevice;
+						if (renderDevice != null)
+						{
+							renderDevice.ReadImageBits(xNATextureData.mTextures[0].mTexture, mBits);
+						}
+						else
+						{
+							xNATextureData.mTextures[0].mTexture.GetData(mBits);
+						}
 					}
 					else
 					{
@@ -426,6 +435,13 @@ namespace SexyFramework.Graphics
 
 		public virtual void BitsChanged()
 		{
+			mBitsChanged = true;
+			mBitsChangedCount++;
+			mNativeAlphaData = null;
+			mRLAlphaData = null;
+			mRLAdditiveData = null;
+			mNormalTriRep.mLevels.Clear();
+			mAdditiveTriRep.mLevels.Clear();
 		}
 
 		internal void Clear()

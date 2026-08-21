@@ -55,7 +55,7 @@ namespace SexyFramework.Graphics
 			mTransY = theState.mTransY;
 			mClipRect = theState.mClipRect;
 			mFont = theState.mFont;
-			mPushedColorVector = theState.mPushedColorVector;
+			mPushedColorVector.CopyFrom(theState.mPushedColorVector);
 			mColor = theState.mColor;
 			mFinalColor = theState.mFinalColor;
 			mDrawMode = theState.mDrawMode;

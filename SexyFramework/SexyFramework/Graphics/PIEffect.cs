@@ -1972,9 +1972,9 @@ namespace SexyFramework.Graphics
 			mFrameNum = 0f;
 			mUpdateCnt = 0;
 			mIsNewFrame = false;
-			mHasEmitterTransform = false;
-			mHasDrawTransform = false;
-			mDrawTransformSimple = false;
+			mHasEmitterTransform = rhs.mHasEmitterTransform;
+			mHasDrawTransform = rhs.mHasDrawTransform;
+			mDrawTransformSimple = rhs.mDrawTransformSimple;
 			mCurNumParticles = 0;
 			mCurNumEmitters = 0;
 			mLastDrawnPixelCount = 0;

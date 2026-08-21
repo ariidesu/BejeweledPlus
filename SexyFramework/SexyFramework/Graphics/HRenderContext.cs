@@ -4,6 +4,10 @@ namespace SexyFramework.Graphics
 	{
 		public object mHandlePtr;
 
+		public HRenderContext mParentContext;
+
+		public RenderStateManager.Context mStateContext;
+
 		public HRenderContext()
 		{
 		}

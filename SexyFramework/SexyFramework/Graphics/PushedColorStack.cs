@@ -57,12 +57,15 @@ namespace SexyFramework.Graphics
 
 		public void Pop_back()
 		{
-			mColors.RemoveAt(mColors.Count);
+			if (mColors.Count > 0)
+			{
+				mColors.RemoveAt(mColors.Count - 1);
+			}
 		}
 
 		public void RemoveAt(int idx)
 		{
-			if (idx >= 0)
+			if (idx >= 0 && idx < mColors.Count)
 			{
 				mColors.RemoveAt(idx);
 			}

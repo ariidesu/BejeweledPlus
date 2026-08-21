@@ -278,7 +278,7 @@ namespace SexyFramework.Graphics
 							num9 = charData.mWidth;
 							if (c != 0)
 							{
-								num10 = ((c != ' ') ? activeFontLayer.mBaseFontLayer.mSpacing : 0);
+								num10 = activeFontLayer.mBaseFontLayer.mSpacing;
 								if (charData.mKerningCount != 0)
 								{
 									int mKerningCount = charData.mKerningCount;
@@ -700,7 +700,7 @@ namespace SexyFramework.Graphics
 					num5 = (((double)activeFontLayer.mBaseFontLayer.GetCharData(theChar).mWidth * num2 / (double)(float)num4 >= 0.0) ? ((int)((double)activeFontLayer.mBaseFontLayer.GetCharData(theChar).mWidth * num2 / (double)(float)num4 + 0.501)) : ((int)((double)activeFontLayer.mBaseFontLayer.GetCharData(theChar).mWidth * num2 / (double)(float)num4 - 0.501)));
 					if (thePrevChar != 0)
 					{
-						num6 = ((thePrevChar != ' ') ? activeFontLayer.mBaseFontLayer.mSpacing : 0);
+						num6 = activeFontLayer.mBaseFontLayer.mSpacing;
 						CharData charData2 = activeFontLayer.mBaseFontLayer.GetCharData(thePrevChar);
 						if (charData2.mKerningCount != 0)
 						{

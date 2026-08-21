@@ -122,8 +122,9 @@ namespace SexyFramework.Graphics
 			RenderDevice3D renderDevice3D = GlobalMembers.gSexyAppBase.mGraphicsDriver.GetRenderDevice3D();
 			if (renderDevice3D != null)
 			{
-				HRenderContext hRenderContext = new HRenderContext();
-				hRenderContext = ((theSourceGraphics == null) ? renderDevice3D.CreateContext(mDestImage) : renderDevice3D.CreateContext(mDestImage, theSourceGraphics.mRenderContext));
+				HRenderContext hRenderContext = (theSourceGraphics == null)
+					? renderDevice3D.CreateContext(mDestImage)
+					: renderDevice3D.CreateContext(mDestImage, theSourceGraphics.mRenderContext);
 				mRenderDevice = renderDevice3D;
 				mRenderContext = hRenderContext;
 				mGraphics3D = new Graphics3D(this, renderDevice3D, mRenderContext);
@@ -138,12 +139,13 @@ namespace SexyFramework.Graphics
 				RenderDevice renderDevice = GlobalMembers.gSexyAppBase.mGraphicsDriver.GetRenderDevice();
 				if (renderDevice != null)
 				{
-					HRenderContext hRenderContext2 = new HRenderContext();
-					hRenderContext2 = ((theSourceGraphics == null) ? renderDevice.CreateContext(mDestImage) : renderDevice.CreateContext(mDestImage, theSourceGraphics.mRenderContext));
-					if (hRenderContext2.IsValid())
+					HRenderContext hRenderContext = (theSourceGraphics == null)
+						? renderDevice.CreateContext(mDestImage)
+						: renderDevice.CreateContext(mDestImage, theSourceGraphics.mRenderContext);
+					if (hRenderContext.IsValid())
 					{
 						mRenderDevice = renderDevice;
-						mRenderContext = hRenderContext2;
+						mRenderContext = hRenderContext;
 						mGraphics3D = null;
 						mIs3D = false;
 					}
@@ -303,13 +305,15 @@ namespace SexyFramework.Graphics
 
 		public virtual void Dispose()
 		{
-			mRenderDevice.DeleteContext(mRenderContext);
+			if (mRenderDevice != null)
+			{
+				mRenderDevice.DeleteContext(mRenderContext);
+			}
 		}
 
 		public void ClearRenderContext()
 		{
-			XNAGraphicsDriver xNAGraphicsDriver = (XNAGraphicsDriver)GlobalMembers.gSexyAppBase.mGraphicsDriver;
-			xNAGraphicsDriver.mXNARenderDevice.SetCurrentContext(null);
+			mRenderDevice?.SetCurrentContext(null);
 		}
 
 		public Graphics3D Get3D()

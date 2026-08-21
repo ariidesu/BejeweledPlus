@@ -196,6 +196,8 @@ namespace SexyFramework.Drivers.Graphics
 
 		public Stack<Graphics3D.EBlendMode> mStatckDestBlendState;
 
+		public Stack<BlendState> mStatckBlendState;
+
 		public Stack<RasterizerState> mStatckRasterizerState;
 
 		public Stack<DepthStencilState> mStatckDepthStencilState;
@@ -250,6 +252,7 @@ namespace SexyFramework.Drivers.Graphics
 			new Viewport(0, 0, GlobalMembers.gSexyAppBase.mWidth, GlobalMembers.gSexyAppBase.mHeight);
 			mStatckSrcBlendState = new Stack<Graphics3D.EBlendMode>();
 			mStatckDestBlendState = new Stack<Graphics3D.EBlendMode>();
+			mStatckBlendState = new Stack<BlendState>();
 			mStatckRasterizerState = new Stack<RasterizerState>();
 			mStatckDepthStencilState = new Stack<DepthStencilState>();
 			mStatckSamplerState = new Stack<SamplerState[]>();
@@ -709,9 +712,10 @@ namespace SexyFramework.Drivers.Graphics
 		{
 			mStatckSrcBlendState.Push(mSrcBlendMode);
 			mStatckDestBlendState.Push(mDestBlendMode);
+			mStatckBlendState.Push(mXNABlendState);
 			mStatckRasterizerState.Push(mXNARasterizerState);
 			mStatckDepthStencilState.Push(mXNADepthStencilState);
-			mStatckSamplerState.Push(mXNASamplerStateSlots);
+			mStatckSamplerState.Push((SamplerState[])mXNASamplerStateSlots.Clone());
 			mStatckProjectionMatrix.Push(mXNAProjectionMatrix);
 			mStatckViewMatrix.Push(mXNAViewMatrix);
 			mStatckWorldMatrix.Push(mXNAWorldMatrix);
@@ -720,20 +724,21 @@ namespace SexyFramework.Drivers.Graphics
 
 		public new void PopState()
 		{
-			mSrcBlendMode = mStatckSrcBlendState.Pop();
-			mDestBlendMode = mStatckDestBlendState.Pop();
-			mXNARasterizerState = mStatckRasterizerState.Pop();
-			mXNADepthStencilState = mStatckDepthStencilState.Pop();
-			if (mXNASamplerStateSlots != mStatckSamplerState.Peek())
+			if (mStatckSrcBlendState.Count > 0) mSrcBlendMode = mStatckSrcBlendState.Pop();
+			if (mStatckDestBlendState.Count > 0) mDestBlendMode = mStatckDestBlendState.Pop();
+			if (mStatckBlendState.Count > 0) mXNABlendState = mStatckBlendState.Pop();
+			if (mStatckRasterizerState.Count > 0) mXNARasterizerState = mStatckRasterizerState.Pop();
+			if (mStatckDepthStencilState.Count > 0) mXNADepthStencilState = mStatckDepthStencilState.Pop();
+			if (mStatckSamplerState.Count > 0)
 			{
-				mStateDirty = true;
+				mXNALastSamplerStateSlots = mXNASamplerStateSlots;
+				mXNASamplerStateSlots = mStatckSamplerState.Pop();
 			}
-			mXNALastSamplerStateSlots = mXNASamplerStateSlots;
-			mXNASamplerStateSlots = mStatckSamplerState.Pop();
-			mXNAProjectionMatrix = mStatckProjectionMatrix.Pop();
-			mXNAViewMatrix = mStatckViewMatrix.Pop();
-			mXNAWorldMatrix = mStatckWorldMatrix.Pop();
-			mXNAViewPort = mStatckViewPort.Pop();
+			if (mStatckProjectionMatrix.Count > 0) mXNAProjectionMatrix = mStatckProjectionMatrix.Pop();
+			if (mStatckViewMatrix.Count > 0) mXNAViewMatrix = mStatckViewMatrix.Pop();
+			if (mStatckWorldMatrix.Count > 0) mXNAWorldMatrix = mStatckWorldMatrix.Pop();
+			if (mStatckViewPort.Count > 0) mXNAViewPort = mStatckViewPort.Pop();
+			mStateDirty = true;
 		}
 
 		public void SetAtlasState(ulong inSampler, bool inEnabled, SexyVector2 inBase, SexyVector2 inU, SexyVector2 inV)
