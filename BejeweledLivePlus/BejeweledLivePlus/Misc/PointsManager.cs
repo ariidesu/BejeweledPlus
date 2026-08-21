@@ -169,14 +169,16 @@ namespace BejeweledLivePlus.Misc
 						case 0:
 						{
 							num16 = Math.Min(1f, Math.Max(0f, (num13 - 0.3f) * 2f));
-							num14 = 1f;
+							float extra = Math.Max(0f, num13 - 0.5f);
+							num14 = j % 2 == 0 ? 0.5f : 0.5f + extra * ModVal.M(1f);
 							num15 = 1f;
 							break;
 						}
 						case 1:
 						{
 							num16 = Math.Min(1f, Math.Max(0f, (num13 - 0.3f) * 2f));
-							num14 = 1f;
+							float extra = Math.Max(0f, num13 - 0.1f);
+							num14 = j % 2 == 0 ? 0.5f : 0.5f + extra * ModVal.M(1f);
 							num15 = Math.Max(0f, (num13 - 0.5f) * 3f);
 							break;
 						}

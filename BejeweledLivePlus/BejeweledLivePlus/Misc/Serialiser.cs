@@ -676,6 +676,12 @@ namespace BejeweledLivePlus.Misc
 			theValue = ReadCurvedVal();
 		}
 
+		public void ReadValuePair(CurvedVal theValue)
+		{
+			ReadInt32();
+			ReadCurvedVal(theValue);
+		}
+
 		public int ReadArrayPair(int max, uint[] array)
 		{
 			ReadInt32();
@@ -876,6 +882,12 @@ namespace BejeweledLivePlus.Misc
 		public CurvedVal ReadCurvedVal()
 		{
 			CurvedVal curvedVal = new CurvedVal();
+			ReadCurvedVal(curvedVal);
+			return curvedVal;
+		}
+
+		public void ReadCurvedVal(CurvedVal curvedVal)
+		{
 			switch (ReadInt32())
 			{
 			case 0:
@@ -917,7 +929,6 @@ namespace BejeweledLivePlus.Misc
 				break;
 			}
 			}
-			return curvedVal;
 		}
 
 		public void WriteBytes(List<byte> buffer, int length)

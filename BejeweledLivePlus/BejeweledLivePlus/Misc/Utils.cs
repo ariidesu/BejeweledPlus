@@ -383,16 +383,18 @@ namespace BejeweledLivePlus.Misc
 			{
 				return;
 			}
-			string[] array = theStr.Split(theSplitChar);
+			string[] array = theMaxEntries > 0
+				? theStr.Split(new char[] { theSplitChar }, theMaxEntries)
+				: theStr.Split(theSplitChar);
 			outVals.Clear();
 			for (int i = 0; (theMaxEntries < 0 || (theMaxEntries >= 0 && i < theMaxEntries)) && i < array.Length; i++)
 			{
 				string text = array[i];
 				if (theTrimLeadingWhitespace)
 				{
-					text.TrimStart(' ');
+					text = text.TrimStart();
 				}
-				outVals.Add(array[i]);
+				outVals.Add(text);
 			}
 		}
 

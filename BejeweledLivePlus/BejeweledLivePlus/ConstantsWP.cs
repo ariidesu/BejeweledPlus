@@ -252,6 +252,8 @@ namespace BejeweledLivePlus
 
 		public static int ICESTORM_BOARD_UI_HINT_BTN_Y = 767;
 
+		public static int ICESTORM_UI_BUTTON_Y = 765;
+
 		public static int ZENBOARD_UI_ZEN_BTN_WIDTH = BOARD_UI_HINT_BTN_WIDTH;
 
 		public static int ZENBOARD_UI_ZEN_BTN_X = 5;
@@ -466,13 +468,17 @@ namespace BejeweledLivePlus
 
 		public static int INFERNOBOARD_BOARD_Y = 80;
 
+		public static int INFERNOBOARD_BOARD_X = 0;
+
+		public static int INFERNOBOARD_PILLAR_Y = 100;
+
 		public static int INFERNOBOARD_TOPSKULL_OFFSET_Y_0 = 0;
 
-		public static int INFERNOBOARD_TOPSKULL_OFFSET_X_1 = -33;
+		public static int INFERNOBOARD_TOPSKULL_OFFSET_X_1 = -26;
 
 		public static int INFERNOBOARD_TOPSKULL_OFFSET_Y_1 = -80;
 
-		public static int INFERNOBOARD_TOPSKULL_OFFSET_X_2 = -30;
+		public static int INFERNOBOARD_TOPSKULL_OFFSET_X_2 = -24;
 
 		public static int INFERNOBOARD_TOPSKULL_OFFSET_Y_2 = 0;
 
@@ -534,7 +540,7 @@ namespace BejeweledLivePlus
 
 		public static int MAIN_MENU_BUTTON_CLASSIC_X = (int)(DEVICE_WIDTH_F / 2f);
 
-		public static int MAIN_MENU_BUTTON_CLASSIC_Y = 220;
+		public static int MAIN_MENU_BUTTON_CLASSIC_Y = 435;
 
 		public static float MAIN_MENU_BUTTON_CLASSIC_SCALE = 0.9f;
 
@@ -546,13 +552,13 @@ namespace BejeweledLivePlus
 
 		public static int MAIN_MENU_BUTTON_DIAMONDMINE_X = (int)(DEVICE_WIDTH_F / 2f + 150f);
 
-		public static int MAIN_MENU_BUTTON_DIAMONDMINE_Y = 380;
+		public static int MAIN_MENU_BUTTON_DIAMONDMINE_Y = 570;
 
 		public static float MAIN_MENU_BUTTON_DIAMONDMINE_SCALE = MAIN_MENU_BUTTON_ZEN_SCALE;
 
-		public static int MAIN_MENU_BUTTON_BUTTERFLIES_X = MAIN_MENU_BUTTON_CLASSIC_X;
+		public static int MAIN_MENU_BUTTON_BUTTERFLIES_X = (int)(DEVICE_WIDTH_F / 2f - 150f);
 
-		public static int MAIN_MENU_BUTTON_BUTTERFLIES_Y = 650;
+		public static int MAIN_MENU_BUTTON_BUTTERFLIES_Y = 570;
 
 		public static float MAIN_MENU_BUTTON_BUTTERFLIES_SCALE = MAIN_MENU_BUTTON_ZEN_SCALE;
 
@@ -568,11 +574,11 @@ namespace BejeweledLivePlus
 
 		public static float MAIN_MENU_BUTTON_MORE_1_SCALE = MAIN_MENU_BUTTON_ZEN_SCALE;
 
-		public static int MAIN_MENU_BUTTON_LIGHTNING_X;
+		public static int MAIN_MENU_BUTTON_LIGHTNING_X = (int)(DEVICE_WIDTH_F / 2f + 210f);
 
-		public static int MAIN_MENU_BUTTON_LIGHTNING_Y;
+		public static int MAIN_MENU_BUTTON_LIGHTNING_Y = 385;
 
-		public static float MAIN_MENU_BUTTON_LIGHTNING_SCALE;
+		public static float MAIN_MENU_BUTTON_LIGHTNING_SCALE = MAIN_MENU_BUTTON_ZEN_SCALE;
 
 		public static int MAIN_MENU_BUTTON_MORE_2_X;
 
@@ -580,11 +586,11 @@ namespace BejeweledLivePlus
 
 		public static float MAIN_MENU_BUTTON_MORE_2_SCALE;
 
-		public static int MAIN_MENU_BUTTON_ICESTORM_X;
+		public static int MAIN_MENU_BUTTON_ICESTORM_X = (int)(DEVICE_WIDTH_F / 2f - 210f);
 
-		public static int MAIN_MENU_BUTTON_ICESTORM_Y;
+		public static int MAIN_MENU_BUTTON_ICESTORM_Y = 385;
 
-		public static float MAIN_MENU_BUTTON_ICESTORM_SCALE;
+		public static float MAIN_MENU_BUTTON_ICESTORM_SCALE = MAIN_MENU_BUTTON_ZEN_SCALE;
 
 		public static int MAIN_MENU_BUTTON_POKER_X;
 
@@ -2168,6 +2174,7 @@ namespace BejeweledLivePlus
 			DIGBOARD_UI_HINT_BTN_Y = (int)((double)DIGBOARD_UI_HINT_BTN_Y * 0.5);
 			ICESTORM_BOARD_UI_HINT_BTN_X = (int)((double)ICESTORM_BOARD_UI_HINT_BTN_X * 0.5);
 			ICESTORM_BOARD_UI_HINT_BTN_Y = (int)((double)ICESTORM_BOARD_UI_HINT_BTN_Y * 0.5);
+			ICESTORM_UI_BUTTON_Y = (int)((double)ICESTORM_UI_BUTTON_Y * 0.5);
 			ZENBOARD_UI_ZEN_BTN_WIDTH = (int)((double)ZENBOARD_UI_ZEN_BTN_WIDTH * 0.5);
 			ZENBOARD_UI_ZEN_BTN_X = (int)((double)ZENBOARD_UI_ZEN_BTN_X * 0.5);
 			ZENBOARD_UI_ZEN_BTN_Y = (int)((double)ZENBOARD_UI_ZEN_BTN_Y * 0.5);
@@ -2275,6 +2282,8 @@ namespace BejeweledLivePlus
 			INFERNOBOARD_MIN_Y_ONE_COLUMN = (int)((double)INFERNOBOARD_MIN_Y_ONE_COLUMN * 0.5);
 			INFERNOBOARD_MIN_Y_TWO_COLUMN = (int)((double)INFERNOBOARD_MIN_Y_TWO_COLUMN * 0.5);
 			INFERNOBOARD_BOARD_Y = (int)((double)INFERNOBOARD_BOARD_Y * 0.5);
+			INFERNOBOARD_BOARD_X = (int)((double)INFERNOBOARD_BOARD_X * 0.5);
+			INFERNOBOARD_PILLAR_Y = (int)((double)INFERNOBOARD_PILLAR_Y * 0.5);
 			INFERNOBOARD_TOPSKULL_OFFSET_Y_0 = (int)((double)INFERNOBOARD_TOPSKULL_OFFSET_Y_0 * 0.5);
 			INFERNOBOARD_TOPSKULL_OFFSET_X_1 = (int)((double)INFERNOBOARD_TOPSKULL_OFFSET_X_1 * 0.5);
 			INFERNOBOARD_TOPSKULL_OFFSET_Y_1 = (int)((double)INFERNOBOARD_TOPSKULL_OFFSET_Y_1 * 0.5);
@@ -3131,15 +3140,9 @@ namespace BejeweledLivePlus
 		{
 			float num = DEVICE_WIDTH_F / 2f + 200f;
 			int mAIN_MENU_TAB_WIDTH = MAIN_MENU_TAB_WIDTH;
-			MAIN_MENU_BUTTON_LIGHTNING_X = (int)(num + 0f);
-			MAIN_MENU_BUTTON_LIGHTNING_Y = MAIN_MENU_BUTTON_CLASSIC_Y;
-			MAIN_MENU_BUTTON_LIGHTNING_SCALE = MAIN_MENU_BUTTON_ZEN_SCALE;
 			MAIN_MENU_BUTTON_MORE_2_X = (int)(DEVICE_WIDTH_F / 2f + (float)MAIN_MENU_TAB_WIDTH);
 			MAIN_MENU_BUTTON_MORE_2_Y = 690;
 			MAIN_MENU_BUTTON_MORE_2_SCALE = MAIN_MENU_BUTTON_ZEN_SCALE;
-			MAIN_MENU_BUTTON_ICESTORM_X = (int)(DEVICE_WIDTH_F / 2f - 150f + (float)(MAIN_MENU_TAB_WIDTH * 2));
-			MAIN_MENU_BUTTON_ICESTORM_Y = 490;
-			MAIN_MENU_BUTTON_ICESTORM_SCALE = MAIN_MENU_BUTTON_ZEN_SCALE;
 			MAIN_MENU_BUTTON_POKER_X = (int)(DEVICE_WIDTH_F / 2f + 150f + (float)(MAIN_MENU_TAB_WIDTH * 2));
 			MAIN_MENU_BUTTON_POKER_Y = 490;
 			MAIN_MENU_BUTTON_POKER_SCALE = MAIN_MENU_BUTTON_ZEN_SCALE;

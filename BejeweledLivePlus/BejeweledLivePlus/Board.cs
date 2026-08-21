@@ -7507,7 +7507,7 @@ namespace BejeweledLivePlus
 						while (num13 <= upperBound2)
 						{
 							Piece thePiece = array[l, num13];
-							if (!IsHypermixerCancelledBy(thePiece))
+							if (thePiece == null || !IsHypermixerCancelledBy(thePiece))
 							{
 								num13++;
 								continue;

@@ -106,6 +106,11 @@ namespace BejeweledLivePlus
 			return base.IsGameSuspended();
 		}
 
+		public void CallBoardDoUpdate()
+		{
+			base.DoUpdate();
+		}
+
 		public Rect CallBoardGetCountdownBarRect()
 		{
 			return base.GetCountdownBarRect();
@@ -184,6 +189,21 @@ namespace BejeweledLivePlus
 		public void CallBoardDrawBottomFrame(Graphics g)
 		{
 			base.DrawBottomFrame(g);
+		}
+
+		public void CallBoardDrawGameElements(Graphics g)
+		{
+			base.DrawGameElements(g);
+		}
+
+		public void CallBoardInitUI()
+		{
+			base.InitUI();
+		}
+
+		public void CallBoardRefreshUI()
+		{
+			base.RefreshUI();
 		}
 
 		public void CallBoardDeletePiece(Piece thePiece)
@@ -1364,7 +1384,7 @@ namespace BejeweledLivePlus
 			mSidebarText = mParams["Description"];
 			if (mParams.ContainsKey("HyperMixers"))
 			{
-				bool.TryParse("HyperMixers", out mWantHyperMixers);
+				bool.TryParse(mParams["HyperMixers"], out mWantHyperMixers);
 			}
 		}
 

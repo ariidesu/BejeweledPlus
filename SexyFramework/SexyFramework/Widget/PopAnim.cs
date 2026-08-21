@@ -777,7 +777,6 @@ namespace SexyFramework.Widget
 					}
 					string pathFrom = Common.GetPathFrom("..\\" + text4 + "\\" + text4, Common.GetFileDir(mLoadedPamFile, false));
 					string pathFrom2 = Common.GetPathFrom(text4 + "\\" + text4, Common.GetFileDir(mLoadedPamFile, false));
-					pathFrom2 = "images\\960\\help\\" + text4 + "\\" + text4;
 					if (mListener != null)
 					{
 						pAParticleEffect.mEffect = mListener.PopAnimLoadParticleEffect(text4);
@@ -1365,7 +1364,14 @@ namespace SexyFramework.Widget
 						SexyTransform2D sexyTransform2D = new SexyTransform2D(false);
 						sexyTransform2D.Translate((float)pAParticleEffect.mEffect.mWidth / 2f, (float)pAParticleEffect.mEffect.mHeight / 2f);
 						SexyTransform2D theMatrix = new SexyTransform2D(false);
-						theMatrix.CopyFrom(theTransform.Value.mMatrix * sexyTransform2D);
+						if (theTransform.HasValue)
+						{
+							theMatrix.CopyFrom(theTransform.Value.mMatrix * sexyTransform2D);
+						}
+						else
+						{
+							theMatrix.CopyFrom(theSpriteInst.mCurTransform.mMatrix * sexyTransform2D);
+						}
 						pAParticleEffect.mEffect.mDrawTransform.CopyFrom(theMatrix);
 					}
 					else
@@ -1387,6 +1393,7 @@ namespace SexyFramework.Widget
 			DrawParticleEffects(g, theSpriteInst, theTransform, theColor, false);
 			PAFrame pAFrame = theSpriteInst.mDef.mFrames[(int)theSpriteInst.mFrameNum];
 			PATransform theTransform2 = default(PATransform);
+			PATransform listenerTransform = theTransform.GetValueOrDefault(theSpriteInst.mCurTransform);
 			bool flag = parentFrozen || theSpriteInst.mDelayFrames > 0 || pAFrame.mHasStop;
 			for (int i = 0; i < pAFrame.mFrameObjectPosVector.Length; i++)
 			{
@@ -1394,7 +1401,7 @@ namespace SexyFramework.Widget
 				PAObjectInst pAObjectInst = theSpriteInst.mChildren[pAObjectPos.mObjectNum];
 				if (mListener != null && pAObjectInst.mPredrawCallback)
 				{
-					pAObjectInst.mPredrawCallback = mListener.PopAnimObjectPredraw(mId, g, theSpriteInst, pAObjectInst, theTransform.Value, theColor);
+					pAObjectInst.mPredrawCallback = mListener.PopAnimObjectPredraw(mId, g, theSpriteInst, pAObjectInst, listenerTransform, theColor);
 				}
 				Color theColor2;
 				if (pAObjectPos.mIsSprite)
@@ -1431,7 +1438,7 @@ namespace SexyFramework.Widget
 				}
 				else
 				{
-					theTransform.Value.TransformSrc(theTransform2, ref outTran);
+					theTransform.GetValueOrDefault().TransformSrc(theTransform2, ref outTran);
 				}
 				Color color = new Color(theColor2.mRed * theColor.mRed * pAObjectInst.mColorMult.mRed / 65025, theColor2.mGreen * theColor.mGreen * pAObjectInst.mColorMult.mGreen / 65025, theColor2.mBlue * theColor.mBlue * pAObjectInst.mColorMult.mBlue / 65025, theColor2.mAlpha * theColor.mAlpha * pAObjectInst.mColorMult.mAlpha / 65025);
 				if (color.mAlpha == 0)
@@ -1461,22 +1468,22 @@ namespace SexyFramework.Widget
 						{
 							g.SetDrawMode(pAImage.mDrawMode);
 						}
-						Rect rect = default(Rect);
-						DeviceImage deviceImage;
-						if (pAObjectPos.mAnimFrameNum == 0 || pAImage.mImages.Count() == 1)
-						{
-							deviceImage = (DeviceImage)pAImage.mImages[0].GetImage();
-							rect = deviceImage.GetCelRect(pAObjectPos.mAnimFrameNum);
-						}
-						else
-						{
-							deviceImage = (DeviceImage)pAImage.mImages[pAObjectPos.mAnimFrameNum].GetImage();
-							rect = deviceImage.GetCelRect(0);
-						}
-						if (pAObjectPos.mHasSrcRect)
-						{
-							rect = pAObjectPos.mSrcRect;
-						}
+Rect rect = default(Rect);
+					DeviceImage deviceImage;
+					if (pAObjectPos.mAnimFrameNum == 0 || pAImage.mImages.Count() == 1)
+					{
+						deviceImage = (DeviceImage)pAImage.mImages[0].GetImage();
+						rect = deviceImage.GetCelRect(pAObjectPos.mAnimFrameNum);
+					}
+					else
+					{
+						deviceImage = (DeviceImage)pAImage.mImages[pAObjectPos.mAnimFrameNum].GetImage();
+						rect = deviceImage.GetCelRect(0);
+					}
+if (pAObjectPos.mHasSrcRect)
+					{
+						rect = pAObjectPos.mSrcRect;
+					}
 						if (mImgScale != 1f)
 						{
 							float m = outTran2.mMatrix.m02;
@@ -1520,7 +1527,7 @@ namespace SexyFramework.Widget
 				}
 				if (mListener != null && pAObjectInst.mPostdrawCallback)
 				{
-					pAObjectInst.mPostdrawCallback = mListener.PopAnimObjectPostdraw(mId, g, theSpriteInst, pAObjectInst, theTransform.Value, theColor);
+					pAObjectInst.mPostdrawCallback = mListener.PopAnimObjectPostdraw(mId, g, theSpriteInst, pAObjectInst, listenerTransform, theColor);
 				}
 			}
 			DrawParticleEffects(g, theSpriteInst, theTransform, theColor, true);
@@ -2332,7 +2339,10 @@ namespace SexyFramework.Widget
 						blendSrcData.mParticleEffectVector = pAObjectInst.mSpriteInst.mParticleEffectVector;
 						pAObjectInst.mSpriteInst.mParticleEffectVector.Clear();
 					}
-					dictionary.Add(pAObjectPos.mName, blendSrcData);
+					if (!dictionary.ContainsKey(pAObjectPos.mName))
+					{
+						dictionary.Add(pAObjectPos.mName, blendSrcData);
+					}
 				}
 			}
 			List<PAParticleEffect> mParticleEffectVector = mMainSpriteInst.mParticleEffectVector;

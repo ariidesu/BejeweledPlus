@@ -881,6 +881,7 @@ namespace BejeweledLivePlus
 			mOverlay.Create(num, num2);
 			mOverlayGlow.Create(num, num2);
 			Graphics graphics = new Graphics(mOverlay);
+			graphics.ClearRect(0, 0, mOverlay.mWidth, mOverlay.mHeight);
 			graphics.SetColorizeImages(true);
 			Color color = default(Color);
 			color = GlobalMembers.gGemColors[mColor];
@@ -910,6 +911,7 @@ namespace BejeweledLivePlus
 			Utils.SetFontLayerColor(imageFont, 1, Color.Red);
 			Utils.SetFontLayerColor(imageFont, 0, Color.White);
 			Graphics graphics2 = new Graphics(mOverlayGlow);
+			graphics2.ClearRect(0, 0, mOverlayGlow.mWidth, mOverlayGlow.mHeight);
 			graphics2.SetColorizeImages(true);
 			graphics2.SetFont(imageFont);
 			graphics2.SetColor(new Color(255, 255, 255));

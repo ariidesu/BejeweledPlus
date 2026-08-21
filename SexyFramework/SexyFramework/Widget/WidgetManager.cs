@@ -347,7 +347,6 @@ namespace SexyFramework.Widget
 
 		public void DeferOverlay(Widget theWidget, int thePriority)
 		{
-			theWidget.mIsFinishDrawOverlay = false;
 			mDeferredOverlayWidgets.Add(new Pair<Widget, int>(theWidget, thePriority));
 			if (thePriority < mMinDeferredOverlayPriority)
 			{
@@ -368,7 +367,7 @@ namespace SexyFramework.Widget
 				for (int i = 0; i < mDeferredOverlayWidgets.Count; i++)
 				{
 					Widget key = mDeferredOverlayWidgets[i].Key;
-					if (key != null && !key.mIsFinishDrawOverlay)
+					if (key != null)
 					{
 						int value = mDeferredOverlayWidgets[i].Value;
 						if (value == mMinDeferredOverlayPriority)
@@ -378,7 +377,7 @@ namespace SexyFramework.Widget
 							graphics.Translate(key.mX, key.mY);
 							graphics.SetFastStretch(graphics.Is3D());
 							graphics.SetLinearBlend(graphics.Is3D());
-							mDeferredOverlayWidgets[i].Key.mIsFinishDrawOverlay = true;
+							mDeferredOverlayWidgets[i].Key = null;
 							key.DrawOverlay(graphics, value);
 							graphics.PopState();
 						}

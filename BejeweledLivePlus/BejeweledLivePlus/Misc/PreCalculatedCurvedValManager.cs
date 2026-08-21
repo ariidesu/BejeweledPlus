@@ -387,7 +387,7 @@ namespace BejeweledLivePlus.Misc
 
 		private CurvedVal[] mCurvedValLookupTable = new CurvedVal[375];
 
-		private void CalculateCurvedValsFromConfigFiles()
+		public void CalculateCurvedValsFromConfigFiles()
 		{
 			Dictionary<string, string> mParams = GlobalMembers.gApp.mSecretModeDataParser.mQuestDataVector[3].mParams;
 			Dictionary<string, string> mParams2 = GlobalMembers.gApp.mSecretModeDataParser.mQuestDataVector[2].mParams;
@@ -403,12 +403,18 @@ namespace BejeweledLivePlus.Misc
 			mCurvedValLookupTable[158].SetCurve(mParams["ArtifactSpread"]);
 			mCurvedValLookupTable[159].SetCurve(mParams["BrickStrSpread"]);
 			mCurvedValLookupTable[160].SetCurve(mParams["MineStrSpread"]);
-			mCurvedValLookupTable[230].SetCurve(mParams2["ColComboCoolDownVsCount"]);
-			mCurvedValLookupTable[235].SetCurve(mParams2["RowFireSpeed"]);
-			mCurvedValLookupTable[236].SetCurve(mParams2["LevelProgress"]);
-			mCurvedValLookupTable[237].SetCurve(mParams2["ColCountOverTime"]);
-			mCurvedValLookupTable[238].SetCurve(mParams2["ColDistribution"]);
-			mCurvedValLookupTable[239].SetCurve(mParams2["ReprieveStrVsRow"]);
+			mCurvedValLookupTable[(int)CURVED_VAL_ID.eINFERNO_BOARD_COL_COMBO_COOL_DOWN_VS_COUNT].SetCurve(mParams2["ColComboCoolDownVsCount"]);
+			mCurvedValLookupTable[(int)CURVED_VAL_ID.eINFERNO_BOARD_CV_ROW_FIRE_SPEED].SetCurve(mParams2["RowFireSpeed"]);
+			if (mParams2.ContainsKey("LevelProgress"))
+			{
+				mCurvedValLookupTable[(int)CURVED_VAL_ID.eINFERNO_BOARD_CV_LEVEL_PROGRESS].SetCurve(mParams2["LevelProgress"]);
+			}
+			if (mParams2.ContainsKey("ColCountOverTime"))
+			{
+				mCurvedValLookupTable[(int)CURVED_VAL_ID.eINFERNO_BOARD_COL_COUNT_OVER_TIME].SetCurve(mParams2["ColCountOverTime"]);
+			}
+			mCurvedValLookupTable[(int)CURVED_VAL_ID.eINFERNO_BOARD_COL_DISTRIB].SetCurve(mParams2["ColDistribution"]);
+			mCurvedValLookupTable[(int)CURVED_VAL_ID.eINFERNO_BOARD_REPRIEVE_STR].SetCurve(mParams2["ReprieveStrVsRow"]);
 			mCurvedValLookupTable[346].SetCurve(mParams3["5SecChanceCurve"]);
 			mCurvedValLookupTable[347].SetCurve(mParams3["10SecChanceCurve"]);
 		}
@@ -617,6 +623,11 @@ namespace BejeweledLivePlus.Misc
 			mCurvedValLookupTable[232].SetCurve("b;0,1,0.01,0.25,####         ~~###");
 			mCurvedValLookupTable[233].SetCurve("b;1,1.5,0.008,1,$###7h6t6qjk=] ,.n[(  c####     .####");
 			mCurvedValLookupTable[234].SetCurve("b+0,100,0.01,1,#### 3####        n~bRG");
+			mCurvedValLookupTable[235].SetCurve("b;0,1,0.01,2,#77v Z~###     N~###  v#<A6");
+			mCurvedValLookupTable[236].SetCurve("b;0.25,1.25,0.01,2,#7V. s~###     L~###  `#<R+#####");
+			mCurvedValLookupTable[237].SetCurve("b;-700,0,0.01,0.5,####o#2}4         2~####~Q2.");
+			mCurvedValLookupTable[238].SetCurve("b;55,230,0.01,1,~###V~i4O    P#OV7    x##J`##P##");
+			mCurvedValLookupTable[239].SetCurve("b;0,1,0.01,1,#### ]~### b#### `~### `#### X|### h####");
 			mCurvedValLookupTable[240].SetCurve("b;0,8,0.01,0.5,#1QB    t~&KQ     -#EAC");
 			mCurvedValLookupTable[241].SetCurve("b;0,15,0.01,0.5,#1QB    t~&KQ     -#EAC");
 			mCurvedValLookupTable[242].SetCurve("b;0,1,0.01,1,~###         ~####");

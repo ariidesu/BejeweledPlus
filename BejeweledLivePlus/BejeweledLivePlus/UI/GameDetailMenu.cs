@@ -477,6 +477,8 @@ namespace BejeweledLivePlus.UI
 				break;
 			}
 			case GameMode.MODE_BUTTERFLY:
+			case GameMode.MODE_ICESTORM:
+			case GameMode.MODE_INFERNOSTORM:
 			{
 				int mPoints3 = theBoard.mPoints;
 				mHeadingLabel.SetText(Common.CommaSeperate(mPoints3));

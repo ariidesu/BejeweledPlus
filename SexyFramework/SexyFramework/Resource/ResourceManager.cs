@@ -1196,6 +1196,21 @@ namespace SexyFramework.Resource
 					popAnim.mImgScale = 0.625f;
 					popAnim.mDrawScale = 0.625f;
 				}
+				if (string.Compare(theRes.mPath, "images\\960\\quest\\inferno\\IcestormUI\\IcestormUI.pam") == 0)
+				{
+					popAnim.mImgScale = 0.625f;
+					popAnim.mDrawScale = 0.625f;
+				}
+				if (string.Compare(theRes.mPath, "images\\960\\quest\\inferno\\IcestormUI\\IcestormDeath.pam") == 0)
+				{
+					popAnim.mImgScale = 0.625f;
+					popAnim.mDrawScale = 0.8f;
+				}
+				if (string.Compare(theRes.mPath, "images\\960\\quest\\inferno\\IcestormFill\\IcestormFill.pam") == 0)
+				{
+					popAnim.mImgScale = 0.8f;
+					popAnim.mDrawScale = 0.8f;
+				}
 				if (string.Compare(theRes.mPath, "images\\960\\anims\\column1\\column1.pam") == 0 || string.Compare(theRes.mPath, "images\\960\\anims\\column2\\column2.pam") == 0)
 				{
 					popAnim.mImgScale = 0.65f;
@@ -2180,13 +2195,18 @@ namespace SexyFramework.Resource
 		public ResourceRef GetResourceRefFromPath(string theFileName)
 		{
 			string text = theFileName.ToUpper();
-			if (text.IndexOf(".") != -1)
-			{
-				text = text.Substring(0, text.IndexOf("."));
-			}
 			if (mResFromPathMap.ContainsKey(text))
 			{
 				return GetResourceRef(mResFromPathMap[text]);
+			}
+			int extensionPos = text.LastIndexOf('.');
+			if (extensionPos != -1)
+			{
+				text = text.Substring(0, extensionPos);
+				if (mResFromPathMap.ContainsKey(text))
+				{
+					return GetResourceRef(mResFromPathMap[text]);
+				}
 			}
 			return null;
 		}

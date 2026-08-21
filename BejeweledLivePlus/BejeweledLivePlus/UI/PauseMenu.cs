@@ -354,6 +354,7 @@ namespace BejeweledLivePlus.UI
 					GlobalMembers.gApp.DoHelpDialog(17, 1);
 					break;
 				case GameMode.MODE_ICESTORM:
+				case GameMode.MODE_INFERNOSTORM:
 					GlobalMembers.gApp.DoHelpDialog(20, 1);
 					break;
 				default:

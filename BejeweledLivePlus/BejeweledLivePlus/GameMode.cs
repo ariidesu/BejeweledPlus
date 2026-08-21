@@ -12,6 +12,7 @@ namespace BejeweledLivePlus
 		MODE_BLITZ,
 		MODE_TIMEBOMB,
 		MODE_REALTIMEBOMB,
+		MODE_INFERNOSTORM,
 		MODE_MAX
 	}
 }

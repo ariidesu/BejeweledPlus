@@ -20,14 +20,15 @@ namespace BejeweledLivePlus.UI
 			BTN_LIGHTNING_ID,
 			BTN_BLITZ_ID,
 			BTN_BUTTERFLY_ID,
-			BTN_COMING_SOON_ID,
+			BTN_ICESTORM_ID,
 			BTN_MORE_1_ID,
 			BTN_MORE_2_ID,
 			BTN_MORE_3_ID,
 			BTN_MORE_4_ID,
 			BTN_MORE_5_ID,
 			BTN_TIMEBOMB_ID,
-			BTN_REALTIMEBOMB_ID
+			BTN_REALTIMEBOMB_ID,
+			BTN_INFERNOSTORM_ID
 		}
 
 		public enum PAGE_NUM
@@ -56,6 +57,8 @@ namespace BejeweledLivePlus.UI
 
 		private CrystalBall mButterflyButton;
 
+		private CrystalBall mIceStormButton;
+
 		private CrystalBall mZenButton;
 
 		private CrystalBall mDiamondMineButton;
@@ -68,7 +71,7 @@ namespace BejeweledLivePlus.UI
 
 		private CrystalBall mRealTimeBombButton;
 
-		private CrystalBall mComingSoonButton;
+		private CrystalBall mInfernoStormButton;
 
 		private ArrowButton Tst1Button;
 
@@ -94,7 +97,7 @@ namespace BejeweledLivePlus.UI
 			mButtons = new List<CrystalBall>();
 			mCrystalBallCountdown = 150;
 			mDoesSlideInFromBottom = (mCanAllowSlide = false);
-			mZenButton = new CrystalBall(GlobalMembers._ID("ZEN", 3366), GlobalMembers._ID("", 3367), GlobalMembers._ID("", 3368), 1, this, Bej3Widget.COLOR_CRYSTALBALL_FONT, ConstantsWP.MAIN_MENU_BUTTON_ZEN_SCALE + 0.1f);
+			mZenButton = new CrystalBall(GlobalMembers._ID("ZEN", 3366), GlobalMembers._ID("", 3367), GlobalMembers._ID("", 3368), 1, this, Bej3Widget.COLOR_CRYSTALBALL_FONT, ConstantsWP.MAIN_MENU_BUTTON_ZEN_SCALE);
 			mButtons.Add(mZenButton);
 			AddWidget(mZenButton);
 			mDiamondMineButton = new CrystalBall(GlobalMembers._ID("DIAMOND", 3369), GlobalMembers._ID("MINE", 3370), GlobalMembers._ID("", 3371), 2, this, Bej3Widget.COLOR_CRYSTALBALL_FONT, ConstantsWP.MAIN_MENU_BUTTON_DIAMONDMINE_SCALE);
@@ -104,24 +107,35 @@ namespace BejeweledLivePlus.UI
 			mButtons.Add(mClassicButton);
 			AddWidget(mClassicButton);
 			mLightningButton = new CrystalBall(GlobalMembers._ID("LIGHTNING", 3375), GlobalMembers._ID("", 3376), GlobalMembers._ID("", 3377), 3, this, Bej3Widget.COLOR_CRYSTALBALL_FONT, ConstantsWP.MAIN_MENU_BUTTON_LIGHTNING_SCALE);
+			mLightningButton.mFontScale = 0.9f;
 			mButtons.Add(mLightningButton);
 			AddWidget(mLightningButton);
 			mBlitzButton = new CrystalBall(GlobalMembers._ID("BLITZ", 3363), GlobalMembers._ID("", 3374), GlobalMembers._ID("", 3386), (int)MAINMENU_BUTTON_IDS.BTN_BLITZ_ID, this, Bej3Widget.COLOR_CRYSTALBALL_FONT, ConstantsWP.MAIN_MENU_BUTTON_BLITZ_SCALE);
 			mButtons.Add(mBlitzButton);
 			AddWidget(mBlitzButton);
-			mButterflyButton = new CrystalBall(GlobalMembers._ID("BUTTERFLIES", 3378), GlobalMembers._ID("", 3379), GlobalMembers._ID("", 3380), 5, this, Bej3Widget.COLOR_CRYSTALBALL_FONT, ConstantsWP.MAIN_MENU_BUTTON_BUTTERFLIES_SCALE + 0.1f);
+			mButterflyButton = new CrystalBall(GlobalMembers._ID("BUTTERFLIES", 3378), GlobalMembers._ID("", 3379), GlobalMembers._ID("", 3380), 5, this, Bej3Widget.COLOR_CRYSTALBALL_FONT, ConstantsWP.MAIN_MENU_BUTTON_BUTTERFLIES_SCALE);
 			mButtons.Add(mButterflyButton);
 			AddWidget(mButterflyButton);
+			mIceStormButton = new CrystalBall(GlobalMembers._ID("ICE STORM", 444), GlobalMembers._ID("", 3379), GlobalMembers._ID("", 3380), (int)MAINMENU_BUTTON_IDS.BTN_ICESTORM_ID, this, Bej3Widget.COLOR_CRYSTALBALL_FONT, ConstantsWP.MAIN_MENU_BUTTON_ICESTORM_SCALE);
+			mIceStormButton.mFontScale = 0.9f;
+			mButtons.Add(mIceStormButton);
+			AddWidget(mIceStormButton);
 			mMatchBombButton = new CrystalBall(GlobalMembers._ID("MATCH", 3410), GlobalMembers._ID("BOMB", 3412), GlobalMembers._ID("", 3386), (int)MAINMENU_BUTTON_IDS.BTN_TIMEBOMB_ID, this, Bej3Widget.COLOR_CRYSTALBALL_FONT, ConstantsWP.MAIN_MENU_BUTTON_BLITZ_SCALE);
 			mButtons.Add(mMatchBombButton);
 			AddWidget(mMatchBombButton);
 			mRealTimeBombButton = new CrystalBall(GlobalMembers._ID("TIME", 3411), GlobalMembers._ID("BOMB", 3412), GlobalMembers._ID("", 3386), (int)MAINMENU_BUTTON_IDS.BTN_REALTIMEBOMB_ID, this, Bej3Widget.COLOR_CRYSTALBALL_FONT, ConstantsWP.MAIN_MENU_BUTTON_BLITZ_SCALE);
 			mButtons.Add(mRealTimeBombButton);
 			AddWidget(mRealTimeBombButton);
+			mInfernoStormButton = new CrystalBall(GlobalMembers._ID("INFERNO", 8891), GlobalMembers._ID("STORM", 8892), GlobalMembers._ID("", 3386), (int)MAINMENU_BUTTON_IDS.BTN_INFERNOSTORM_ID, this, Bej3Widget.COLOR_CRYSTALBALL_FONT, ConstantsWP.MAIN_MENU_BUTTON_BLITZ_SCALE);
+			mInfernoStormButton.mFontScale = 0.9f;
+			mButtons.Add(mInfernoStormButton);
+			AddWidget(mInfernoStormButton);
 			mLeaderBoardButton = new CrystalBall(GlobalMembers._ID("LeaderBoards", 3381), GlobalMembers._ID("", 3382), GlobalMembers._ID("", 3383), 7, this, Bej3Widget.COLOR_CRYSTALBALL_FONT, ConstantsWP.MAIN_MENU_BUTTON_BUTTERFLIES_SCALE - 0.3f);
+			mLeaderBoardButton.mFontScale = 0.88f;
 			mButtons.Add(mLeaderBoardButton);
 			AddWidget(mLeaderBoardButton);
 			mAchievementButton = new CrystalBall(GlobalMembers._ID("Achievements", 3384), GlobalMembers._ID("", 3385), GlobalMembers._ID("", 3386), 8, this, Bej3Widget.COLOR_CRYSTALBALL_FONT, ConstantsWP.MAIN_MENU_BUTTON_BUTTERFLIES_SCALE - 0.3f);
+			mAchievementButton.mFontScale = 0.88f;
 			mButtons.Add(mAchievementButton);
 			AddWidget(mAchievementButton);
 			mBuyFullGameButton = new CrystalBall(GlobalMembers._ID("Buy", 3387), GlobalMembers._ID("FullGame", 3388), GlobalMembers._ID("", 3389), 9, this, Bej3Widget.COLOR_CRYSTALBALL_FONT, ConstantsWP.MAIN_MENU_BUTTON_BUTTERFLIES_SCALE);
@@ -161,17 +175,19 @@ namespace BejeweledLivePlus.UI
 			int num2 = 40;
 			Bej3Widget.CenterWidgetAt(ConstantsWP.MAIN_MENU_BUTTON_BLITZ_X - 75, ConstantsWP.MAIN_MENU_BUTTON_BLITZ_Y + 470 + num, Tst2Button);
 			Bej3Widget.CenterWidgetAt(ConstantsWP.MAIN_MENU_BUTTON_DIAMONDMINE_X + 75, ConstantsWP.MAIN_MENU_BUTTON_BLITZ_Y + 470 + num, Tst1Button);
-			Bej3Widget.CenterWidgetAt(ConstantsWP.MAIN_MENU_BUTTON_CLASSIC_X, ConstantsWP.MAIN_MENU_BUTTON_BLITZ_Y + 410 + num, mBuyFullGameButton);
-			Bej3Widget.CenterWidgetAt(ConstantsWP.MAIN_MENU_BUTTON_CLASSIC_X, ConstantsWP.MAIN_MENU_BUTTON_BLITZ_Y + 250 + num, mAchievementButton);
-			Bej3Widget.CenterWidgetAt(ConstantsWP.MAIN_MENU_BUTTON_CLASSIC_X, ConstantsWP.MAIN_MENU_BUTTON_BLITZ_Y + 120 + num, mLeaderBoardButton);
-			Bej3Widget.CenterWidgetAt(ConstantsWP.MAIN_MENU_BUTTON_BUTTERFLIES_X + (int)(1.55f * ConstantsWP.MAIN_MENU_BUTTON_CLASSIC_X), ConstantsWP.MAIN_MENU_BUTTON_BUTTERFLIES_Y + 30, mButterflyButton);
-			Bej3Widget.CenterWidgetAt(ConstantsWP.MAIN_MENU_BUTTON_BLITZ_X, ConstantsWP.MAIN_MENU_BUTTON_BLITZ_Y + num, mLightningButton);
-			Bej3Widget.CenterWidgetAt(ConstantsWP.MAIN_MENU_BUTTON_BUTTERFLIES_X + (int)(2.45f * ConstantsWP.MAIN_MENU_BUTTON_CLASSIC_X), ConstantsWP.MAIN_MENU_BUTTON_BUTTERFLIES_Y + 30, mBlitzButton);
-			Bej3Widget.CenterWidgetAt(ConstantsWP.MAIN_MENU_BUTTON_BUTTERFLIES_X + (int)(1.35f * ConstantsWP.MAIN_MENU_BUTTON_CLASSIC_X), ConstantsWP.MAIN_MENU_BUTTON_BUTTERFLIES_Y - 160, mMatchBombButton);
-			Bej3Widget.CenterWidgetAt(ConstantsWP.MAIN_MENU_BUTTON_BUTTERFLIES_X + (int)(2.65f * ConstantsWP.MAIN_MENU_BUTTON_CLASSIC_X), ConstantsWP.MAIN_MENU_BUTTON_BUTTERFLIES_Y - 160, mRealTimeBombButton);
-			Bej3Widget.CenterWidgetAt(ConstantsWP.MAIN_MENU_BUTTON_CLASSIC_X, ConstantsWP.MAIN_MENU_BUTTON_CLASSIC_Y + num, mClassicButton);
-			Bej3Widget.CenterWidgetAt(ConstantsWP.MAIN_MENU_BUTTON_DIAMONDMINE_X, ConstantsWP.MAIN_MENU_BUTTON_DIAMONDMINE_Y + num, mDiamondMineButton);
-			Bej3Widget.CenterWidgetAt(ConstantsWP.MAIN_MENU_BUTTON_ZEN_X + 2 * ConstantsWP.MAIN_MENU_BUTTON_CLASSIC_X, ConstantsWP.MAIN_MENU_BUTTON_ZEN_Y + num + num2, mZenButton);
+			Bej3Widget.CenterWidgetAt(ConstantsWP.MAIN_MENU_BUTTON_CLASSIC_X, ConstantsWP.MAIN_MENU_BUTTON_BLITZ_Y + 410 + 180, mBuyFullGameButton);
+			Bej3Widget.CenterWidgetAt(ConstantsWP.MAIN_MENU_BUTTON_CLASSIC_X, ConstantsWP.MAIN_MENU_BUTTON_BLITZ_Y + 250 + 180, mAchievementButton);
+			Bej3Widget.CenterWidgetAt(ConstantsWP.MAIN_MENU_BUTTON_CLASSIC_X, ConstantsWP.MAIN_MENU_BUTTON_BLITZ_Y + 120 + 180, mLeaderBoardButton);
+			Bej3Widget.CenterWidgetAt(ConstantsWP.MAIN_MENU_BUTTON_BUTTERFLIES_X, ConstantsWP.MAIN_MENU_BUTTON_BUTTERFLIES_Y, mButterflyButton);
+			Bej3Widget.CenterWidgetAt(ConstantsWP.MAIN_MENU_BUTTON_ICESTORM_X, ConstantsWP.MAIN_MENU_BUTTON_ICESTORM_Y, mIceStormButton);
+			Bej3Widget.CenterWidgetAt(ConstantsWP.MAIN_MENU_BUTTON_LIGHTNING_X, ConstantsWP.MAIN_MENU_BUTTON_LIGHTNING_Y, mLightningButton);
+			Bej3Widget.CenterWidgetAt(ConstantsWP.MAIN_MENU_BUTTON_CLASSIC_X * 3 - 170, ConstantsWP.MAIN_MENU_BUTTON_CLASSIC_Y - 50, mBlitzButton);
+			Bej3Widget.CenterWidgetAt(ConstantsWP.MAIN_MENU_BUTTON_CLASSIC_X * 3 + 170, ConstantsWP.MAIN_MENU_BUTTON_CLASSIC_Y - 50, mInfernoStormButton);
+			Bej3Widget.CenterWidgetAt(ConstantsWP.MAIN_MENU_BUTTON_CLASSIC_X * 3 - 170, ConstantsWP.MAIN_MENU_BUTTON_CLASSIC_Y + 220, mMatchBombButton);
+			Bej3Widget.CenterWidgetAt(ConstantsWP.MAIN_MENU_BUTTON_CLASSIC_X * 3 + 170, ConstantsWP.MAIN_MENU_BUTTON_CLASSIC_Y + 220, mRealTimeBombButton);
+			Bej3Widget.CenterWidgetAt(ConstantsWP.MAIN_MENU_BUTTON_CLASSIC_X, ConstantsWP.MAIN_MENU_BUTTON_CLASSIC_Y, mClassicButton);
+			Bej3Widget.CenterWidgetAt(ConstantsWP.MAIN_MENU_BUTTON_DIAMONDMINE_X, ConstantsWP.MAIN_MENU_BUTTON_DIAMONDMINE_Y, mDiamondMineButton);
+			Bej3Widget.CenterWidgetAt(ConstantsWP.MAIN_MENU_BUTTON_ZEN_X, ConstantsWP.MAIN_MENU_BUTTON_ZEN_Y, mZenButton);
 		}
 
 		public override void Dispose()
@@ -332,12 +348,12 @@ namespace BejeweledLivePlus.UI
 			case (int)MAINMENU_BUTTON_IDS.BTN_REALTIMEBOMB_ID:
 				GlobalMembers.gApp.DoNewGame(GameMode.MODE_REALTIMEBOMB);
 				break;
-			case 6:
-			{
-				Bej3Dialog bej3Dialog2 = (Bej3Dialog)GlobalMembers.gApp.DoDialog(0, true, GlobalMembers._ID("Coming Soon", 3399), GlobalMembers._ID("We're working hard to bring you more game modes in future updates. Stay tuned!", 3400), GlobalMembers._ID("BACK", 3606), 3, 3, 3);
-				GlobalMembers.gApp.mMenus[5].Transition_SlideOut();
+			case (int)MAINMENU_BUTTON_IDS.BTN_INFERNOSTORM_ID:
+				GlobalMembers.gApp.DoNewGame(GameMode.MODE_INFERNOSTORM);
 				break;
-			}
+			case (int)MAINMENU_BUTTON_IDS.BTN_ICESTORM_ID:
+				GlobalMembers.gApp.DoNewGame(GameMode.MODE_ICESTORM);
+				break;
 			case 7:
 				if (mIsFullGame)
 				{

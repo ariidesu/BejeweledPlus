@@ -114,6 +114,16 @@ namespace SexyFramework.Misc
 			return NextNoAssert(range);
 		}
 
+		public ulong NextNoAssert(ulong range)
+		{
+			return NextNoAssert() % range;
+		}
+
+		public ulong Next(ulong range)
+		{
+			return NextNoAssert(range);
+		}
+
 		public float NextNoAssert(float range)
 		{
 			return (float)((double)NextNoAssert() / 2147483647.0 * (double)range);

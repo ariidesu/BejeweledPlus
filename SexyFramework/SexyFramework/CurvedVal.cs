@@ -771,6 +771,12 @@ namespace SexyFramework
 			SetInVal(FindClosestInToOutVal(theTargetOutVal, theCheckInIncrPct, 0.0, 1.0, theStopAtLocalMin), true);
 		}
 
+		public void Intercept(CurvedVal theInterceptCv, double theCheckInIncrPct, bool theStopAtLocalMin)
+		{
+			double theTargetOutVal = ((theInterceptCv == null) ? this : theInterceptCv);
+			SetInVal(FindClosestInToOutVal(theTargetOutVal, theCheckInIncrPct, 0.0, 1.0, theStopAtLocalMin), true);
+		}
+
 		public void Intercept(string theData, CurvedVal theInterceptCv, double theCheckInIncrPct)
 		{
 			Intercept(theData, theInterceptCv, theCheckInIncrPct, false);

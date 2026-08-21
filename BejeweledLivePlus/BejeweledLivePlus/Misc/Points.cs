@@ -402,14 +402,8 @@ namespace BejeweledLivePlus.Misc
 			{
 				for (int i = 0; i < Utils.GetFontLayerCount(mFont); i++)
 				{
-					if (i != mLayerCount - 1)
-					{
-						Color cyc = mColorCycle[i].GetColor();
-						color.mRed = cyc.mRed;
-						color.mGreen = cyc.mGreen;
-						color.mBlue = cyc.mBlue;
-					}
-					color.mAlpha = (int)(mAlpha * 255f);
+					color = i == mLayerCount - 1 ? mColor : mColorCycle[i].GetColor();
+					color.mAlpha = (int)(color.mAlpha * mAlpha);
 					Utils.SetFontLayerColor(mFont, i, color);
 				}
 			}

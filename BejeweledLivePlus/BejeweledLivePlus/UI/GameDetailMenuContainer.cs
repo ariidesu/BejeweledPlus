@@ -182,7 +182,14 @@ namespace BejeweledLivePlus.UI
 				mSpecialGemsHeadingLabel.SetText(GlobalMembers._ID("SPECIAL GEMS", 3301));
 				break;
 			case GameMode.MODE_ZEN:
+				break;
 			case GameMode.MODE_ICESTORM:
+			case GameMode.MODE_INFERNOSTORM:
+				mStatsHeadingLabels[0].SetText(GlobalMembers._ID("Highest Multiplier", 271));
+				mStatsHeadingLabels[1].SetText(GlobalMembers._ID("Columns Crushed", 273));
+				mStatsHeadingLabels[2].SetText(GlobalMembers._ID("Best Column Combo", 272));
+				mStatsHeadingLabels[3].SetText(GlobalMembers._ID("Total Time", 274));
+				mSpecialGemsHeadingLabel.SetText(GlobalMembers._ID("SPECIAL GEMS", 3301));
 				break;
 			case GameMode.MODE_BLITZ:
 				mStatsHeadingLabels[0].SetText(GlobalMembers._ID("Highest Multiplier:", 3317));
@@ -223,6 +230,8 @@ namespace BejeweledLivePlus.UI
 			case GameMode.MODE_CLASSIC:
 			case GameMode.MODE_LIGHTNING:
 			case GameMode.MODE_BUTTERFLY:
+			case GameMode.MODE_ICESTORM:
+			case GameMode.MODE_INFERNOSTORM:
 			case GameMode.MODE_POKER:
 			case GameMode.MODE_TIMEBOMB:
 			case GameMode.MODE_REALTIMEBOMB:
@@ -378,6 +387,20 @@ namespace BejeweledLivePlus.UI
 				mSpecialStatsStrings[1] = string.Format(GlobalMembers._ID("x {0}", 3326), theBoard.mGameStats[18]);
 				mSpecialStatsStrings[2] = string.Format(GlobalMembers._ID("x {0}", 3327), theBoard.mGameStats[19]);
 				break;
+			case GameMode.MODE_ICESTORM:
+			case GameMode.MODE_INFERNOSTORM:
+			{
+				InfernoBoard infernoBoard = (InfernoBoard)theBoard;
+				int totalTime = theBoard.mGameStats[(int)STAT.STAT_SECONDS_PLAYED];
+				mStatsLabels[0].SetText(string.Format(GlobalMembers._ID("x{0}", 275), theBoard.mPointMultiplier));
+				mStatsLabels[1].SetText(theBoard.mGameStats[(int)STAT.STAT_ICESTORM_COLUMNS_SMASHED].ToString());
+				mStatsLabels[2].SetText(infernoBoard.mColComboHighest.ToString());
+				mStatsLabels[3].SetText(string.Format(GlobalMembers._ID("{0}:{1:d02}", 276), totalTime / 60, totalTime % 60));
+				mSpecialStatsStrings[0] = string.Format(GlobalMembers._ID("x {0}", 230), theBoard.mGameStats[17]);
+				mSpecialStatsStrings[1] = string.Format(GlobalMembers._ID("x {0}", 231), theBoard.mGameStats[18]);
+				mSpecialStatsStrings[2] = string.Format(GlobalMembers._ID("x {0}", 232), theBoard.mGameStats[19]);
+				break;
+			}
 			case GameMode.MODE_POKER:
 				throw new NotImplementedException();
 			case GameMode.MODE_LIGHTNING:

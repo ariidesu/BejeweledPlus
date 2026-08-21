@@ -59,9 +59,9 @@ namespace BejeweledLivePlus
 		public string[] initialLoadGroups =
 		{
 			"Common", "Fonts", "MainMenu", "GamePlay", "HyperspaceWhirlpool_Common", "HyperspaceWhirlpool_Normal", "AwardGlow", "GamePlay_UI_Normal", "GamePlay_UI_Dig_Common", "GamePlay_UI_Dig",
-			"GamePlayQuest_Lightning", "GamePlayQuest_Dig", "GamePlayQuest_Butterfly_Common", "GamePlayQuest_Butterfly", "GamePlayQuest_TimeBomb", "Badges", "BADGES_BIG_ELITE", "BADGES_BIG_BRONZE", "BADGES_BIG_SILVER", "BADGES_BIG_GOLD", "BADGES_BIG_PLATINUM",
+			"GamePlayQuest_Lightning", "GamePlayQuest_Inferno", "GamePlayQuest_Dig", "GamePlayQuest_Butterfly_Common", "GamePlayQuest_Butterfly", "GamePlayQuest_TimeBomb", "Badges", "BADGES_BIG_ELITE", "BADGES_BIG_BRONZE", "BADGES_BIG_SILVER", "BADGES_BIG_GOLD", "BADGES_BIG_PLATINUM",
 			"BADGES_BIG_LEVELORD", "BADGES_BIG_BEJEWELER", "BADGES_BIG_DIAMOND_MINE", "BADGES_BIG_RELIC_HUNTER", "BADGES_BIG_ELECTRIFIER", "BADGES_BIG_HIGH_VOLTAGE", "BADGES_BIG_BUTTERFLY_MONARCH", "BADGES_BIG_BUTTERFLY_BONANZA", "BADGES_BIG_CHROMATIC", "BADGES_BIG_STELLAR",
-			"BADGES_BIG_BLASTER", "BADGES_BIG_SUPERSTAR", "BADGES_BIG_CHAIN_REACTION", "BADGES_BIG_LUCKY_STREAK", "Help_Basic", "Help_Bfly", "Help_DiamondMine", "Help_Lightning", "Help_Bfly", "ProfilePic_0",
+			"BADGES_BIG_BLASTER", "BADGES_BIG_SUPERSTAR", "BADGES_BIG_CHAIN_REACTION", "BADGES_BIG_LUCKY_STREAK", "Help_Basic", "Help_Bfly", "Help_DiamondMine", "Help_IceStorm", "Help_Lightning", "Help_Bfly", "ProfilePic_0",
 			"ZenOptions", "BadgesGrayIcon", "AtlasEx", null
 		};
 
@@ -667,6 +667,8 @@ namespace BejeweledLivePlus
 				resExtract_["IMAGE_GEMSNORMAL_BLUE"] = GlobalMembersResourcesWP.ExtractGamePlay_960Resources;
 				resExtract_["IMAGE_ARROW_GLOW"] = GlobalMembersResourcesWP.ExtractMainMenu_960Resources;
 				resExtract_["IMAGE_INGAMEUI_LIGHTNING_TIMER"] = GlobalMembersResourcesWP.ExtractGamePlayQuest_Lightning_960Resources;
+				resExtract_["IMAGE_INGAMEUI_ICE_STORM_ICE_BOTTOM"] = GlobalMembersResourcesWP.ExtractGamePlayQuest_Inferno_960Resources;
+				resExtract_["POPANIM_ANIMS_COLUMN1"] = GlobalMembersResourcesWP.ExtractGamePlayQuest_Inferno_CommonResources;
 				resExtract_["IMAGE_HYPERSPACE_WHIRLPOOL_BLACK_HOLE_COVER"] = GlobalMembersResourcesWP.ExtractHyperspaceWhirlpool_Common_960Resources;
 				resExtract_["IMAGE_HYPERSPACE_WHIRLPOOL_HYPERSPACE_NORMAL"] = GlobalMembersResourcesWP.ExtractHyperspaceWhirlpool_Normal_960Resources;
 				resExtract_["IMAGE_AWARD_GLOW"] = GlobalMembersResourcesWP.ExtractAwardGlow_960Resources;
@@ -702,6 +704,7 @@ namespace BejeweledLivePlus
 				resExtract_["POPANIM_HELP_STARGEM"] = GlobalMembersResourcesWP.ExtractHelp_Basic_CommonResources;
 				resExtract_["POPANIM_HELP_BFLY_SPIDER"] = GlobalMembersResourcesWP.ExtractHelp_Bfly_CommonResources;
 				resExtract_["POPANIM_HELP_DIAMOND_GOLD"] = GlobalMembersResourcesWP.ExtractHelp_DiamondMine_CommonResources;
+				resExtract_["POPANIM_HELP_ICESTORM_HORIZ"] = GlobalMembersResourcesWP.ExtractHelp_IceStorm_CommonResources;
 				resExtract_["POPANIM_HELP_LIGHTNING_SPEED"] = GlobalMembersResourcesWP.ExtractHelp_Lightning_CommonResources;
 				resExtract_["IMAGE_PP29"] = GlobalMembersResourcesWP.ExtractProfilePic_0Resources;
 				resExtract_["IMAGE_ZEN_OPTIONS_WEIGHT_LOSS"] = GlobalMembersResourcesWP.ExtractZenOptions_960Resources;
@@ -947,6 +950,11 @@ namespace BejeweledLivePlus
 
 		public void PopAnimStopped(int theId)
 		{
+			if (theId == 1000 && mBoard is InfernoBoard &&
+				GlobalMembersResourcesWP.POPANIM_QUEST_INFERNO_ICESTORMFILL != null)
+			{
+				GlobalMembersResourcesWP.POPANIM_QUEST_INFERNO_ICESTORMFILL.Play("loop", false);
+			}
 		}
 
 		public void PopAnimCommand(int theId, string theCommand, string theParam)
@@ -1110,12 +1118,17 @@ namespace BejeweledLivePlus
 			StartSetupGame(true);
 		}
 
-		private void DoNewEndlessGame(EEndlessMode theId, bool isRestart = false)
+		private void DoNewEndlessGame(EEndlessMode theId, bool isRestart = false, bool allowSpeedBonus = false)
 		{
-			DoNewConfigGame((int)theId, mSecretModeDataParser, true, isRestart);
+			DoNewConfigGame((int)theId, mSecretModeDataParser, true, isRestart, allowSpeedBonus);
 		}
 
-		private void DoNewConfigGame(int theId, QuestDataParser theParams, bool isPerprtual, bool isRestart = false)
+		private void DoNewInfernoStormGame(bool isRestart = false)
+		{
+			DoNewEndlessGame(EEndlessMode.ENDLESS_ICESTORM, isRestart, true);
+		}
+
+		private void DoNewConfigGame(int theId, QuestDataParser theParams, bool isPerprtual, bool isRestart = false, bool allowSpeedBonus = false)
 		{
 			mLastDataParserId = theId;
 			mLastDataParser = theParams;
@@ -1126,6 +1139,9 @@ namespace BejeweledLivePlus
 			case "BUTTERFLIES":
 			case "BUTTERFLY":
 				mBoard = new ButterflyBoard();
+				break;
+			case "INFERNO":
+				mBoard = new InfernoBoard(allowSpeedBonus);
 				break;
 			case "DIG":
 				mBoard = new DigBoard();
@@ -1538,7 +1554,9 @@ namespace BejeweledLivePlus
 			case GameMode.MODE_POKER:
 				return GlobalMembers._ID("POKER", 3213);
 			case GameMode.MODE_ICESTORM:
-				return GlobalMembers._ID("ICESTORM", 3214);
+				return GlobalMembers._ID("ICE STORM", 444);
+			case GameMode.MODE_INFERNOSTORM:
+				return GlobalMembers._ID("INFERNO STORM", 8890);
 			case GameMode.MODE_BLITZ:
 				return GlobalMembers._ID("BLITZ", 3363);
 			case GameMode.MODE_TIMEBOMB:
@@ -1564,6 +1582,9 @@ namespace BejeweledLivePlus
 				return GlobalMembers._ID("Score as many points as possible until there are no more moves.", 3557);
 			case GameMode.MODE_BUTTERFLY:
 				return GlobalMembers._ID("Score as many points as you can before a Butterfly Gem reaches the top.", 3558);
+			case GameMode.MODE_ICESTORM:
+			case GameMode.MODE_INFERNOSTORM:
+				return GlobalMembers._ID("Score as many points as possible before the ice reaches the top.", 3207);
 			case GameMode.MODE_BLITZ:
 				return GlobalMembers._ID("Score as many points as you can before the time runs out.", 3555);
 			default:
@@ -1590,6 +1611,10 @@ namespace BejeweledLivePlus
 				break;
 			case GameMode.MODE_BUTTERFLY:
 				result = 17;
+				break;
+			case GameMode.MODE_ICESTORM:
+			case GameMode.MODE_INFERNOSTORM:
+				result = 20;
 				break;
 			case GameMode.MODE_BLITZ:
 				result = 0;
@@ -1639,6 +1664,14 @@ namespace BejeweledLivePlus
 			if (theLocalisedTableName == GlobalMembers._ID("BUTTERFLIES", 3212))
 			{
 				return "BUTTERFLIES";
+			}
+			if (theLocalisedTableName == GlobalMembers._ID("ICE STORM", 444))
+			{
+				return "ICESTORM";
+			}
+			if (theLocalisedTableName == GlobalMembers._ID("INFERNO STORM", 8890))
+			{
+				return "INFERNOSTORM";
 			}
 			if (theLocalisedTableName == GlobalMembers._ID("BLITZ", 3363))
 			{
@@ -1713,6 +1746,7 @@ namespace BejeweledLivePlus
 			{
 				Popup(mSpeedModeDataParser.mError);
 			}
+			mCurveValCache?.CalculateCurvedValsFromConfigFiles();
 		}
 
 		public void LoadHighscores()
@@ -1916,6 +1950,12 @@ namespace BejeweledLivePlus
 				break;
 			case GameMode.MODE_BUTTERFLY:
 				DoNewEndlessGame(EEndlessMode.ENDLESS_BUTTERFLY);
+				break;
+			case GameMode.MODE_ICESTORM:
+				DoNewEndlessGame(EEndlessMode.ENDLESS_ICESTORM);
+				break;
+			case GameMode.MODE_INFERNOSTORM:
+				DoNewInfernoStormGame();
 				break;
 			case GameMode.MODE_BLITZ:
 				DoNewBlitzGame(1);
