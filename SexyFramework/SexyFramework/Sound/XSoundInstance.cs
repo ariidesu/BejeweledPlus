@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework.Audio;
 
@@ -95,7 +96,13 @@ namespace SexyFramework.Sound
 
 		public override void AdjustPitch(double theNumSteps)
 		{
-			mPitch = (float)theNumSteps;
+			// is this correct
+			double rate = Math.Max(0.5, Math.Min(1.1, Math.Pow(1.0595, theNumSteps)));
+			mPitch = (float)(Math.Log(rate) / Math.Log(2.0));
+			if (m_SoundInstance != null)
+			{
+				m_SoundInstance.Pitch = mPitch;
+			}
 		}
 
 		public override void SetVolume(double theVolume)
