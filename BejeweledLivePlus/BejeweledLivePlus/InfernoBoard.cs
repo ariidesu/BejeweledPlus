@@ -534,7 +534,6 @@ namespace BejeweledLivePlus
 			mLastIceRemoved = 0f;
 			mIceRemoved = 0f;
 			mBackDim.SetConstant(0.0);
-			mBackDim.mAppUpdateCountSrc = mCurveUpdateCount;
 			mDeathAnimPct.SetConstant(0.0);
 			GlobalMembers.gApp.mCurveValCache.GetCurvedVal(PreCalculatedCurvedValManager.CURVED_VAL_ID.eINFERNO_BOARD_LOSE_FRAME_PCT, mLoseFramePct);
 			mIntroSnow.SetConstant(0.0);

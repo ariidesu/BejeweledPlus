@@ -222,6 +222,7 @@ namespace SexyFramework
 			mIsHermite = false;
 			mAutoInc = false;
 			mInitAppUpdateCount = 0;
+			mAppUpdateCountSrc = GlobalMembers.gSexyAppBase.mUpdateCount;
 			mOutMin = 0.0;
 			mOutMax = 1.0;
 			mInMin = 0.0;
