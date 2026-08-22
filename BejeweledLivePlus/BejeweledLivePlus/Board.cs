@@ -13034,7 +13034,6 @@ namespace BejeweledLivePlus
 				{
 					mIllegalMoveTutorial = false;
 				}
-				bej3Dialog.mVisible = false;
 				mTutorialPieceIrisPct.SetConstant(0.0);
 				bej3Dialog.Kill();
 			}
