@@ -18,10 +18,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <NativeReference Include="bass.xcframework">
-            <Kind>Framework</Kind>
-            <ForceLoad>True</ForceLoad>
-        </NativeReference>
+        <NativeReference Include="$(MSBuildProjectDirectory)/bass.xcframework" Kind="Framework" />
     </ItemGroup>
 
     <ItemGroup>
