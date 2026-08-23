@@ -27,7 +27,7 @@ namespace SexyFramework.Widget
 
 		public int mId;
 
-		public string mLabel;
+		public string mLabel = String.Empty;
 
 		public int mLabelJustify;
 

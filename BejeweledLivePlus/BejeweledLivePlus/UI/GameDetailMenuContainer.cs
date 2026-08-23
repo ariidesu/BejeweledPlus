@@ -389,7 +389,6 @@ namespace BejeweledLivePlus.UI
 				break;
 			case GameMode.MODE_ICESTORM:
 			case GameMode.MODE_INFERNOSTORM:
-			{
 				InfernoBoard infernoBoard = (InfernoBoard)theBoard;
 				int totalTime = theBoard.mGameStats[(int)STAT.STAT_SECONDS_PLAYED];
 				mStatsLabels[0].SetText(string.Format(GlobalMembers._ID("x{0}", 275), theBoard.mPointMultiplier));
@@ -400,9 +399,16 @@ namespace BejeweledLivePlus.UI
 				mSpecialStatsStrings[1] = string.Format(GlobalMembers._ID("x {0}", 231), theBoard.mGameStats[18]);
 				mSpecialStatsStrings[2] = string.Format(GlobalMembers._ID("x {0}", 232), theBoard.mGameStats[19]);
 				break;
-			}
 			case GameMode.MODE_POKER:
-				throw new NotImplementedException();
+				PokerBoard pokerBoard = (PokerBoard)theBoard;
+				mStatsLabels[0].SetText(SexyFramework.Common.CommaSeperate(pokerBoard.mBestHandPts));
+				mStatsLabels[1].SetText(pokerBoard.mHandsDealt.ToString());
+				mStatsLabels[2].SetText(pokerBoard.mSkullsBusted.ToString());
+				mStatsLabels[3].SetText(theBoard.mGameStats[(int)STAT.STAT_SKULL_COIN_FLIPS].ToString());
+				mSpecialStatsStrings[0] = string.Format(GlobalMembers._ID("x {0}", 3325), theBoard.mGameStats[17]);
+				mSpecialStatsStrings[1] = string.Format(GlobalMembers._ID("x {0}", 3326), theBoard.mGameStats[18]);
+				mSpecialStatsStrings[2] = string.Format(GlobalMembers._ID("x {0}", 3327), theBoard.mGameStats[19]);
+				break;
 			case GameMode.MODE_LIGHTNING:
 				mStatsLabels[0].SetText(SexyFramework.Common.CommaSeperate(theBoard.mPointMultiplier));
 				mStatsLabels[1].SetText(SexyFramework.Common.CommaSeperate(theBoard.mGameStats[25]));

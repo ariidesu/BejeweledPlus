@@ -339,6 +339,7 @@ namespace BejeweledLivePlus
 
 		public override void RefreshUI()
 		{
+			base.RefreshUI();
 			if (mHelpButton != null)
 			{
 				mHelpButton.Resize(GlobalMembers.S(GetUICenterX() - 125), GlobalMembers.MS(755), GlobalMembers.MS(250), GlobalMembers.S(GlobalMembers.M(120) + GetBottomWidgetOffset()));

@@ -217,6 +217,8 @@ namespace BejeweledLivePlus.UI
 			case 0:
 			case 21:
 				return "Help_Basic";
+			case 18:
+				return "Help_Poker";
 			case 20:
 				return "Help_IceStorm";
 			case 22:

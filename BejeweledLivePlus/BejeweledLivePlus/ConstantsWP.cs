@@ -550,15 +550,15 @@ namespace BejeweledLivePlus
 
 		public static float MAIN_MENU_BUTTON_ZEN_SCALE = 0.9f;
 
-		public static int MAIN_MENU_BUTTON_DIAMONDMINE_X = (int)(DEVICE_WIDTH_F / 2f + 150f);
+		public static int MAIN_MENU_BUTTON_DIAMONDMINE_X = (int)(DEVICE_WIDTH_F / 2f + 180f);
 
-		public static int MAIN_MENU_BUTTON_DIAMONDMINE_Y = 570;
+		public static int MAIN_MENU_BUTTON_DIAMONDMINE_Y = 539;
 
 		public static float MAIN_MENU_BUTTON_DIAMONDMINE_SCALE = MAIN_MENU_BUTTON_ZEN_SCALE;
 
-		public static int MAIN_MENU_BUTTON_BUTTERFLIES_X = (int)(DEVICE_WIDTH_F / 2f - 150f);
+		public static int MAIN_MENU_BUTTON_BUTTERFLIES_X = (int)(DEVICE_WIDTH_F / 2f - 180f);
 
-		public static int MAIN_MENU_BUTTON_BUTTERFLIES_Y = 570;
+		public static int MAIN_MENU_BUTTON_BUTTERFLIES_Y = 539;
 
 		public static float MAIN_MENU_BUTTON_BUTTERFLIES_SCALE = MAIN_MENU_BUTTON_ZEN_SCALE;
 
@@ -574,9 +574,9 @@ namespace BejeweledLivePlus
 
 		public static float MAIN_MENU_BUTTON_MORE_1_SCALE = MAIN_MENU_BUTTON_ZEN_SCALE;
 
-		public static int MAIN_MENU_BUTTON_LIGHTNING_X = (int)(DEVICE_WIDTH_F / 2f + 210f);
+		public static int MAIN_MENU_BUTTON_LIGHTNING_X = (int)(DEVICE_WIDTH_F / 2f + 180f);
 
-		public static int MAIN_MENU_BUTTON_LIGHTNING_Y = 385;
+		public static int MAIN_MENU_BUTTON_LIGHTNING_Y = 342;
 
 		public static float MAIN_MENU_BUTTON_LIGHTNING_SCALE = MAIN_MENU_BUTTON_ZEN_SCALE;
 
@@ -586,23 +586,117 @@ namespace BejeweledLivePlus
 
 		public static float MAIN_MENU_BUTTON_MORE_2_SCALE;
 
-		public static int MAIN_MENU_BUTTON_ICESTORM_X = (int)(DEVICE_WIDTH_F / 2f - 210f);
+		public static int MAIN_MENU_BUTTON_ICESTORM_X = (int)(DEVICE_WIDTH_F / 2f - 180f);
 
-		public static int MAIN_MENU_BUTTON_ICESTORM_Y = 385;
+		public static int MAIN_MENU_BUTTON_ICESTORM_Y = 342;
 
 		public static float MAIN_MENU_BUTTON_ICESTORM_SCALE = MAIN_MENU_BUTTON_ZEN_SCALE;
 
-		public static int MAIN_MENU_BUTTON_POKER_X;
+		public static int MAIN_MENU_BUTTON_POKER_X = (int)(DEVICE_WIDTH_F / 2f);
 
-		public static int MAIN_MENU_BUTTON_POKER_Y;
+		public static int MAIN_MENU_BUTTON_POKER_Y = 620;
 
-		public static float MAIN_MENU_BUTTON_POKER_SCALE;
+		public static float MAIN_MENU_BUTTON_POKER_SCALE = MAIN_MENU_BUTTON_ZEN_SCALE;
 
 		public static int MAIN_MENU_BUTTON_MORE_3_X;
 
 		public static int MAIN_MENU_BUTTON_MORE_3_Y;
 
 		public static float MAIN_MENU_BUTTON_MORE_3_SCALE;
+
+		public static int POKER_BOARD_X_OFFS = 0;
+
+		public static int POKER_BOARD_Y = 80;
+
+		public static int POKER_CARDS_X = 20;
+
+		public static int POKER_CARDS_Y = 970;
+
+		public static int POKER_CARDS_Y_SHIFT = 0;
+
+		public static int POKER_CARD_PITCH = 50;
+
+		public static int POKER_CARD_SCORE_OFFSET_X = 279;
+
+		public static int POKER_SCORENAME_ONBOARD_Y = 320;
+
+		public static int POKER_SCORE_ONBOARD_Y = 630;
+
+		public static int POKER_SKULLCOIN_Y = 720;
+
+		public static int POKER_NEED_MESSAGE_Y = 50;
+
+		public static int POKER_TOBLERONE = 50;
+
+		public static int POKER_TOBLERONE_CLIP_Y_OFFSET = 10;
+
+		public static int POKER_ANNOUNCEMENT_Y_OFFSET = 120;
+
+		public static int POKER_BOARD_SKULL_FRAME_TOP_Y = 0;
+
+		public static int POKER_BOARD_Y_SHIFT = 0;
+
+		public static int POKER_SKULL_BAR_Y_SHIFT = 0;
+
+		public static int POKER_RESUME_BUTTON_X = 420;
+
+		public static int POKER_RESUME_BUTTON_Y = 750;
+
+		public static int POKER_EXAMPLE_BUTTON_X = 72;
+
+		public static int POKER_EXAMPLE_BUTTON_Y = 750;
+
+		public static int HANDS_EXAMPLES_WIDGET_HEIGHT_IPHONE5_EXTRA_HEIGHT = 150;
+
+		public static int POKER_BUTTON_WIDTH = 316;
+
+		public static int POKER_BUTTON_HEIGHT = 100;
+
+		public static int POKER_INFO_BUTTON_X = 359;
+
+		public static int POKER_INFO_BUTTON_Y = 924;
+
+		public static int POKER_CRUSHER_BAR_X = 0;
+
+		public static int POKER_CRUSHER_BAR_Y = 0;
+
+		public static int POKER_BOARD_LIGHT_BULBS_OFFSET_Y = 100;
+
+		public static float POKER_BAR_SKULL_SCALE = 0.9f;
+
+		public static float POKER_BAR_SKULL_SLASH_SCALE = 0.8f;
+
+		public static int POKER_SKULL_SLASH_OFFS_X = 395;
+
+		public static int POKER_SKULL_SLASH_OFFS_Y = 853;
+
+		public static int POKER_SKULL_SLASH_OFFSET_X = 1;
+
+		public static int POKER_SKULL_SLASH_OFFSET_Y = 4;
+
+		public static int POKER_SKULL_SLASH_CURVE_OFFS_X = -185;
+
+		public static int POKER_SKULL_SLASH_CURVE_OFFS_Y = -252;
+
+		public static int POKER_SKULL_SLASH_CURVE_OFFS_Y_STEP = 70;
+
+		public static float POKER_STARBURST_SCALE_X = 0.56f;
+
+		public static float POKER_STARBURST_SCALE_Y = 0.56f;
+
+		public static int POKER_DISCOBALL_X = 600;
+
+		public static int POKER_DISCOBALL_Y = 600;
+
+		public static float POKER_DISCOBALL_SCALE_X = 0.56f;
+
+		public static float POKER_DISCOBALL_SCALE_Y = 0.56f;
+
+		public static int POKER_SKULLEXPLODE_X = 600;
+
+		public static int POKER_SKULLEXPLODE_Y = 680;
+
+		public static int POKER_SKULLEXPLODE_Y_STEP = 70;
 
 		public static float MAIN_MENU_FOREGROUND_RIGHT_OFFSET_X;
 
@@ -3143,9 +3237,6 @@ namespace BejeweledLivePlus
 			MAIN_MENU_BUTTON_MORE_2_X = (int)(DEVICE_WIDTH_F / 2f + (float)MAIN_MENU_TAB_WIDTH);
 			MAIN_MENU_BUTTON_MORE_2_Y = 690;
 			MAIN_MENU_BUTTON_MORE_2_SCALE = MAIN_MENU_BUTTON_ZEN_SCALE;
-			MAIN_MENU_BUTTON_POKER_X = (int)(DEVICE_WIDTH_F / 2f + 150f + (float)(MAIN_MENU_TAB_WIDTH * 2));
-			MAIN_MENU_BUTTON_POKER_Y = 490;
-			MAIN_MENU_BUTTON_POKER_SCALE = MAIN_MENU_BUTTON_ZEN_SCALE;
 			MAIN_MENU_BUTTON_MORE_3_X = (int)(DEVICE_WIDTH_F / 2f + (float)(MAIN_MENU_TAB_WIDTH * 2));
 			MAIN_MENU_BUTTON_MORE_3_Y = 690;
 			MAIN_MENU_BUTTON_MORE_3_SCALE = MAIN_MENU_BUTTON_ZEN_SCALE;

@@ -15,7 +15,7 @@ namespace BejeweledLivePlus
 
 		internal static Dictionary<object, int> gVarToIdMap = new Dictionary<object, int>();
 
-		internal static Point[] gImgOffsets = new Point[1843];
+		internal static Point[] gImgOffsets = new Point[1875];
 
 		public static object gVarToIdMapCrit = new object();
 
@@ -2127,6 +2127,28 @@ namespace BejeweledLivePlus
 
 		public static Image ATLASIMAGE_ATLAS_GAMEPLAYQUEST_POKER_960_00;
 
+		public static Image IMAGE_INGAMEUI_POKER_2_PAIR;
+		public static Image IMAGE_INGAMEUI_POKER_3_OF_A_KIND;
+		public static Image IMAGE_INGAMEUI_POKER_4_OF_A_KIND;
+		public static Image IMAGE_INGAMEUI_POKER_BAR_SKULL_COPY_3;
+		public static Image IMAGE_INGAMEUI_POKER_EXAMPLE_BACKGROUND;
+		public static Image IMAGE_INGAMEUI_POKER_EXAMPLE_CONTAINER;
+		public static Image IMAGE_INGAMEUI_POKER_FLUSH;
+		public static Image IMAGE_INGAMEUI_POKER_FULL_HOUSE;
+		public static Image IMAGE_INGAMEUI_POKER_HAND_HIGHLIGHTED;
+		public static Image IMAGE_INGAMEUI_POKER_HAND_LIST;
+		public static Image IMAGE_INGAMEUI_POKER_INFO;
+		public static Image IMAGE_INGAMEUI_POKER_PAIR;
+		public static Image IMAGE_INGAMEUI_POKER_SHAPE_3_COPY_3;
+		public static Image IMAGE_INGAMEUI_POKER_SKULL_BAR;
+		public static Image IMAGE_INGAMEUI_POKER_SKULL_BAR_BACKGROUND;
+		public static Image IMAGE_INGAMEUI_POKER_SKULL_BAR_GLOW;
+		public static Image IMAGE_INGAMEUI_POKER_SKULL_FRAME_BOTTOM;
+		public static Image IMAGE_INGAMEUI_POKER_SKULL_FRAME_TOP;
+		public static Image IMAGE_INGAMEUI_POKER_SKULL_ICON;
+		public static Image IMAGE_INGAMEUI_POKER_SKULL_SHUTTER;
+		public static Image IMAGE_INGAMEUI_POKER_SPECTRUM;
+
 		public static Image ATLASIMAGE_ATLAS_GAMEPLAYQUEST_TIMEBOMB_480_00;
 
 		public static Image IMAGE_BOMBGEMS;
@@ -3733,7 +3755,7 @@ namespace BejeweledLivePlus
 
 		public static Image IMAGE_HEATWAVE;
 
-		internal static ResGlobalPtr[] gResources = new ResGlobalPtr[1843];
+		internal static ResGlobalPtr[] gResources = new ResGlobalPtr[1875];
 
 		internal static uint[] gResourceLocales = new uint[6] { 1145390149u, 1162761555u, 1163085139u, 1179797074u, 1230260564u, 0u };
 
@@ -3747,7 +3769,7 @@ namespace BejeweledLivePlus
 			if (!InitResourceManager_sAlreadyRun || forceRun)
 			{
 				InitResourceManager_sAlreadyRun = true;
-				for (int i = 0; i < 1843; i++)
+				for (int i = 0; i < 1875; i++)
 				{
 					ResGlobalPtr resGlobalPtr = theManager.RegisterGlobalPtr(GetStringIdById(i));
 					gResources[i] = resGlobalPtr;
@@ -9873,8 +9895,8 @@ namespace BejeweledLivePlus
 			InitResourceManager(theManager);
 			try
 			{
-				PIEFFECT_DANGERSNOW_HARD_TOP = theManager.LoadPIEffect("PIEFFECT_DANGERSNOW_HARD_TOP");
-				PIEFFECT_DANGERSNOW_SOFT = theManager.LoadPIEffect("PIEFFECT_DANGERSNOW_SOFT");
+				PIEFFECT_DANGERSNOW_HARD_TOP = GetPIEffectThrow(theManager, 1499, "PIEFFECT_DANGERSNOW_HARD_TOP", 0, 0);
+				PIEFFECT_DANGERSNOW_SOFT = GetPIEffectThrow(theManager, 1500, "PIEFFECT_DANGERSNOW_SOFT", 0, 0);
 				PIEFFECT_ANIMS_COLUMN1_FBOMB_SMALL = GetPIEffectThrow(theManager, 1523, "PIEFFECT_ANIMS_COLUMN1_FBOMB_SMALL", 0, 0);
 				PIEFFECT_ANIMS_COLUMN1_SHATTERLEFT_SMALL = GetPIEffectThrow(theManager, 1524, "PIEFFECT_ANIMS_COLUMN1_SHATTERLEFT_SMALL", 0, 0);
 				PIEFFECT_ANIMS_COLUMN1_SHATTERRIGHT_SMALL = GetPIEffectThrow(theManager, 1525, "PIEFFECT_ANIMS_COLUMN1_SHATTERRIGHT_SMALL", 0, 0);
@@ -9886,18 +9908,18 @@ namespace BejeweledLivePlus
 				POPANIM_ANIMS_COLUMN1 = GetPopAnimThrow(theManager, 1555, "POPANIM_ANIMS_COLUMN1", 0, 0);
 				POPANIM_ANIMS_COLUMN2 = GetPopAnimThrow(theManager, 1556, "POPANIM_ANIMS_COLUMN2", 0, 0);
 				POPANIM_ANIMS_FROSTPANIC = GetPopAnimThrow(theManager, 1557, "POPANIM_ANIMS_FROSTPANIC", 0, 0);
-				IMAGE_INFERNO_TEXT_CYCLE = theManager.LoadImage("IMAGE_INFERNO_TEXT_CYCLE")?.GetImage();
-				POPANIM_QUEST_INFERNO_ICESTORMUI = theManager.LoadPopAnim("POPANIM_QUEST_INFERNO_ICESTORMUI");
-				POPANIM_QUEST_INFERNO_ICESTORMFILL = theManager.LoadPopAnim("POPANIM_QUEST_INFERNO_ICESTORMFILL");
-				IMAGE_QUEST_INFERNO_ICESTORMUI_STEAMRELEASEJET_0_PARTICLE_STEAM2 = theManager.LoadImage("IMAGE_QUEST_INFERNO_ICESTORMUI_STEAMRELEASEJET_0_PARTICLE_STEAM2")?.GetImage();
-				IMAGE_QUEST_INFERNO_ICESTORMUI_STEAMTUBE_0_PARTICLE_STEAM = theManager.LoadImage("IMAGE_QUEST_INFERNO_ICESTORMUI_STEAMTUBE_0_PARTICLE_STEAM")?.GetImage();
-				IMAGE_QUEST_INFERNO_ICESTORMUI_DEATHSTEAM_0_WATERFLOW_NEW6 = theManager.LoadImage("IMAGE_QUEST_INFERNO_ICESTORMUI_DEATHSTEAM_0_WATERFLOW_NEW6")?.GetImage();
-				IMAGE_QUEST_INFERNO_ICESTORMUI_DEATHSTEAM_1_COMIC_SMOKE2 = theManager.LoadImage("IMAGE_QUEST_INFERNO_ICESTORMUI_DEATHSTEAM_1_COMIC_SMOKE2")?.GetImage();
-				IMAGE_QUEST_INFERNO_ICESTORMFILL_STEAMTOP_0_PARTICLE_STEAM = theManager.LoadImage("IMAGE_QUEST_INFERNO_ICESTORMFILL_STEAMTOP_0_PARTICLE_STEAM")?.GetImage();
-				PIEFFECT_STEAMRELEASEJET = theManager.LoadPIEffect("PIEFFECT_STEAMRELEASEJET");
-				PIEFFECT_STEAMTUBE = theManager.LoadPIEffect("PIEFFECT_STEAMTUBE");
-				PIEFFECT_DEATHSTEAM = theManager.LoadPIEffect("PIEFFECT_DEATHSTEAM");
-				PIEFFECT_QUEST_INFERNO_ICESTORMFILL_STEAMTOP = theManager.LoadPIEffect("PIEFFECT_QUEST_INFERNO_ICESTORMFILL_STEAMTOP");
+				IMAGE_INFERNO_TEXT_CYCLE = GetImageThrow(theManager, 1872, "IMAGE_INFERNO_TEXT_CYCLE", 960, 0);
+				POPANIM_QUEST_INFERNO_ICESTORMUI = GetPopAnimThrow(theManager, 1873, "POPANIM_QUEST_INFERNO_ICESTORMUI", 0, 0);
+				POPANIM_QUEST_INFERNO_ICESTORMFILL = GetPopAnimThrow(theManager, 1874, "POPANIM_QUEST_INFERNO_ICESTORMFILL", 0, 0);
+				IMAGE_QUEST_INFERNO_ICESTORMUI_STEAMRELEASEJET_0_PARTICLE_STEAM2 = GetImageThrow(theManager, 1844, "IMAGE_QUEST_INFERNO_ICESTORMUI_STEAMRELEASEJET_0_PARTICLE_STEAM2", 960, 0);
+				IMAGE_QUEST_INFERNO_ICESTORMUI_STEAMTUBE_0_PARTICLE_STEAM = GetImageThrow(theManager, 1845, "IMAGE_QUEST_INFERNO_ICESTORMUI_STEAMTUBE_0_PARTICLE_STEAM", 960, 0);
+				IMAGE_QUEST_INFERNO_ICESTORMUI_DEATHSTEAM_0_WATERFLOW_NEW6 = GetImageThrow(theManager, 1846, "IMAGE_QUEST_INFERNO_ICESTORMUI_DEATHSTEAM_0_WATERFLOW_NEW6", 960, 0);
+				IMAGE_QUEST_INFERNO_ICESTORMUI_DEATHSTEAM_1_COMIC_SMOKE2 = GetImageThrow(theManager, 1847, "IMAGE_QUEST_INFERNO_ICESTORMUI_DEATHSTEAM_1_COMIC_SMOKE2", 960, 0);
+				IMAGE_QUEST_INFERNO_ICESTORMFILL_STEAMTOP_0_PARTICLE_STEAM = GetImageThrow(theManager, 1848, "IMAGE_QUEST_INFERNO_ICESTORMFILL_STEAMTOP_0_PARTICLE_STEAM", 960, 0);
+				PIEFFECT_STEAMRELEASEJET = GetPIEffectThrow(theManager, 1842, "PIEFFECT_STEAMRELEASEJET", 0, 0);
+				PIEFFECT_STEAMTUBE = GetPIEffectThrow(theManager, 1843, "PIEFFECT_STEAMTUBE", 0, 0);
+				PIEFFECT_DEATHSTEAM = GetPIEffectThrow(theManager, 1849, "PIEFFECT_DEATHSTEAM", 0, 0);
+				PIEFFECT_QUEST_INFERNO_ICESTORMFILL_STEAMTOP = GetPIEffectThrow(theManager, 1850, "PIEFFECT_QUEST_INFERNO_ICESTORMFILL_STEAMTOP", 0, 0);
 				if (PIEFFECT_DANGERSNOW_HARD_TOP == null || PIEFFECT_DANGERSNOW_SOFT == null ||
 					IMAGE_INFERNO_TEXT_CYCLE == null || POPANIM_QUEST_INFERNO_ICESTORMUI == null ||
 					POPANIM_QUEST_INFERNO_ICESTORMFILL == null)
@@ -10068,6 +10090,27 @@ namespace BejeweledLivePlus
 			try
 			{
 				ATLASIMAGE_ATLAS_GAMEPLAYQUEST_POKER_960_00 = GetImageThrow(theManager, 55, "ATLASIMAGE_ATLAS_GAMEPLAYQUEST_POKER_960_00", 960, 0);
+				IMAGE_INGAMEUI_POKER_2_PAIR = GetImageThrow(theManager, 1851, "IMAGE_INGAMEUI_POKER_2_PAIR", 960, 0);
+				IMAGE_INGAMEUI_POKER_3_OF_A_KIND = GetImageThrow(theManager, 1852, "IMAGE_INGAMEUI_POKER_3_OF_A_KIND", 960, 0);
+				IMAGE_INGAMEUI_POKER_4_OF_A_KIND = GetImageThrow(theManager, 1853, "IMAGE_INGAMEUI_POKER_4_OF_A_KIND", 960, 0);
+				IMAGE_INGAMEUI_POKER_BAR_SKULL_COPY_3 = GetImageThrow(theManager, 1854, "IMAGE_INGAMEUI_POKER_BAR_SKULL_COPY_3", 960, 0);
+				IMAGE_INGAMEUI_POKER_EXAMPLE_BACKGROUND = GetImageThrow(theManager, 1855, "IMAGE_INGAMEUI_POKER_EXAMPLE_BACKGROUND", 960, 0);
+				IMAGE_INGAMEUI_POKER_EXAMPLE_CONTAINER = GetImageThrow(theManager, 1856, "IMAGE_INGAMEUI_POKER_EXAMPLE_CONTAINER", 960, 0);
+				IMAGE_INGAMEUI_POKER_FLUSH = GetImageThrow(theManager, 1857, "IMAGE_INGAMEUI_POKER_FLUSH", 960, 0);
+				IMAGE_INGAMEUI_POKER_FULL_HOUSE = GetImageThrow(theManager, 1858, "IMAGE_INGAMEUI_POKER_FULL_HOUSE", 960, 0);
+				IMAGE_INGAMEUI_POKER_HAND_HIGHLIGHTED = GetImageThrow(theManager, 1859, "IMAGE_INGAMEUI_POKER_HAND_HIGHLIGHTED", 960, 0);
+				IMAGE_INGAMEUI_POKER_HAND_LIST = GetImageThrow(theManager, 1860, "IMAGE_INGAMEUI_POKER_HAND_LIST", 960, 0);
+				IMAGE_INGAMEUI_POKER_INFO = GetImageThrow(theManager, 1861, "IMAGE_INGAMEUI_POKER_INFO", 960, 0);
+				IMAGE_INGAMEUI_POKER_PAIR = GetImageThrow(theManager, 1862, "IMAGE_INGAMEUI_POKER_PAIR", 960, 0);
+				IMAGE_INGAMEUI_POKER_SHAPE_3_COPY_3 = GetImageThrow(theManager, 1863, "IMAGE_INGAMEUI_POKER_SHAPE_3_COPY_3", 960, 0);
+				IMAGE_INGAMEUI_POKER_SKULL_BAR = GetImageThrow(theManager, 1864, "IMAGE_INGAMEUI_POKER_SKULL_BAR", 960, 0);
+				IMAGE_INGAMEUI_POKER_SKULL_BAR_BACKGROUND = GetImageThrow(theManager, 1865, "IMAGE_INGAMEUI_POKER_SKULL_BAR_BACKGROUND", 960, 0);
+				IMAGE_INGAMEUI_POKER_SKULL_BAR_GLOW = GetImageThrow(theManager, 1866, "IMAGE_INGAMEUI_POKER_SKULL_BAR_GLOW", 960, 0);
+				IMAGE_INGAMEUI_POKER_SKULL_FRAME_BOTTOM = GetImageThrow(theManager, 1867, "IMAGE_INGAMEUI_POKER_SKULL_FRAME_BOTTOM", 960, 0);
+				IMAGE_INGAMEUI_POKER_SKULL_FRAME_TOP = GetImageThrow(theManager, 1868, "IMAGE_INGAMEUI_POKER_SKULL_FRAME_TOP", 960, 0);
+				IMAGE_INGAMEUI_POKER_SKULL_ICON = GetImageThrow(theManager, 1869, "IMAGE_INGAMEUI_POKER_SKULL_ICON", 960, 0);
+				IMAGE_INGAMEUI_POKER_SKULL_SHUTTER = GetImageThrow(theManager, 1870, "IMAGE_INGAMEUI_POKER_SKULL_SHUTTER", 960, 0);
+				IMAGE_INGAMEUI_POKER_SPECTRUM = GetImageThrow(theManager, 1871, "IMAGE_INGAMEUI_POKER_SPECTRUM", 960, 0);
 				IMAGE_INGAME_POKER_BOARD_SEPERATOR_FRAME_BOTTOM = GetImageThrow(theManager, 1111, "IMAGE_INGAME_POKER_BOARD_SEPERATOR_FRAME_BOTTOM", 960, 0);
 				IMAGE_INGAME_POKER_BOARD_SEPERATOR_FRAME_TOP = GetImageThrow(theManager, 1112, "IMAGE_INGAME_POKER_BOARD_SEPERATOR_FRAME_TOP", 960, 0);
 				IMAGE_INGAME_POKER_HAND = GetImageThrow(theManager, 1113, "IMAGE_INGAME_POKER_HAND", 960, 0);
@@ -12541,35 +12584,6 @@ namespace BejeweledLivePlus
 			try
 			{
 				IMAGE_PP0 = GetImageThrow(theManager, 712, "IMAGE_PP0", 960, 0);
-				IMAGE_PP1 = GetImageThrow(theManager, 713, "IMAGE_PP1", 960, 0);
-				IMAGE_PP2 = GetImageThrow(theManager, 714, "IMAGE_PP2", 960, 0);
-				IMAGE_PP3 = GetImageThrow(theManager, 715, "IMAGE_PP3", 960, 0);
-				IMAGE_PP4 = GetImageThrow(theManager, 716, "IMAGE_PP4", 960, 0);
-				IMAGE_PP5 = GetImageThrow(theManager, 717, "IMAGE_PP5", 960, 0);
-				IMAGE_PP6 = GetImageThrow(theManager, 718, "IMAGE_PP6", 960, 0);
-				IMAGE_PP7 = GetImageThrow(theManager, 719, "IMAGE_PP7", 960, 0);
-				IMAGE_PP8 = GetImageThrow(theManager, 720, "IMAGE_PP8", 960, 0);
-				IMAGE_PP9 = GetImageThrow(theManager, 721, "IMAGE_PP9", 960, 0);
-				IMAGE_PP10 = GetImageThrow(theManager, 722, "IMAGE_PP10", 960, 0);
-				IMAGE_PP11 = GetImageThrow(theManager, 723, "IMAGE_PP11", 960, 0);
-				IMAGE_PP12 = GetImageThrow(theManager, 724, "IMAGE_PP12", 960, 0);
-				IMAGE_PP13 = GetImageThrow(theManager, 725, "IMAGE_PP13", 960, 0);
-				IMAGE_PP14 = GetImageThrow(theManager, 726, "IMAGE_PP14", 960, 0);
-				IMAGE_PP15 = GetImageThrow(theManager, 727, "IMAGE_PP15", 960, 0);
-				IMAGE_PP16 = GetImageThrow(theManager, 728, "IMAGE_PP16", 960, 0);
-				IMAGE_PP17 = GetImageThrow(theManager, 729, "IMAGE_PP17", 960, 0);
-				IMAGE_PP18 = GetImageThrow(theManager, 730, "IMAGE_PP18", 960, 0);
-				IMAGE_PP19 = GetImageThrow(theManager, 731, "IMAGE_PP19", 960, 0);
-				IMAGE_PP20 = GetImageThrow(theManager, 732, "IMAGE_PP20", 960, 0);
-				IMAGE_PP21 = GetImageThrow(theManager, 733, "IMAGE_PP21", 960, 0);
-				IMAGE_PP22 = GetImageThrow(theManager, 734, "IMAGE_PP22", 960, 0);
-				IMAGE_PP23 = GetImageThrow(theManager, 735, "IMAGE_PP23", 960, 0);
-				IMAGE_PP24 = GetImageThrow(theManager, 736, "IMAGE_PP24", 960, 0);
-				IMAGE_PP25 = GetImageThrow(theManager, 737, "IMAGE_PP25", 960, 0);
-				IMAGE_PP26 = GetImageThrow(theManager, 738, "IMAGE_PP26", 960, 0);
-				IMAGE_PP27 = GetImageThrow(theManager, 739, "IMAGE_PP27", 960, 0);
-				IMAGE_PP28 = GetImageThrow(theManager, 740, "IMAGE_PP28", 960, 0);
-				IMAGE_PP29 = GetImageThrow(theManager, 741, "IMAGE_PP29", 960, 0);
 			}
 			catch (ResourceManagerException)
 			{
@@ -18084,6 +18098,54 @@ namespace BejeweledLivePlus
                 return "PIEFFECT_DEATHSTEAM";
             case 1850:
                 return "PIEFFECT_QUEST_INFERNO_ICESTORMFILL_STEAMTOP";
+            case 1851:
+                return "IMAGE_INGAMEUI_POKER_2_PAIR";
+            case 1852:
+                return "IMAGE_INGAMEUI_POKER_3_OF_A_KIND";
+            case 1853:
+                return "IMAGE_INGAMEUI_POKER_4_OF_A_KIND";
+            case 1854:
+                return "IMAGE_INGAMEUI_POKER_BAR_SKULL_COPY_3";
+            case 1855:
+                return "IMAGE_INGAMEUI_POKER_EXAMPLE_BACKGROUND";
+            case 1856:
+                return "IMAGE_INGAMEUI_POKER_EXAMPLE_CONTAINER";
+            case 1857:
+                return "IMAGE_INGAMEUI_POKER_FLUSH";
+            case 1858:
+                return "IMAGE_INGAMEUI_POKER_FULL_HOUSE";
+            case 1859:
+                return "IMAGE_INGAMEUI_POKER_HAND_HIGHLIGHTED";
+            case 1860:
+                return "IMAGE_INGAMEUI_POKER_HAND_LIST";
+            case 1861:
+                return "IMAGE_INGAMEUI_POKER_INFO";
+            case 1862:
+                return "IMAGE_INGAMEUI_POKER_PAIR";
+            case 1863:
+                return "IMAGE_INGAMEUI_POKER_SHAPE_3_COPY_3";
+            case 1864:
+                return "IMAGE_INGAMEUI_POKER_SKULL_BAR";
+            case 1865:
+                return "IMAGE_INGAMEUI_POKER_SKULL_BAR_BACKGROUND";
+            case 1866:
+                return "IMAGE_INGAMEUI_POKER_SKULL_BAR_GLOW";
+            case 1867:
+                return "IMAGE_INGAMEUI_POKER_SKULL_FRAME_BOTTOM";
+            case 1868:
+                return "IMAGE_INGAMEUI_POKER_SKULL_FRAME_TOP";
+            case 1869:
+                return "IMAGE_INGAMEUI_POKER_SKULL_ICON";
+            case 1870:
+                return "IMAGE_INGAMEUI_POKER_SKULL_SHUTTER";
+            case 1871:
+                return "IMAGE_INGAMEUI_POKER_SPECTRUM";
+            case 1872:
+                return "IMAGE_INFERNO_TEXT_CYCLE";
+            case 1873:
+                return "POPANIM_QUEST_INFERNO_ICESTORMUI";
+            case 1874:
+                return "POPANIM_QUEST_INFERNO_ICESTORMFILL";
             default:
 				return "";
 			}
@@ -18093,7 +18155,7 @@ namespace BejeweledLivePlus
 		{
 			if (GetIdByStringId_aMap.Count == 0)
 			{
-				for (int i = 0; i < 1851; i++)
+				for (int i = 0; i < 1875; i++)
 				{
 					GetIdByStringId_aMap[GetStringIdById(i)] = i;
 				}

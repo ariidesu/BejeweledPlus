@@ -57,6 +57,8 @@ namespace BejeweledLivePlus.Widget
 
 		public float mZenSize;
 
+		public float mTextScale;
+
 		public bool mPlayPressSound;
 
 		private int width;
@@ -72,6 +74,8 @@ namespace BejeweledLivePlus.Widget
 		public int iconY;
 
 		protected bool mIsHighLighted;
+
+		private bool mVisualGreyed;
 
 		private static bool topButtonAnimating = false;
 
@@ -350,6 +354,12 @@ namespace BejeweledLivePlus.Widget
 				{
 					return;
 				}
+				if (mVisualGreyed)
+				{
+					g.PushState();
+					g.SetColorizeImages(true);
+					g.SetColor(new Color(145, 145, 145, 190));
+				}
 				if (mType == Bej3ButtonType.BUTTON_TYPE_LONG || mType == Bej3ButtonType.BUTTON_TYPE_LONG_PURPLE || mType == Bej3ButtonType.BUTTON_TYPE_LONG_GREEN)
 				{
 					switch (mOverlayType)
@@ -439,7 +449,18 @@ namespace BejeweledLivePlus.Widget
 				}
 				if (mIsHighLighted)
 				{
-					g.DrawImageBox(mDownRect, mInsideImageRect, mComponentImage);
+					if (mVisualGreyed)
+					{
+						g.PushState();
+						g.SetColorizeImages(true);
+						g.SetColor(new Color(185, 185, 185, 115));
+						g.DrawImageBox(mDownRect, mInsideImageRect, mComponentImage);
+						g.PopState();
+					}
+					else
+					{
+						g.DrawImageBox(mDownRect, mInsideImageRect, mComponentImage);
+					}
 				}
 				if (mFont != null)
 				{
@@ -482,15 +503,39 @@ namespace BejeweledLivePlus.Widget
 						Utils.SetFontLayerColor((ImageFont)mFont, 0, Bej3Widget.COLOR_SUBHEADING_4_FILL);
 						Utils.SetFontLayerColor((ImageFont)mFont, 1, Bej3Widget.COLOR_SUBHEADING_4_STROKE);
 					}
+					ImageFont imageFont = (ImageFont)mFont;
+					if (mVisualGreyed)
+					{
+						imageFont.PushLayerColor(0, new Color(55, 55, 55, 220));
+						imageFont.PushLayerColor(1, new Color(175, 175, 175, 225));
+					}
 					if (mType == Bej3ButtonType.BUTTON_TYPE_LONG || mType == Bej3ButtonType.BUTTON_TYPE_LONG_PURPLE || mType == Bej3ButtonType.BUTTON_TYPE_LONG_GREEN)
 					{
 						num3 += ConstantsWP.BEJ3BUTTON_TEXT_OFFSET_Y;
 					}
+					if (mTextScale != 1f)
+					{
+						g.PushState();
+						g.SetScale(mTextScale, mTextScale, mWidth / 2, mHeight / 2);
+					}
 					g.DrawString(mLabel, num2 + mTextOffsetX, num3 + mTextOffsetY);
+					if (mTextScale != 1f)
+					{
+						g.PopState();
+					}
+					if (mVisualGreyed)
+					{
+						imageFont.PopLayerColor(1);
+						imageFont.PopLayerColor(0);
+					}
 				}
 				if (mIconImage != null)
 				{
-					if (mIsOver)
+					if (mVisualGreyed)
+					{
+						g.SetColor(new Color(175, 175, 175, 225));
+					}
+					else if (mIsOver)
 					{
 						g.SetColor(mColors[1]);
 					}
@@ -506,12 +551,25 @@ namespace BejeweledLivePlus.Widget
 				{
 					g.Translate(-mTranslateX, -mTranslateY);
 				}
+				if (mVisualGreyed)
+				{
+					g.PopState();
+				}
 			}
 		}
 
 		public void HighLighted(bool enable)
 		{
 			mIsHighLighted = enable;
+		}
+
+		public void SetVisualGreyed(bool greyed)
+		{
+			if (mVisualGreyed != greyed)
+			{
+				mVisualGreyed = greyed;
+				MarkDirty();
+			}
 		}
 
 		public Bej3Button(int theId, Bej3ButtonListener theListener)
@@ -539,6 +597,8 @@ namespace BejeweledLivePlus.Widget
 			mClippingEnabled = true;
 			mImageId = -1;
 			mZenSize = 1f;
+			mTextScale = 1f;
+			mVisualGreyed = false;
 			mSizeToContent = sizeToContent;
 			mSlideGlowEnabled = true;
 			mOverlayType = BUTTON_OVERLAY_TYPE.BUTTON_OVERLAY_NONE;

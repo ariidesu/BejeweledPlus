@@ -353,6 +353,9 @@ namespace BejeweledLivePlus.UI
 				case GameMode.MODE_BUTTERFLY:
 					GlobalMembers.gApp.DoHelpDialog(17, 1);
 					break;
+				case GameMode.MODE_POKER:
+					GlobalMembers.gApp.DoHelpDialog(18, 1);
+					break;
 				case GameMode.MODE_ICESTORM:
 				case GameMode.MODE_INFERNOSTORM:
 					GlobalMembers.gApp.DoHelpDialog(20, 1);
