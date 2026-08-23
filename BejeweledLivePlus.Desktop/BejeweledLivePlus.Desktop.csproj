@@ -5,6 +5,8 @@
         <TargetFramework>net9.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
+        <BassRuntimeIdentifier Condition="'$(RuntimeIdentifier)' != ''">$(RuntimeIdentifier)</BassRuntimeIdentifier>
+        <BassRuntimeIdentifier Condition="'$(BassRuntimeIdentifier)' == ''">$(NETCoreSdkRuntimeIdentifier)</BassRuntimeIdentifier>
     </PropertyGroup>
 
     <ItemGroup>
@@ -23,6 +25,12 @@
     </ItemGroup>
     <ItemGroup>
         <Content Include="..\BejeweledLivePlus\Content\effects\*.fx" Link="Content\effects\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+    </ItemGroup>
+    <ItemGroup Condition="Exists('..\SexyFramework\runtimes\$(BassRuntimeIdentifier)\native')">
+        <Content Include="..\SexyFramework\runtimes\$(BassRuntimeIdentifier)\native\*"
+                 Link="%(Filename)%(Extension)"
+                 CopyToOutputDirectory="PreserveNewest"
+                 CopyToPublishDirectory="PreserveNewest" />
     </ItemGroup>
 
     <PropertyGroup>

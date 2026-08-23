@@ -14,9 +14,6 @@
       </PackageReference>
     </ItemGroup>
     <ItemGroup>
-        <None Include="runtimes\**\native\*">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </None>
+      <None Remove="runtimes\**\native\*" />
     </ItemGroup>
-
 </Project>
