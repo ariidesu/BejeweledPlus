@@ -55,9 +55,40 @@ namespace BejeweledLivePlus.UI
 			bool flag = pageHorizontal > 0;
 			mSlideLeftButton.SetVisible(flag);
 			mSlideLeftButton.SetDisabled(!flag);
-			flag = pageHorizontal < 3;
+			flag = pageHorizontal < (int)HighScoresMenuContainer.HSMODE.HIGHSCORES_MAX_MODES - 1;
 			mSlideRightButton.SetVisible(flag);
 			mSlideRightButton.SetDisabled(!flag);
+		}
+
+		private void RefreshTimeButtons()
+		{
+			if (mByTodayButton == null || mByAllTimeButton == null)
+			{
+				return;
+			}
+
+			bool supportsTimeViews = mContainer.CurrentModeSupportsTimeViews();
+			bool loading = mContainer.CurrentModeIsLoading();
+			if (!supportsTimeViews)
+			{
+				mContainer.ForceAllTimeView();
+				mByTodayButton.HighLighted(false);
+				mByAllTimeButton.HighLighted(true);
+				mByTodayButton.SetVisualGreyed(true);
+				mByAllTimeButton.SetVisualGreyed(true);
+				mByTodayButton.SetDisabled(true);
+				mByAllTimeButton.SetDisabled(true);
+				return;
+			}
+
+			mByTodayButton.SetVisualGreyed(false);
+			mByAllTimeButton.SetVisualGreyed(false);
+			mByTodayButton.HighLighted(
+				mContainer.mCurrentDisplayView == HighScoreTable.HighScoreTableTime.TIME_RECENT);
+			mByAllTimeButton.HighLighted(
+				mContainer.mCurrentDisplayView == HighScoreTable.HighScoreTableTime.TIME_ALLTIME);
+			mByTodayButton.SetDisabled(loading);
+			mByAllTimeButton.SetDisabled(loading);
 		}
 
 		public override void Dispose()
@@ -70,13 +101,16 @@ namespace BejeweledLivePlus.UI
 		{
 			base.Update();
 			SetUpSlideButtons();
+			RefreshTimeButtons();
 			SetTopButtonType(Bej3ButtonType.TOP_BUTTON_TYPE_DISMISS);
 		}
 
 		public override void Draw(Graphics g)
 		{
+			g.PushState();
 			Bej3Widget.DrawDialogBox(g, mWidth);
 			Bej3Widget.DrawSwipeInlay(g, mScrollWidget.mY, mScrollWidget.mHeight - 75, mWidth, true);
+			g.PopState();
 		}
 
 		public override void DrawOverlay(Graphics g)
@@ -104,11 +138,8 @@ namespace BejeweledLivePlus.UI
 				break;
 			case 4:
 			{
-				GameMode gameMode = (GameMode)mScrollWidget.GetPageHorizontal();
-				if (gameMode == GameMode.MODE_ZEN)
-				{
-					gameMode = GameMode.MODE_BUTTERFLY;
-				}
+				GameMode gameMode = HighScoresMenuContainer.GetGameMode(
+					(HighScoresMenuContainer.HSMODE)mScrollWidget.GetPageHorizontal());
 				GlobalMembers.gApp.DoNewGame(gameMode);
 				Transition_SlideOut();
 				break;
@@ -124,7 +155,7 @@ namespace BejeweledLivePlus.UI
 				mContainer.SelectModeView(mContainer.mCurrentDisplayMode - 1);
 				break;
 			case 5:
-				if (!GlobalMembers.isLeaderboardLoading)
+				if (!mContainer.CurrentModeIsLoading() && mContainer.CurrentModeSupportsTimeViews())
 				{
 					mContainer.SelectTimeView(HighScoreTable.HighScoreTableTime.TIME_RECENT);
 					mByTodayButton.HighLighted(true);
@@ -132,7 +163,7 @@ namespace BejeweledLivePlus.UI
 				}
 				break;
 			case 7:
-				if (!GlobalMembers.isLeaderboardLoading)
+				if (!mContainer.CurrentModeIsLoading() && mContainer.CurrentModeSupportsTimeViews())
 				{
 					mContainer.SelectTimeView(HighScoreTable.HighScoreTableTime.TIME_ALLTIME);
 					mByTodayButton.HighLighted(false);
@@ -192,7 +223,7 @@ namespace BejeweledLivePlus.UI
 
 		public virtual void PageChanged(Bej3ScrollWidget scrollWidget, int pageH, int pageV)
 		{
-			if (pageH >= 0 && pageH < 4 && pageH != mCurrentPage)
+			if (pageH >= 0 && pageH < (int)HighScoresMenuContainer.HSMODE.HIGHSCORES_MAX_MODES && pageH != mCurrentPage)
 			{
 				mCurrentPage = pageH;
 				mContainer.SelectModeView((HighScoresMenuContainer.HSMODE)mCurrentPage);
@@ -259,6 +290,7 @@ namespace BejeweledLivePlus.UI
 			Bej3Widget.CenterWidgetAt(GlobalMembers.gApp.mWidth - 170, 210, mByAllTimeButton, true, false);
 			AddWidget(mByAllTimeButton);
 			GlobalMembers.mByAllTimeButton = mByAllTimeButton;
+			RefreshTimeButtons();
 			if (GlobalMembers.gApp.mGameCenterIsAvailable)
 			{
 				mXBLButton = new Bej3Button(2, this, Bej3ButtonType.BUTTON_TYPE_GAMECENTER);

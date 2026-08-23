@@ -16,6 +16,12 @@ namespace BejeweledLivePlus
 
 		public string mName;
 
+		public int mTimestamp;
+
+		public bool mIsNew;
+
+		public int mPicture;
+
 		public Stream mPicStream;
 
 		private object mGetProfileLock = new object();
@@ -25,7 +31,20 @@ namespace BejeweledLivePlus
 			mRank = -1;
 			mScore = -1;
 			mName = string.Empty;
+			mTimestamp = 0;
+			mIsNew = false;
+			mPicture = 0;
 			mPicStream = null;
+		}
+
+		public HighScoreEntryLive(string name, int score, int timestamp, bool isNew, int picture = 0)
+			: this()
+		{
+			mName = name;
+			mScore = score;
+			mTimestamp = timestamp;
+			mIsNew = isNew;
+			mPicture = picture;
 		}
 
 		public void Init(LeaderboardEntry liveEntry)

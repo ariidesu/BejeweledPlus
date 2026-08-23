@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using BejeweledLivePlus.Misc;
+using BejeweledLivePlus.UI;
 using BejeweledLivePlus.Widget;
 using SexyFramework;
 using SexyFramework.Graphics;
@@ -384,6 +385,23 @@ namespace BejeweledLivePlus
 				g.DrawImage(GlobalMembersResourcesWP.IMAGE_INGAMEUI_BUTTERFLIES_BOARD_SEPERATOR_FRAME_BOTTOM, (int)GlobalMembers.S(GlobalMembersResourcesWP.ImgXOfs(ResourceId.IMAGE_INGAMEUI_BUTTERFLIES_BOARD_SEPERATOR_FRAME_BOTTOM_ID)), (int)GlobalMembers.S(GlobalMembersResourcesWP.ImgYOfs(ResourceId.IMAGE_INGAMEUI_BUTTERFLIES_BOARD_SEPERATOR_FRAME_BOTTOM_ID)));
 				g.DrawImage(GlobalMembersResourcesWP.IMAGE_INGAMEUI_BUTTERFLIES_SCORE_FRAME, (int)GlobalMembers.S(GlobalMembersResourcesWP.ImgXOfs(ResourceId.IMAGE_INGAMEUI_BUTTERFLIES_SCORE_FRAME_ID)), (int)GlobalMembers.S(GlobalMembersResourcesWP.ImgYOfs(ResourceId.IMAGE_INGAMEUI_BUTTERFLIES_SCORE_FRAME_ID)));
 				g.PopState();
+			}
+		}
+
+		public override void GameOverExit()
+		{
+			SubmitHighscore();
+			GameMode leaderboardMode = mRealTimeBombs ? GameMode.MODE_REALTIMEBOMB : GameMode.MODE_TIMEBOMB;
+			GlobalMembers.gApp.DoGameDetailMenu(leaderboardMode, GameDetailMenu.GAMEDETAILMENU_STATE.STATE_POST_GAME);
+		}
+
+		public override void SubmitHighscore()
+		{
+			GameMode leaderboardMode = mRealTimeBombs ? GameMode.MODE_REALTIMEBOMB : GameMode.MODE_TIMEBOMB;
+			HighScoreTable table = GlobalMembers.gApp.mHighScoreMgr.GetOrCreateTable(GlobalMembers.gApp.GetModeHeading(leaderboardMode));
+			if (table.Submit(GlobalMembers.gApp.mProfile.mProfileName, mPoints, GlobalMembers.gApp.mProfile.GetProfilePictureId()))
+			{
+				GlobalMembers.gApp.SaveHighscores();
 			}
 		}
 

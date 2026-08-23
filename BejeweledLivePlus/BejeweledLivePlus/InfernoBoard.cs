@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using BejeweledLivePlus.Bej3Graphics;
 using BejeweledLivePlus.Misc;
+using BejeweledLivePlus.UI;
 using BejeweledLivePlus.Widget;
 using SexyFramework;
 using SexyFramework.Graphics;
@@ -2329,6 +2330,27 @@ namespace BejeweledLivePlus
 					}
 				}
 			}
+		}
+
+		public override void GameOverExit()
+		{
+			SubmitHighscore();
+			GlobalMembers.gApp.DoGameDetailMenu(GetLeaderboardMode(), GameDetailMenu.GAMEDETAILMENU_STATE.STATE_POST_GAME);
+		}
+
+		public override void SubmitHighscore()
+		{
+			GameMode leaderboardMode = GetLeaderboardMode();
+			HighScoreTable orCreateTable = GlobalMembers.gApp.mHighScoreMgr.GetOrCreateTable(GlobalMembers.gApp.GetModeHeading(leaderboardMode));
+			if (orCreateTable.Submit(GlobalMembers.gApp.mProfile.mProfileName, mPoints, GlobalMembers.gApp.mProfile.GetProfilePictureId()))
+			{
+				GlobalMembers.gApp.SaveHighscores();
+			}
+		}
+
+		private GameMode GetLeaderboardMode()
+		{
+			return mAllowSpeedBonus ? GameMode.MODE_INFERNOSTORM : GameMode.MODE_ICESTORM;
 		}
 
 		public void GameOverAtCol(int theColumn)

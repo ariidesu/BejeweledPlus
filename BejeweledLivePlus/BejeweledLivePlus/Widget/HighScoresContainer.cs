@@ -111,9 +111,9 @@ namespace BejeweledLivePlus.Widget
 
 		public void ChangeWidth(int theNewWidth)
 		{
+			mNewWidth = theNewWidth;
 			if (mScoreTable != null && mScoreTable.mHighScoresLive != null)
 			{
-				theNewWidth = 610;
 				int count = mScoreTable.mHighScoresLive.Count;
 				Resize(0, 0, theNewWidth, count * ConstantsWP.HIGHSCORESWIDGET_ITEM_HEIGHT - ConstantsWP.HIGHSCORESWIDGET_CONTAINER_OFFSET_Y * 2);
 				if (mParent != null)
@@ -184,6 +184,7 @@ namespace BejeweledLivePlus.Widget
 			{
 				return;
 			}
+			mScoreTable.UpdateReadState();
 			UpdateLoadingWheel();
 			HighScoreTable.LRState mLRState = mScoreTable.mLRState;
 			if (GlobalMembers.mByAllTimeButton != null && GlobalMembers.mByTodayButton != null)

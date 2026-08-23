@@ -342,7 +342,18 @@ namespace SexyFramework.Misc
 
 		public void WriteUTF8String(string theString)
 		{
-			throw new NotSupportedException();
+			theString ??= string.Empty;
+			byte[] bytes = Encoding.UTF8.GetBytes(theString);
+			int characterCount = 0;
+			for (int i = 0; i < bytes.Length; i++)
+			{
+				if ((bytes[i] & 0xC0) != 0x80)
+				{
+					characterCount++;
+				}
+			}
+			WriteShort((short)characterCount);
+			WriteBytes(bytes, bytes.Length);
 		}
 
 		public void WriteSexyString(string theString)
@@ -545,32 +556,59 @@ namespace SexyFramework.Misc
 			{
 				mReadBitPos = (mReadBitPos + 8) & -8;
 			}
-			string text = "";
-			int num = ReadShort();
-			if (num == 0)
+			int characterCount = ReadShort();
+			if (characterCount <= 0)
 			{
-				return "";
+				return string.Empty;
 			}
-			int num2 = mReadBitPos / 8;
-			byte[] theBuffer = mData.ToArray();
-			int num3 = (mDataBitSize - mReadBitPos) / 8;
-			int num4 = 0;
-			num4 = 0;
-			while (num3 > 0 && num4 < num)
+
+			List<byte> bytes = new List<byte>(characterCount);
+			for (int i = 0; i < characterCount; i++)
 			{
-				string theChar = "";
-				int nextUTF8CharFromStream = GetNextUTF8CharFromStream(theBuffer, num2, num3, ref theChar);
-				if (nextUTF8CharFromStream == 0)
+				if (GetBytesAvailable() <= 0)
 				{
-					break;
+					throw new FormatException("Unexpected end of UTF-8 string.");
 				}
-				num2 += nextUTF8CharFromStream;
-				num3 -= nextUTF8CharFromStream;
-				mReadBitPos += 8 * nextUTF8CharFromStream;
-				text += theChar;
-				num4++;
+
+				byte first = ReadByte();
+				bytes.Add(first);
+				int sequenceLength;
+				if ((first & 0x80) == 0)
+				{
+					sequenceLength = 1;
+				}
+				else if ((first & 0xE0) == 0xC0)
+				{
+					sequenceLength = 2;
+				}
+				else if ((first & 0xF0) == 0xE0)
+				{
+					sequenceLength = 3;
+				}
+				else if ((first & 0xF8) == 0xF0)
+				{
+					sequenceLength = 4;
+				}
+				else
+				{
+					throw new FormatException("Invalid UTF-8 leading byte.");
+				}
+
+				for (int j = 1; j < sequenceLength; j++)
+				{
+					if (GetBytesAvailable() <= 0)
+					{
+						throw new FormatException("Unexpected end of UTF-8 sequence.");
+					}
+					byte continuation = ReadByte();
+					if ((continuation & 0xC0) != 0x80)
+					{
+						throw new FormatException("Invalid UTF-8 continuation byte.");
+					}
+					bytes.Add(continuation);
+				}
 			}
-			return text;
+			return Encoding.UTF8.GetString(bytes.ToArray());
 		}
 
 		public string ReadSexyString()
