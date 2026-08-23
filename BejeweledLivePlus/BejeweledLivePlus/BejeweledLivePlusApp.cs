@@ -1181,6 +1181,7 @@ namespace BejeweledLivePlus
 			mBoard.mParams["BombCountdown"] = (realTime ? "60" : "20");
 			mBoard.mParams["DropCountdown"] = "4";
 			mBoard.mParams["MaxBombs"] = "3";
+			mBoard.mParams["HyperMixers"] = "true";
 			mBoard.mParams["MaxBombsPerUpdate"] = "1";
 			mBoard.mParams["DropCountDownPerUpdate"] = "1";
 			mBoard.mParams["MaxBombsUpdateScore"] = (realTime ? "250000" : "200000");
