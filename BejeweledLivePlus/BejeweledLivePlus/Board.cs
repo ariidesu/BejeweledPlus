@@ -7674,7 +7674,7 @@ namespace BejeweledLivePlus
 				float num5 = (float)((double)num4 - mSpeedBonusNum);
 				if (num5 > 0f)
 				{
-					mSpeedBonusNum = Math.Min(1.0, mSpeedBonusNum + (double)Math.Min(0.1f, num5 * GetSpeedBonusRamp()));
+					mSpeedBonusNum = Math.Min(1.0, mSpeedBonusNum + (double)Math.Min(GetSpeedBonusMaxIncrement(), num5 * GetSpeedBonusRamp()));
 					if (mSpeedBonusNum >= 1.0 && mSpeedBonusFlameModePct == 0f)
 					{
 						mSpeedBonusNum = 1.0;
@@ -8570,6 +8570,11 @@ namespace BejeweledLivePlus
 		public virtual float GetSpeedBonusRamp()
 		{
 			return GlobalMembers.M(0.075f);
+		}
+
+		public virtual float GetSpeedBonusMaxIncrement()
+		{
+			return GlobalMembers.M(0.1f);
 		}
 
 		public virtual Color GetWarningGlowColor()

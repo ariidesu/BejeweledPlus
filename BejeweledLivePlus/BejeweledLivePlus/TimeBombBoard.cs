@@ -146,6 +146,16 @@ namespace BejeweledLivePlus
 			return 1f;
 		}
 
+		public override float GetSpeedBonusRamp()
+		{
+			return GlobalMembers.M(0.12f);
+		}
+
+		public override float GetSpeedBonusMaxIncrement()
+		{
+			return GlobalMembers.M(0.16f);
+		}
+
 		public override bool DecrementCounterGem(Piece thePiece, bool immediate)
 		{
 			if (mDecrementCounterGems)
@@ -164,7 +174,7 @@ namespace BejeweledLivePlus
 				for (int i = 0; i < 100; i++)
 				{
 					Piece piece = thePieceVector[(int)(mRand.Next() % count)];
-					if (piece.mRow <= 4 && piece.mChangedTick == 0)
+					if (piece.mRow <= 4 && piece.mFlags == 0)
 					{
 						mPendingBombDrop = true;
 						Bombify(piece, mBombCountdown, mRealTimeBombs);
@@ -286,7 +296,7 @@ namespace BejeweledLivePlus
 
 		public override bool AllowSpeedBonus()
 		{
-			return mRealTimeBombs;
+			return mIsPerpetual && mRealTimeBombs;
 		}
 
 		public override string GetMusicName()
