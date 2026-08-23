@@ -143,7 +143,7 @@ jobs:
 
           for attempt in 1 2 3; do
             if HOMEBREW_FORCE_BREWED_CURL=1 HOMEBREW_CURL_RETRIES=5 \
-              brew install --cask wine-stable; then
+              brew install --cask wine-stable --skip-cask-deps; then
               break
             fi
             if [[ "$attempt" == 3 ]]; then
@@ -351,7 +351,7 @@ jobs:
 
           for attempt in 1 2 3; do
             if HOMEBREW_FORCE_BREWED_CURL=1 HOMEBREW_CURL_RETRIES=5 \
-              brew install --cask wine-stable; then
+              brew install --cask wine-stable --skip-cask-deps; then
               break
             fi
             if [[ "$attempt" == 3 ]]; then
