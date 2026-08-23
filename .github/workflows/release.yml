@@ -80,25 +80,25 @@ jobs:
             rid: win-x64
             bass: bass.dll
             platform-name: windows-x64
-            package: zip
+            asset-name: BejeweledLivePlus.Desktop.zip
           - label: Linux x64
             os: ubuntu-latest
             rid: linux-x64
             bass: libbass.so
             platform-name: linux-x64
-            package: tar
+            asset-name: BejeweledLivePlus.Desktop.Linux-x64.zip
           - label: macOS Intel
             os: macos-15
             rid: osx-x64
             bass: libbass.dylib
             platform-name: macos-x64
-            package: zip
+            asset-name: BejeweledLivePlus.Desktop.macOS-x64.zip
           - label: macOS Apple Silicon
             os: macos-15
             rid: osx-arm64
             bass: libbass.dylib
             platform-name: macos-arm64
-            package: zip
+            asset-name: BejeweledLivePlus.Desktop.macOS-arm64.zip
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v7
@@ -109,6 +109,9 @@ jobs:
         with:
           dotnet-version: 9.0.304
 
+      - name: Restore pinned workload set
+        run: dotnet workload restore BejeweledLivePlus.Desktop/BejeweledLivePlus.Desktop.csproj
+
       - name: Restore local tools
         run: dotnet tool restore
 
@@ -117,7 +120,7 @@ jobs:
         shell: bash
         run: |
           sudo apt-get update
-          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y wine wine64 wget curl p7zip-full
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y wine wine64 wget curl p7zip-full zip
           wget -qO- https://monogame.net/downloads/net9_mgfxc_wine_setup.sh | bash
           echo "MGFXC_WINE_PATH=$HOME/.winemonogame" >> "$GITHUB_ENV"
 
@@ -155,30 +158,31 @@ jobs:
             -LiteralPath "SexyFramework/runtimes/${{ matrix.rid }}/native/${{ matrix.bass }}" `
             -Destination artifacts/publish/
 
-      - name: Package Windows
-        if: matrix.package == 'zip' && runner.os == 'Windows'
+      - name: Package Windows ZIP
+        if: runner.os == 'Windows'
         shell: pwsh
         run: |
           New-Item -ItemType Directory -Force artifacts/release | Out-Null
           Compress-Archive `
             -Path artifacts/publish/* `
-            -DestinationPath "artifacts/release/BejeweledPlus-${{ needs.prepare.outputs.tag }}-${{ matrix.platform-name }}.zip"
+            -DestinationPath "artifacts/release/${{ matrix.asset-name }}"
 
-      - name: Package macOS
-        if: matrix.package == 'zip' && runner.os == 'macOS'
+      - name: Package macOS ZIP
+        if: runner.os == 'macOS'
         shell: bash
         run: |
           mkdir -p artifacts/release
           ditto -c -k --sequesterRsrc artifacts/publish \
-            "artifacts/release/BejeweledPlus-${{ needs.prepare.outputs.tag }}-${{ matrix.platform-name }}.zip"
+            "artifacts/release/${{ matrix.asset-name }}"
 
-      - name: Package Linux
-        if: matrix.package == 'tar'
+      - name: Package Linux ZIP
+        if: runner.os == 'Linux'
         shell: bash
         run: |
           mkdir -p artifacts/release
-          tar -C artifacts/publish -czf \
-            "artifacts/release/BejeweledPlus-${{ needs.prepare.outputs.tag }}-${{ matrix.platform-name }}.tar.gz" .
+          archive="$GITHUB_WORKSPACE/artifacts/release/${{ matrix.asset-name }}"
+          cd artifacts/publish
+          zip -r "$archive" .
 
       - uses: actions/upload-artifact@v7
         with:
@@ -204,8 +208,8 @@ jobs:
         with:
           dotnet-version: 9.0.304
 
-      - name: Install Android workload
-        run: dotnet workload install android --version 9.0.305
+      - name: Restore pinned Android workload
+        run: dotnet workload restore BejeweledLivePlus.Android/BejeweledLivePlus.Android.csproj
 
       - name: Restore local tools
         run: dotnet tool restore
@@ -245,7 +249,7 @@ jobs:
           printf '%s' "$ANDROID_STORE_PASSWORD" > "$RUNNER_TEMP/android-signing/store-password.txt"
           printf '%s' "$ANDROID_KEY_PASSWORD" > "$RUNNER_TEMP/android-signing/key-password.txt"
 
-      - name: Publish signed APK and AAB
+      - name: Publish signed APK
         shell: bash
         run: |
           dotnet publish BejeweledLivePlus.Android/BejeweledLivePlus.Android.csproj \
@@ -254,7 +258,7 @@ jobs:
             -m:1 \
             -p:ApplicationDisplayVersion="${{ needs.prepare.outputs.display-version }}" \
             -p:ApplicationVersion="${{ github.run_number }}" \
-            '-p:AndroidPackageFormats=apk;aab' \
+            -p:AndroidPackageFormat=apk \
             -p:AndroidKeyStore=true \
             -p:AndroidSigningKeyStore="$RUNNER_TEMP/android-signing/release.keystore" \
             -p:AndroidSigningKeyAlias="$ANDROID_KEY_ALIAS" \
@@ -265,16 +269,13 @@ jobs:
         shell: bash
         run: |
           apk="$(find BejeweledLivePlus.Android/bin/Release/net9.0-android -maxdepth 1 -type f -iname '*-signed.apk' -print -quit)"
-          aab="$(find BejeweledLivePlus.Android/bin/Release/net9.0-android -maxdepth 1 -type f -iname '*-signed.aab' -print -quit)"
           test -n "$apk" || { echo "Signed APK was not produced" >&2; exit 1; }
-          test -n "$aab" || { echo "Signed AAB was not produced" >&2; exit 1; }
 
           unzip -l "$apk" | grep -q 'lib/armeabi-v7a/libbass.so'
           unzip -l "$apk" | grep -q 'lib/arm64-v8a/libbass.so'
 
           mkdir -p artifacts/release
-          cp "$apk" "artifacts/release/BejeweledPlus-${{ needs.prepare.outputs.tag }}-android.apk"
-          cp "$aab" "artifacts/release/BejeweledPlus-${{ needs.prepare.outputs.tag }}-android.aab"
+          cp "$apk" artifacts/release/BejeweledLivePlus.Android.apk
 
       - uses: actions/upload-artifact@v7
         with:
@@ -298,8 +299,8 @@ jobs:
       - name: Select Xcode 16.4
         run: sudo xcode-select -s /Applications/Xcode_16.4.app/Contents/Developer
 
-      - name: Install iOS workload
-        run: dotnet workload install ios --version 9.0.305
+      - name: Restore pinned iOS workload
+        run: dotnet workload restore BejeweledLivePlus.iOS/BejeweledLivePlus.iOS.csproj
 
       - name: Restore local tools
         run: dotnet tool restore
@@ -342,7 +343,7 @@ jobs:
           mkdir -p artifacts/ipa/Payload artifacts/release
           cp -R "$app" artifacts/ipa/Payload/
           ditto -c -k --sequesterRsrc --keepParent artifacts/ipa/Payload \
-            "artifacts/release/BejeweledPlus-${{ needs.prepare.outputs.tag }}-ios-unsigned.ipa"
+            artifacts/release/BejeweledLivePlus.iOS.ipa
 
       - uses: actions/upload-artifact@v7
         with:
@@ -362,12 +363,6 @@ jobs:
           pattern: release-*
           path: dist
           merge-multiple: true
-
-      - name: Create checksums
-        shell: bash
-        run: |
-          cd dist
-          sha256sum * > SHA256SUMS.txt
 
       - name: Create or update release
         shell: bash

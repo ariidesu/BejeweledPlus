@@ -17,7 +17,7 @@
 
     <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
       <RuntimeIdentifiers>android-arm;android-arm64</RuntimeIdentifiers>
-      <AndroidPackageFormats>apk;aab</AndroidPackageFormats>
+      <AndroidPackageFormat>apk</AndroidPackageFormat>
     </PropertyGroup>
 
     <ItemGroup>
