@@ -687,7 +687,7 @@ namespace BejeweledLivePlus
 		{
 			mShouldUnloadContentWhenDone = true;
 			mBackgroundLoadedThreaded = false;
-			FUDGE = 75;
+			FUDGE = 25;
 			mCheatPiece = null;
 			mCheatInputingScore = false;
 			mCheatScoreStr = "";
