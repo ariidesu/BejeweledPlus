@@ -1,3 +1,4 @@
+using BejeweledLivePlus.Misc;
 using BejeweledLivePlus.Widget;
 using SexyFramework.Graphics;
 using SexyFramework.Misc;
@@ -42,10 +43,14 @@ namespace BejeweledLivePlus.UI
 		private void HighlightSelectedButton()
 		{
 			int num = ((mSelectedProfilePicture < 0) ? GlobalMembers.gApp.mProfile.GetProfilePictureId() : mSelectedProfilePicture);
-			if (num >= 0 && num < 30)
+			if (num >= 0 && num < (int)ProfilePictureConstants.NUMBER_OF_PROFILE_IMAGES)
 			{
 				mContainer.mSelection = new Point(mContainer.mImageLibrary[num].mX + mContainer.mImageLibrary[num].mWidth / 2, mContainer.mImageLibrary[num].mY + mContainer.mImageLibrary[num].mHeight / 2);
-				mContainer.mSelectedImg = GlobalMembersResourcesWP.GetImageById(742 + num);
+				mContainer.mSelectedImg = GlobalMembersResourcesWP.GetImageById((int)ProfilePictureConstants.FIRST_PROFILE_PICTURE + num);
+			}
+			for (int i = 0; i < (int)ProfilePictureConstants.NUMBER_OF_PROFILE_IMAGES; i++)
+			{
+				mContainer.mImageLibrary[i].HighLighted(i == num);
 			}
 			if (mState == Bej3WidgetState.STATE_IN || mState == Bej3WidgetState.STATE_FADING_IN)
 			{
@@ -80,9 +85,9 @@ namespace BejeweledLivePlus.UI
 			mEditNameButton = new Bej3Button(1, this, Bej3ButtonType.BUTTON_TYPE_LONG, true);
 			mEditNameButton.SetLabel(GlobalMembers._ID("EDIT NAME", 3285));
 			Bej3Widget.CenterWidgetAt(ConstantsWP.EDITPROFILEMENU_EDIT_NAME_X, ConstantsWP.EDITPROFILEMENU_EDIT_NAME_Y, mEditNameButton, true, false);
-			int num = 100;
+			AddWidget(mEditNameButton);
 			mSaveButton = new Bej3Button(0, this, Bej3ButtonType.BUTTON_TYPE_LONG_PURPLE);
-			Bej3Widget.CenterWidgetAt(ConstantsWP.EDITPROFILEMENU_SAVE_X, ConstantsWP.EDITPROFILEMENU_SAVE_Y + num, mSaveButton, true, false);
+			Bej3Widget.CenterWidgetAt(ConstantsWP.EDITPROFILEMENU_SAVE_X, ConstantsWP.EDITPROFILEMENU_SAVE_Y, mSaveButton, true, false);
 			AddWidget(mSaveButton);
 			mPlayerImage = new ImageWidget(712, true);
 			mPlayerImage.Resize(ConstantsWP.EDITPROFILEMENU_PLAYER_IMAGE_X, ConstantsWP.EDITPROFILEMENU_PLAYER_IMAGE_Y, ConstantsWP.LARGE_PROFILE_PICTURE_SIZE, ConstantsWP.LARGE_PROFILE_PICTURE_SIZE);
@@ -145,13 +150,20 @@ namespace BejeweledLivePlus.UI
 				GlobalMembers.gApp.DoRenameUserDialog();
 				break;
 			case 0:
-				GlobalMembers.gApp.mProfile.SetProfilePictureId(mPlayerImage.GetImageId() - 712);
+				GlobalMembers.gApp.mProfile.SetProfilePictureId(mPlayerImage.GetImageId() - (int)ProfilePictureConstants.FIRST_PROFILE_PICTURE_BIG);
 				GlobalMembers.gApp.mProfile.RenameProfile(GlobalMembers.gApp.mProfile.mProfileName, mDisplayName);
 				GlobalMembers.gApp.mProfile.WriteProfile();
 				GlobalMembers.gApp.mProfile.WriteProfileList();
 				mSelectedProfilePicture = -1;
-				GlobalMembers.gApp.DoMainMenu();
-				((MainMenuOptions)GlobalMembers.gApp.mMenus[5]).Expand();
+				if (mFirstTime)
+				{
+					GlobalMembers.gApp.DoMainMenu();
+				}
+				else
+				{
+					GlobalMembers.gApp.DoMainMenu();
+					((MainMenuOptions)GlobalMembers.gApp.mMenus[5]).Expand();
+				}
 				Transition_SlideOut();
 				break;
 			}
@@ -174,6 +186,8 @@ namespace BejeweledLivePlus.UI
 			mTopButton.SetType(Bej3ButtonType.TOP_BUTTON_TYPE_DISMISS);
 			mContainer.Show();
 			base.Show();
+			mContainer.LinkUpAssets();
+			HighlightSelectedButton();
 			SetVisible(false);
 		}
 
@@ -235,8 +249,8 @@ namespace BejeweledLivePlus.UI
 			else
 			{
 				mPlayerImage.Resize(ConstantsWP.EDITPROFILEMENU_PLAYER_IMAGE_X, ConstantsWP.EDITPROFILEMENU_PLAYER_IMAGE_Y, ConstantsWP.LARGE_PROFILE_PICTURE_SIZE, ConstantsWP.LARGE_PROFILE_PICTURE_SIZE);
-				mPlayerNameLabel.SetFont(GlobalMembersResources.FONT_HUGE);
-				mPlayerNameLabel.Resize(ConstantsWP.EDITPROFILEMENU_NAME_LABEL_X, ConstantsWP.EDITPROFILEMENU_NAME_LABEL_Y + 30, 0, 0);
+				mPlayerNameLabel.SetFont(GlobalMembersResources.FONT_SUBHEADER);
+				mPlayerNameLabel.Resize(ConstantsWP.EDITPROFILEMENU_NAME_LABEL_X, ConstantsWP.EDITPROFILEMENU_NAME_LABEL_Y, 0, 0);
 				mHeadingLabel.SetText(GlobalMembers._ID("EDIT PROFILE", 3287));
 				mSaveButton.SetLabel(GlobalMembers._ID("BACK", 3288));
 				mSaveButton.SetType(Bej3ButtonType.BUTTON_TYPE_LONG_PURPLE);
@@ -247,6 +261,9 @@ namespace BejeweledLivePlus.UI
 		public void SetDisplayedName(string name)
 		{
 			mDisplayName = name;
+			Graphics graphics = new Graphics();
+			graphics.SetFont(mPlayerNameLabel.GetFont());
+			mPlayerNameLabel.SetText(Utils.GetEllipsisString(graphics, name, ConstantsWP.EDITPROFILEMENU_NAME_LABEL_WIDTH));
 		}
 
 		public void ResetDisplayedPicture()
@@ -292,28 +309,39 @@ namespace BejeweledLivePlus.UI
 			return GlobalMembers.gApp.IsKeyboardShowing();
 		}
 
+		public override void SetUpPlayerImage()
+		{
+			SetUpPlayerImage(mSelectedProfilePicture);
+		}
+
 		public override void SetUpPlayerImage(int overridePresetId)
 		{
 			if (mState == Bej3WidgetState.STATE_OUT || mPlayerImage == null)
 			{
 				return;
 			}
-			bool flag = mLoading;
+
+			int profilePictureId = overridePresetId < 0
+				? GlobalMembers.gApp.mProfile.GetProfilePictureId()
+				: overridePresetId;
+			if (profilePictureId < 0 || profilePictureId >= (int)ProfilePictureConstants.NUMBER_OF_PROFILE_IMAGES)
+			{
+				return;
+			}
+
 			mLoading = true;
-			if (overridePresetId >= 0 || GlobalMembers.gApp.mProfile.UsesPresetProfilePicture())
+			try
 			{
-				int num = (mLoadedProfilePictureId = ((overridePresetId < 0) ? GlobalMembers.gApp.mProfile.GetProfilePictureId() : overridePresetId));
-				for (int i = 0; i < 30; i++)
+				BejeweledLivePlusApp.LoadContent($"ProfilePic_{profilePictureId}", false);
+				if (SetPlayerImage(profilePictureId))
 				{
-					BejeweledLivePlusApp.LoadContent($"ProfilePic_{i}", false);
+					mLoadedProfilePictureId = profilePictureId;
 				}
-				mPlayerImage.SetImage(num + 712);
 			}
-			if (!flag)
+			finally
 			{
-				LinkUpAssets();
+				mLoading = false;
 			}
-			mLoading = false;
 		}
 	}
 }

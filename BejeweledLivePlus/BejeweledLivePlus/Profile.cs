@@ -17,7 +17,7 @@ namespace BejeweledLivePlus
 			MAX_NUMBER_OF_RECENT_BADGES = 3
 		}
 
-		public const int MAX_CHARS = 16;
+		public const int MAX_CHARS = 32;
 
 		private List<int> pointRanges = new List<int>();
 

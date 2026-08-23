@@ -12,7 +12,7 @@ namespace BejeweledLivePlus.UI
 		{
 			BTN_PROFILE_ID,
 			BTN_OPTIONS_ID,
-			BTN_MOREGAMES_ID,
+			BTN_EDIT_PROFILE_ID,
 			BTN_HELP_ID,
 			BTN_BACK_ID
 		}
@@ -23,7 +23,7 @@ namespace BejeweledLivePlus.UI
 
 		private Bej3Button mOptionsButton;
 
-		private Bej3Button mHelpButton;
+		private Bej3Button mEditProfileButton;
 
 		private Bej3Button mBackButton;
 
@@ -78,10 +78,16 @@ namespace BejeweledLivePlus.UI
 			mOptionsButton.Resize(0, 0, ConstantsWP.MAINMENU_OPTIONSMENU_BUTTON_WIDTH, 0);
 			Bej3Widget.CenterWidgetAt(ConstantsWP.MAINMENU_OPTIONSMENU_OPTIONS_X, ConstantsWP.MAINMENU_OPTIONSMENU_OPTIONS_Y + mPlayerHeight + num6, mOptionsButton);
 			AddWidget(mOptionsButton);
+			mEditProfileButton = new Bej3Button((int)MainMenuOptions_BUTTON_IDS.BTN_EDIT_PROFILE_ID, this, Bej3ButtonType.BUTTON_TYPE_LONG);
+			mEditProfileButton.mFont = GlobalMembersResources.FONT_SUBHEADER;
+			mEditProfileButton.SetLabel(GlobalMembers._ID("EDIT PROFILE", 3427));
+			mEditProfileButton.Resize(0, 0, ConstantsWP.MAINMENU_OPTIONSMENU_BUTTON_WIDTH, 0);
+			Bej3Widget.CenterWidgetAt(ConstantsWP.MAINMENU_OPTIONSMENU_HELP_X, ConstantsWP.MAINMENU_OPTIONSMENU_HELP_Y + mPlayerHeight + num6, mEditProfileButton);
+			AddWidget(mEditProfileButton);
 			mBackButton = new Bej3Button(4, this, Bej3ButtonType.BUTTON_TYPE_LONG_PURPLE);
 			mBackButton.SetLabel(GlobalMembers._ID("BACK", 3405));
 			mBackButton.Resize(0, 0, ConstantsWP.MAINMENU_OPTIONSMENU_BUTTON_WIDTH, 0);
-			Bej3Widget.CenterWidgetAt(ConstantsWP.LEGALMENU_BUTTON_BACK_X, ConstantsWP.MAINMENU_OPTIONSMENU_HELP_Y + mPlayerHeight + num6, mBackButton);
+			Bej3Widget.CenterWidgetAt(ConstantsWP.MAINMENU_OPTIONSMENU_MOREGAMES_1_X, ConstantsWP.MAINMENU_OPTIONSMENU_MOREGAMES_1_Y + mPlayerHeight + num6, mBackButton);
 			AddWidget(mBackButton);
 			base.SystemButtonPressed += OnSystemButtonPressed;
 		}

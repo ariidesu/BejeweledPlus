@@ -6,7 +6,7 @@ namespace BejeweledLivePlus.UI
 {
 	internal class EditProfileDialogImageContainer : Bej3Widget
 	{
-		public Bej3Button[] mImageLibrary = new Bej3Button[30];
+		public Bej3Button[] mImageLibrary = new Bej3Button[(int)ProfilePictureConstants.NUMBER_OF_PROFILE_IMAGES];
 
 		public Point mSelection;
 
@@ -23,7 +23,7 @@ namespace BejeweledLivePlus.UI
 			Resize(0, 0, ConstantsWP.EDITPROFILEMENU_IMAGE_LIBRARY_WIDTH, ConstantsWP.EDITPROFILEMENU_IMAGE_LIBRARY_HEIGHT);
 			int num = 0;
 			int num2 = 0;
-			for (int i = 0; i < 30; i++)
+			for (int i = 0; i < (int)ProfilePictureConstants.NUMBER_OF_PROFILE_IMAGES; i++)
 			{
 				mImageLibrary[i] = new Bej3Button(100000 + i, parent, Bej3ButtonType.BUTTON_TYPE_PROFILE_PICTURE);
 				mImageLibrary[i].Resize(num * ConstantsWP.EDITPROFILEMENU_IMAGE_LIBRARY_ITEM_SIZE_X, num2 * ConstantsWP.EDITPROFILEMENU_IMAGE_LIBRARY_ITEM_SIZE_Y, ConstantsWP.EDITPROFILEMENU_IMAGE_LIBRARY_ITEM_SIZE_X, ConstantsWP.EDITPROFILEMENU_IMAGE_LIBRARY_ITEM_SIZE_Y);
@@ -62,16 +62,16 @@ namespace BejeweledLivePlus.UI
 			{
 				float num = 1.4f;
 				int num2 = (int)((float)mSelectedImg.GetCelWidth() * num);
-				g.DrawImage(mSelectedImg, mSelection.mX - num2 / 2, mSelection.mY - num2 / 2, num2, num2);
+				g.DrawImage(image, mSelection.mX - num2 / 2, mSelection.mY - num2 / 2, num2, num2);
 			}
 		}
 
 		public override void LinkUpAssets()
 		{
 			base.LinkUpAssets();
-			for (int i = 0; i < 30; i++)
+			for (int i = 0; i < (int)ProfilePictureConstants.NUMBER_OF_PROFILE_IMAGES; i++)
 			{
-				mImageLibrary[i].mButtonImage = GlobalMembersResourcesWP.GetImageById(742 + i);
+				mImageLibrary[i].mButtonImage = GlobalMembersResourcesWP.GetImageById((int)ProfilePictureConstants.FIRST_PROFILE_PICTURE + i);
 			}
 		}
 

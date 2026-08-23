@@ -1,10 +1,14 @@
+using SexyFramework.Graphics;
+using SexyFramework.Resource;
 using BejeweledLivePlus.Widget;
 
 namespace BejeweledLivePlus.UI
 {
 	public class ProfileMenuBase : Bej3Widget
 	{
-		private static int loadedGroup;
+		private static int loadedGroup = -1;
+
+		private SharedImageRef mPlayerImageRef;
 
 		protected bool mLoading;
 
@@ -17,6 +21,30 @@ namespace BejeweledLivePlus.UI
 		{
 			mLoading = false;
 			mLoadedProfilePictureId = -1;
+		}
+
+		protected bool SetPlayerImage(int profilePictureId)
+		{
+			int imageId = profilePictureId + (int)ProfilePictureConstants.FIRST_PROFILE_PICTURE_BIG;
+			ResourceRef resourceRef = GlobalMembers.gApp.mResourceManager.GetImageRef(GlobalMembersResourcesWP.GetStringIdById(imageId));
+			if (resourceRef == null)
+			{
+				return false;
+			}
+			SharedImageRef sharedImageRef = resourceRef.GetSharedImageRef();
+			mPlayerImage.SetImage(imageId);
+			bool result = sharedImageRef != null && sharedImageRef.GetImage() != null && mPlayerImage.GetImage() != null;
+			if (result)
+			{
+				mPlayerImageRef?.Release();
+				mPlayerImageRef = sharedImageRef;
+			}
+			else
+			{
+				sharedImageRef?.Release();
+			}
+			resourceRef.Release();
+			return result;
 		}
 
 		public virtual void SetUpPlayerImage()
@@ -32,14 +60,16 @@ namespace BejeweledLivePlus.UI
 				int num2 = (mLoadedProfilePictureId = ((num < 0) ? GlobalMembers.gApp.mProfile.GetProfilePictureId() : num));
 				if (loadedGroup == num2)
 				{
-					mPlayerImage.SetImage(num2 + 712);
-					mLoading = false;
-					return;
+					if (SetPlayerImage(num2))
+					{
+						mLoading = false;
+						return;
+					}
+					BejeweledLivePlusApp.UnloadContent($"ProfilePic_{num2}", true);
 				}
 				UnloadPlayerImages();
 				BejeweledLivePlusApp.LoadContent($"ProfilePic_{num2}", false);
-				mPlayerImage.SetImage(num2 + 712);
-				loadedGroup = num2;
+				loadedGroup = SetPlayerImage(num2) ? num2 : -1;
 			}
 			mLoading = false;
 		}
@@ -56,21 +86,23 @@ namespace BejeweledLivePlus.UI
 				int num = (mLoadedProfilePictureId = ((overridePresetId < 0) ? GlobalMembers.gApp.mProfile.GetProfilePictureId() : overridePresetId));
 				if (loadedGroup == num)
 				{
-					mPlayerImage.SetImage(num + 712);
-					mLoading = false;
-					return;
+					if (SetPlayerImage(num))
+					{
+						mLoading = false;
+						return;
+					}
+					BejeweledLivePlusApp.UnloadContent($"ProfilePic_{num}", true);
 				}
 				UnloadPlayerImages();
 				BejeweledLivePlusApp.LoadContent($"ProfilePic_{num}", false);
-				mPlayerImage.SetImage(num + 712);
-				loadedGroup = num;
+				loadedGroup = SetPlayerImage(num) ? num : -1;
 			}
 			mLoading = false;
 		}
 
 		public virtual void UnloadPlayerImages(int exceptThis)
 		{
-			for (int i = 0; i < 30; i++)
+			for (int i = 0; i < (int)ProfilePictureConstants.NUMBER_OF_PROFILE_IMAGES; i++)
 			{
 				if (i != exceptThis && i != GlobalMembers.gApp.mProfile.GetProfilePictureId())
 				{
@@ -83,7 +115,7 @@ namespace BejeweledLivePlus.UI
 		public virtual void UnloadPlayerImages()
 		{
 			int num = -1;
-			for (int i = 0; i < 30; i++)
+			for (int i = 0; i < (int)ProfilePictureConstants.NUMBER_OF_PROFILE_IMAGES; i++)
 			{
 				if (i != num && i != GlobalMembers.gApp.mProfile.GetProfilePictureId())
 				{
@@ -105,6 +137,8 @@ namespace BejeweledLivePlus.UI
 			base.HideCompleted();
 			if (mInterfaceState != InterfaceState.INTERFACE_STATE_PROFILEMENU && mInterfaceState != InterfaceState.INTERFACE_STATE_EDITPROFILEMENU && mInterfaceState != InterfaceState.INTERFACE_STATE_STATSMENU)
 			{
+				mPlayerImageRef?.Release();
+				mPlayerImageRef = null;
 				UnloadPlayerImages(-2);
 			}
 		}
