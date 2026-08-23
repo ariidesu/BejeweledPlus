@@ -122,7 +122,16 @@ jobs:
         shell: bash
         run: |
           sudo apt-get update
-          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y wine wine64 wget curl p7zip-full zip
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y \
+            wine wine64 wget curl p7zip-full zip
+
+          # Ubuntu's wine64 package no longer provides a wine64 command, but
+          # MonoGame's effect compiler still invokes that command by name.
+          mkdir -p "$RUNNER_TEMP/bin"
+          ln -sf "$(command -v wine)" "$RUNNER_TEMP/bin/wine64"
+          export PATH="$RUNNER_TEMP/bin:$PATH"
+          echo "$RUNNER_TEMP/bin" >> "$GITHUB_PATH"
+
           wget -qO- https://monogame.net/downloads/net9_mgfxc_wine_setup.sh | bash
           echo "MGFXC_WINE_PATH=$HOME/.winemonogame" >> "$GITHUB_ENV"
 
@@ -131,8 +140,24 @@ jobs:
         shell: bash
         run: |
           brew install wget p7zip curl
-          brew install --cask wine-stable
+
+          for attempt in 1 2 3; do
+            if HOMEBREW_CURL_RETRIES=5 brew install --cask wine-stable; then
+              break
+            fi
+            if [[ "$attempt" == 3 ]]; then
+              exit 1
+            fi
+            sleep $((attempt * 10))
+          done
+
           xattr -dr com.apple.quarantine "/Applications/Wine Stable.app"
+
+          mkdir -p "$RUNNER_TEMP/bin"
+          ln -sf "$(command -v wine)" "$RUNNER_TEMP/bin/wine64"
+          export PATH="$RUNNER_TEMP/bin:$PATH"
+          echo "$RUNNER_TEMP/bin" >> "$GITHUB_PATH"
+
           wget -qO- https://monogame.net/downloads/net9_mgfxc_wine_setup.sh | bash
           echo "MGFXC_WINE_PATH=$HOME/.winemonogame" >> "$GITHUB_ENV"
 
@@ -222,7 +247,14 @@ jobs:
         shell: bash
         run: |
           sudo apt-get update
-          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y wine wine64 wget curl p7zip-full
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y \
+            wine wine64 wget curl p7zip-full
+
+          mkdir -p "$RUNNER_TEMP/bin"
+          ln -sf "$(command -v wine)" "$RUNNER_TEMP/bin/wine64"
+          export PATH="$RUNNER_TEMP/bin:$PATH"
+          echo "$RUNNER_TEMP/bin" >> "$GITHUB_PATH"
+
           wget -qO- https://monogame.net/downloads/net9_mgfxc_wine_setup.sh | bash
           echo "MGFXC_WINE_PATH=$HOME/.winemonogame" >> "$GITHUB_ENV"
 
@@ -315,8 +347,24 @@ jobs:
         shell: bash
         run: |
           brew install wget p7zip curl
-          brew install --cask wine-stable
+
+          for attempt in 1 2 3; do
+            if HOMEBREW_CURL_RETRIES=5 brew install --cask wine-stable; then
+              break
+            fi
+            if [[ "$attempt" == 3 ]]; then
+              exit 1
+            fi
+            sleep $((attempt * 10))
+          done
+
           xattr -dr com.apple.quarantine "/Applications/Wine Stable.app"
+
+          mkdir -p "$RUNNER_TEMP/bin"
+          ln -sf "$(command -v wine)" "$RUNNER_TEMP/bin/wine64"
+          export PATH="$RUNNER_TEMP/bin:$PATH"
+          echo "$RUNNER_TEMP/bin" >> "$GITHUB_PATH"
+
           wget -qO- https://monogame.net/downloads/net9_mgfxc_wine_setup.sh | bash
           echo "MGFXC_WINE_PATH=$HOME/.winemonogame" >> "$GITHUB_ENV"
 
