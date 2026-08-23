@@ -103,7 +103,9 @@ jobs:
     steps:
       - uses: actions/checkout@v7
         with:
+          token: ${{ secrets.CONTENT_REPOSITORY_TOKEN }}
           submodules: recursive
+          persist-credentials: false
 
       - uses: actions/setup-dotnet@v6
         with:
@@ -202,7 +204,9 @@ jobs:
     steps:
       - uses: actions/checkout@v7
         with:
+          token: ${{ secrets.CONTENT_REPOSITORY_TOKEN }}
           submodules: recursive
+          persist-credentials: false
 
       - uses: actions/setup-dotnet@v6
         with:
@@ -290,7 +294,9 @@ jobs:
     steps:
       - uses: actions/checkout@v7
         with:
+          token: ${{ secrets.CONTENT_REPOSITORY_TOKEN }}
           submodules: recursive
+          persist-credentials: false
 
       - uses: actions/setup-dotnet@v6
         with:
