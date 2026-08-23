@@ -112,9 +112,15 @@ namespace BejeweledLivePlus.Widget
             GlobalMembersResourcesWP.IMAGE_WARP_LINES_04
         };
 
-        private static readonly float[] ambientLightColor = { 1f, 1f, 1f, 1f };
-		private static readonly float[] diffuseLightColor = { 0.6f, 0.6f, 0.6f, 1f };
 		private static readonly float[] specularLightColor = { 1f, 1f, 1f, 1f };
+		private static readonly float[] zeroVector = { 0f, 0f, 0f, 0f };
+		private readonly float[] mCameraPositionScratch = new float[4];
+		private readonly float[] mLightPositionScratch = new float[4];
+		private readonly float[] mSpecularPowerScratch = new float[4];
+		private readonly float[] mGlobalFadeScratch = new float[4];
+		private readonly SexyMatrix4 mGemWorldScratch = new SexyMatrix4();
+		private readonly SexyMatrix4 mGemWorldOutlineScratch = new SexyMatrix4();
+		private readonly SexyCoords3 mGemOutlineCoordsScratch = new SexyCoords3();
 
 		public HyperspaceUltra(Board theBoard)
 		{
@@ -1004,16 +1010,15 @@ namespace BejeweledLivePlus.Widget
 			Microsoft.Xna.Framework.Matrix xnaProj = renderDev.GetXNAMatrix(sexyProj);
 
 			var stateMgr = renderDev.mStateMgr;
-			using (RenderEffectAutoState autoFx = new RenderEffectAutoState(g, fx))
-			{
-				SexyVector3 camPos = mCameraPersp.GetCoords().t;
-				camPos.z = 0f - camPos.z;
-				fx.SetParameter("cameraPosition", new[] { camPos.x, camPos.y, camPos.z, 1f }, 4u);
-				fx.SetParameter("ambientLightColor", ambientLightColor, 4u);
-				fx.SetParameter("diffuseLightColor", diffuseLightColor, 4u);
-				fx.SetParameter("specularLightColor", specularLightColor, 4u);
-				fx.SetParameter("lightingCamOffest", new[] { 0f, 0f, 0f, 0f }, 4u);
-			}
+			SexyVector3 camPos = mCameraPersp.GetCoords().t;
+			camPos.z = 0f - camPos.z;
+			mCameraPositionScratch[0] = camPos.x;
+			mCameraPositionScratch[1] = camPos.y;
+			mCameraPositionScratch[2] = camPos.z;
+			mCameraPositionScratch[3] = 1f;
+			fx.SetParameter("cameraPosition", mCameraPositionScratch, 4u);
+		fx.SetParameter("specularLightColor", specularLightColor, 4u);
+			fx.SetParameter("lightingCamOffest", zeroVector, 4u);
 			float frontFade = Math.Min(mFadeTo3D, 1f);
 			float outlineFade = (mState == HyperSpaceState.FadeTo3D) ? (1f - (float)mPieceAlpha.GetOutVal()) : Math.Min(mFadeTo3D, 1f);
 
@@ -1054,44 +1059,52 @@ namespace BejeweledLivePlus.Widget
 			float frontFade, float outlineFade)
 		{
 			Graphics3D g3d = g.Get3D();
+			stateMgr.SetViewTransform(xnaView);
+			stateMgr.SetProjectionTransform(xnaProj);
+			g3d.SetDepthState(Graphics3D.ECompareFunc.COMPARE_LESS, true);
+			g3d.SetBackfaceCulling(1, 0);
+
+			SexyVector3 lightOffset = mapColorIndexToLightOffset[colorIndex];
+			mLightPositionScratch[0] = gi.mCoords.t.x + lightOffset.x;
+			mLightPositionScratch[1] = gi.mCoords.t.y + lightOffset.y;
+			mLightPositionScratch[2] = gi.mCoords.t.z + lightOffset.z;
+			mLightPositionScratch[3] = 1f;
+			fx.SetParameter("lightPosition", mLightPositionScratch, 4u);
+			HyperMaterial m = mapColorIndexToMaterial[colorIndex];
+			fx.SetParameter("specularMaterialColor", m.specular, 4u);
+			mSpecularPowerScratch[0] = m.power;
+			mSpecularPowerScratch[1] = m.power;
+			mSpecularPowerScratch[2] = m.power;
+			mSpecularPowerScratch[3] = m.power;
+			fx.SetParameter("specularPower", mSpecularPowerScratch, 4u);
+			mGlobalFadeScratch[0] = frontFade;
+			mGlobalFadeScratch[1] = frontFade;
+			mGlobalFadeScratch[2] = frontFade;
+			mGlobalFadeScratch[3] = frontFade;
+			fx.SetParameter("globalFade", mGlobalFadeScratch, 4u);
+
 			using (RenderEffectAutoState autoFx = new RenderEffectAutoState(g, fx))
 			{
-				stateMgr.SetViewTransform(xnaView);
-				stateMgr.SetProjectionTransform(xnaProj);
-				g3d.SetDepthState(Graphics3D.ECompareFunc.COMPARE_LESS, true);
-				g3d.SetBackfaceCulling(1, 0);
-
-				SexyVector3 lp = new SexyVector3(
-					gi.mCoords.t.x + mapColorIndexToLightOffset[colorIndex].x,
-					gi.mCoords.t.y + mapColorIndexToLightOffset[colorIndex].y,
-					gi.mCoords.t.z + mapColorIndexToLightOffset[colorIndex].z);
-				fx.SetParameter("lightPosition", new[] { lp.x, lp.y, lp.z, 1f }, 4u);
-				HyperMaterial m = mapColorIndexToMaterial[colorIndex];
-				fx.SetParameter("ambientMaterialColor", m.ambient, 4u);
-				fx.SetParameter("diffuseMaterialColor", m.diffuse, 4u);
-				fx.SetParameter("specularMaterialColor", m.specular, 4u);
-				fx.SetParameter("specularPower", new[] { m.power, m.power, m.power, m.power }, 4u);
-				fx.SetParameter("globalFade", new[] { frontFade, frontFade, frontFade, frontFade }, 4u);
-
-				SexyMatrix4 mWorld = new SexyMatrix4();
-				gi.mCoords.GetOutboundMatrix(mWorld);
-				renderDev.RenderMeshSinglePass(GlobalMembers.gApp.mGems3D[colorIndex], mWorld, 1);
+				gi.mCoords.GetOutboundMatrix(mGemWorldScratch);
+				renderDev.RenderMeshSinglePass(GlobalMembers.gApp.mGems3D[colorIndex], mGemWorldScratch, 1);
 
 				Microsoft.Xna.Framework.Matrix outlineProj = xnaProj;
 				outlineProj.M43 += 1.0f;
 				stateMgr.SetProjectionTransform(outlineProj);
-				fx.SetParameter("globalFade", new[] { outlineFade, outlineFade, outlineFade, outlineFade }, 4u);
+				mGlobalFadeScratch[0] = outlineFade;
+				mGlobalFadeScratch[1] = outlineFade;
+				mGlobalFadeScratch[2] = outlineFade;
+				mGlobalFadeScratch[3] = outlineFade;
+				fx.SetParameter("globalFade", mGlobalFadeScratch, 4u);
 				g3d.SetDepthState(Graphics3D.ECompareFunc.COMPARE_LESS, false);
 				g3d.SetBackfaceCulling(1, 0);
 
 				float distScale = Math.Max(Math.Min(gi.mDistToCamera / 3425.0f, 1f), 0.5f);
 				float outlineScale = 0.99f + distScale * 0.1f;
-				SexyMatrix4 mWorldOutline = new SexyMatrix4();
-				SexyCoords3 outlineCoords = new SexyCoords3();
-				outlineCoords.CopyFrom(gi.mCoords);
-				outlineCoords.Scale(outlineScale, outlineScale, outlineScale);
-				outlineCoords.GetOutboundMatrix(mWorldOutline);
-				renderDev.RenderMeshSinglePass(GlobalMembers.gApp.mGems3D[colorIndex], mWorldOutline, 0);
+				mGemOutlineCoordsScratch.CopyFrom(gi.mCoords);
+				mGemOutlineCoordsScratch.Scale(outlineScale, outlineScale, outlineScale);
+				mGemOutlineCoordsScratch.GetOutboundMatrix(mGemWorldOutlineScratch);
+				renderDev.RenderMeshSinglePass(GlobalMembers.gApp.mGems3D[colorIndex], mGemWorldOutlineScratch, 0);
 			}
 		}
 		

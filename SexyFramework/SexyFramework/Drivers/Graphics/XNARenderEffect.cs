@@ -315,25 +315,24 @@ namespace SexyFramework.Drivers.Graphics
                     break;
             }
 
-            float[] copy = new float[inFloatCount];
-            for (uint i = 0; i < inFloatCount; i++) copy[i] = inFloatData[i];
-            mLastParamValues[inParamName] = copy;
+            int count = (int)inFloatCount;
+            if (!mLastParamValues.TryGetValue(inParamName, out var copy) || copy.Length != count)
+            {
+                copy = new float[count];
+                mLastParamValues[inParamName] = copy;
+            }
+            Array.Copy(inFloatData, copy, count);
         }
 
         public override void SetParameter(string inParamName, float inFloatData)
         {
             if (mDefinition.mEffect == null)
             {
-                System.Diagnostics.Debug.WriteLine("Attempting to set parameter on null effect");
                 return;
             }
             if (mParams.TryGetValue(inParamName, out var param))
             {
                 param.SetValue(inFloatData);
-            }
-            else
-            {
-                System.Diagnostics.Debug.WriteLine("Parameter '" + inParamName + "' not found in effect " + mDefinition.mEffect.Name);
             }
         }
 

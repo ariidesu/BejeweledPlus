@@ -21,9 +21,9 @@ namespace SexyFramework.Drivers.Graphics
 			Clipper_LessEqual
 		}
 
-		private List<VertexPositionColorTexture> DPC_l2 = new List<VertexPositionColorTexture>();
+		private List<VertexPositionColorTexture> DPC_l2 = new List<VertexPositionColorTexture>(64);
 
-		private List<VertexPositionColorTexture> DPC_l1 = new List<VertexPositionColorTexture>();
+		private List<VertexPositionColorTexture> DPC_l1 = new List<VertexPositionColorTexture>(64);
 
 		public GraphicsDeviceManager mDevice;
 
@@ -101,7 +101,7 @@ namespace SexyFramework.Drivers.Graphics
 
 		private int mBatchedIndexIndex;
 
-		private static int mBatchedTriangleSize = 4096;
+		private static int mBatchedTriangleSize = 8192;
 
 		private IGraphicsDriver mGraphicsDriver;
 
@@ -400,7 +400,8 @@ namespace SexyFramework.Drivers.Graphics
 				return false;
 			}
 
-			if (inImage.mNameForRes.Length != 0)
+			XNATextureData xNATextureData = inImage.GetRenderData() as XNATextureData;
+			if (xNATextureData == null && inImage.mNameForRes.Length != 0)
 			{
 				SharedImageRef sharedImageRef = GlobalMembers.gSexyApp.mResourceManager.LoadImage(inImage.mNameForRes);
 				MemoryImage memoryImage = sharedImageRef?.GetMemoryImage();
@@ -410,7 +411,7 @@ namespace SexyFramework.Drivers.Graphics
 				}
 			}
 
-			XNATextureData xNATextureData = inImage.GetRenderData() as XNATextureData;
+			xNATextureData = inImage.GetRenderData() as XNATextureData;
 			if (xNATextureData != null)
 			{
 				if (xNATextureData.mOptimizedLoad)
@@ -586,33 +587,30 @@ namespace SexyFramework.Drivers.Graphics
 			mImage.InitAtalasState();
 			if (mScratchPoly.Length < num) mScratchPoly = new VertexPositionColorTexture[num];
 			VertexPositionColorTexture[] array = mScratchPoly;
-			if ((theVertexFormat & 4) != 0 && (color.PackedValue != 0 || tx != 0f || ty != 0f || mTransformStack.Count != 0))
-			{
-				for (int i = 0; i < num; i++)
-				{
-					theVertices[i].x += tx;
-					theVertices[i].y += ty;
-					if (theVertices[i].color == SexyFramework.Graphics.Color.Zero)
-					{
-						theVertices[i].color = theColor;
-					}
-					if (mTransformStack.Count != 0)
-					{
-						SexyVector2 sexyVector = new SexyVector2(theVertices[i].x, theVertices[i].y);
-						sexyVector = mTransformStack.Peek() * sexyVector;
-						theVertices[i].x = sexyVector.x;
-						theVertices[i].y = sexyVector.y;
-					}
-				}
-			}
+			bool hasPositionTransform = (theVertexFormat & 4) != 0;
+			bool hasTransform = mTransformStack.Count != 0;
+			SexyTransform2D positionTransform = hasTransform ? mTransformStack.Peek() : default;
 			if ((theVertexFormat & 0x200) != 0)
 			{
 				if (mScratchPolyDual.Length < num) mScratchPolyDual = new VertexPositionColorDualTexture[num];
 				VertexPositionColorDualTexture[] dualArray = mScratchPolyDual;
 				for (int j = 0; j < num; j++)
 				{
-					dualArray[j].Position.X = theVertices[j].x;
-					dualArray[j].Position.Y = theVertices[j].y;
+					float x = theVertices[j].x;
+					float y = theVertices[j].y;
+					if (hasPositionTransform)
+					{
+						x += tx;
+						y += ty;
+						if (hasTransform)
+						{
+							SexyVector2 sexyVector = positionTransform * new SexyVector2(x, y);
+							x = sexyVector.x;
+							y = sexyVector.y;
+						}
+					}
+					dualArray[j].Position.X = x;
+					dualArray[j].Position.Y = y;
 					dualArray[j].Position.Z = mBltDepth;
 					dualArray[j].TextureCoordinate = mImage.mVectorBase + mImage.mVectorU * theVertices[j].u + mImage.mVectorV * theVertices[j].v;
 					dualArray[j].TextureCoordinate1 = new Vector2(theVertices[j].u2, theVertices[j].v2);
@@ -627,8 +625,21 @@ namespace SexyFramework.Drivers.Graphics
 			}
 			for (int j = 0; j < num; j++)
 			{
-				array[j].Position.X = theVertices[j].x;
-				array[j].Position.Y = theVertices[j].y;
+				float x = theVertices[j].x;
+				float y = theVertices[j].y;
+				if (hasPositionTransform)
+				{
+					x += tx;
+					y += ty;
+					if (hasTransform)
+					{
+						SexyVector2 sexyVector = positionTransform * new SexyVector2(x, y);
+						x = sexyVector.x;
+						y = sexyVector.y;
+					}
+				}
+				array[j].Position.X = x;
+				array[j].Position.Y = y;
 				array[j].Position.Z = mBltDepth;
 				array[j].TextureCoordinate = mImage.mVectorBase + mImage.mVectorU * theVertices[j].u + mImage.mVectorV * theVertices[j].v;
 				if (theVertices[j].color == SexyFramework.Graphics.Color.Zero)
@@ -1677,17 +1688,17 @@ namespace SexyFramework.Drivers.Graphics
                 }
                 return;
             }
-            int num3 = 0;
-            while (num3 < theNumTriangles)
-            {
-                if (mBatchedTriangleIndex >= mBatchedTriangleSize)
-                {
-                    DoCommitAllRenderState();
-                    FlushBufferedTriangles();
-                }
-                int inStartIndex = mBatchedTriangleIndex;
-                int num4 = 0;
-                int num5 = Math.Min(mBatchedTriangleSize - mBatchedTriangleIndex, theNumTriangles - num3);
+			int num3 = 0;
+			while (num3 < theNumTriangles)
+			{
+				if (mBatchedTriangleIndex > mBatchedTriangleSize - 3)
+				{
+					DoCommitAllRenderState();
+					FlushBufferedTriangles();
+				}
+				int inStartIndex = mBatchedTriangleIndex;
+				int num4 = 0;
+				int num5 = Math.Min((mBatchedTriangleSize - mBatchedTriangleIndex) / 3, theNumTriangles - num3);
                 while (num4 < num5)
                 {
                     Vector2 uv0n = image.mVectorBase + image.mVectorU * theVertices[num3, 0].u + image.mVectorV * theVertices[num3, 0].v;
@@ -2076,19 +2087,39 @@ namespace SexyFramework.Drivers.Graphics
 			mTmpVPCTBuffer[3].Color = color;
 			mTmpVPCTBuffer[3].TextureCoordinate = image.mVectorBase + image.mVectorU * u2 + image.mVectorV * v2;
 			Matrix matrix = theTransform.mMatrix;
-			for (int i = 0; i < 4; i++)
+			bool affine2D = matrix.M13 == 0f && matrix.M23 == 0f
+				&& matrix.M31 == 0f && matrix.M32 == 0f
+				&& matrix.M33 == 1f && matrix.M43 == 0f;
+			if (affine2D)
 			{
-				Vector3.Transform(ref mTmpVPCTBuffer[i].Position, ref matrix, out mTmpVPCTBuffer[i].Position);
+				for (int i = 0; i < 4; i++)
+				{
+					Vector3 position = mTmpVPCTBuffer[i].Position;
+					float x = position.X;
+					float y = position.Y;
+					position.X = x * matrix.M11 + y * matrix.M21 + matrix.M41;
+					position.Y = x * matrix.M12 + y * matrix.M22 + matrix.M42;
+					mTmpVPCTBuffer[i].Position = position;
+				}
+			}
+			else
+			{
+				for (int i = 0; i < 4; i++)
+				{
+					Vector3.Transform(ref mTmpVPCTBuffer[i].Position, ref matrix, out mTmpVPCTBuffer[i].Position);
+				}
 			}
 			Rect rect = theClipRect;
 			bool flag2 = false;
 			if (rect != Rect.INVALIDATE_RECT && (rect.mX != 0 || rect.mY != 0 || rect.mWidth != mWidth || rect.mHeight != mHeight))
 			{
-				SexyVector2 sexyVector = new SexyVector2(rect.mX, rect.mY);
-				SexyVector2 sexyVector2 = new SexyVector2(rect.mX + rect.mWidth, rect.mY + rect.mHeight);
+				float clipLeft = rect.mX;
+				float clipTop = rect.mY;
+				float clipRight = rect.mX + rect.mWidth;
+				float clipBottom = rect.mY + rect.mHeight;
 				for (int j = 0; j < 4; j++)
 				{
-					if (mTmpVPCTBuffer[j].Position.X < sexyVector.x || mTmpVPCTBuffer[j].Position.X >= sexyVector2.x || mTmpVPCTBuffer[j].Position.Y < sexyVector.y || mTmpVPCTBuffer[j].Position.Y >= sexyVector2.y)
+					if (mTmpVPCTBuffer[j].Position.X < clipLeft || mTmpVPCTBuffer[j].Position.X >= clipRight || mTmpVPCTBuffer[j].Position.Y < clipTop || mTmpVPCTBuffer[j].Position.Y >= clipBottom)
 					{
 						flag2 = true;
 						break;
