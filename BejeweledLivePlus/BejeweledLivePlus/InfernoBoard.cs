@@ -1297,6 +1297,11 @@ namespace BejeweledLivePlus
 				{
 					return true;
 				}
+				if (storm.mStormType == (int)LightningStorm.STORM.STORM_FLAMING &&
+					Math.Abs(storm.mOriginCol - column) <= 1)
+				{
+					return true;
+				}
 			}
 			return false;
 		}
