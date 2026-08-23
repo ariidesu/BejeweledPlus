@@ -1,0 +1,394 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Release version, for example v1.2.0"
+        required: true
+        type: string
+      prerelease:
+        description: "Mark the GitHub release as a prerelease"
+        required: false
+        default: false
+        type: boolean
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+env:
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+  DOTNET_NOLOGO: true
+
+jobs:
+  prepare:
+    name: Prepare version
+    runs-on: ubuntu-latest
+    outputs:
+      tag: ${{ steps.version.outputs.tag }}
+      version: ${{ steps.version.outputs.version }}
+      display-version: ${{ steps.version.outputs.display-version }}
+      prerelease: ${{ steps.version.outputs.prerelease }}
+    steps:
+      - name: Resolve and validate version
+        id: version
+        shell: bash
+        env:
+          MANUAL_VERSION: ${{ inputs.version }}
+          MANUAL_PRERELEASE: ${{ inputs.prerelease }}
+        run: |
+          if [[ "$GITHUB_REF_TYPE" == "tag" ]]; then
+            tag="$GITHUB_REF_NAME"
+          else
+            tag="$MANUAL_VERSION"
+          fi
+
+          [[ "$tag" == v* ]] || tag="v$tag"
+          version="${tag#v}"
+
+          if [[ ! "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+([.-][0-9A-Za-z.-]+)?$ ]]; then
+            echo "Version must look like v1.2.3 or v1.2.3-beta.1" >&2
+            exit 1
+          fi
+
+          prerelease=false
+          if [[ "$version" == *-* || "$MANUAL_PRERELEASE" == "true" ]]; then
+            prerelease=true
+          fi
+
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          echo "display-version=${version%%-*}" >> "$GITHUB_OUTPUT"
+          echo "prerelease=$prerelease" >> "$GITHUB_OUTPUT"
+
+  desktop:
+    name: ${{ matrix.label }}
+    needs: prepare
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - label: Windows x64
+            os: windows-latest
+            rid: win-x64
+            bass: bass.dll
+            platform-name: windows-x64
+            package: zip
+          - label: Linux x64
+            os: ubuntu-latest
+            rid: linux-x64
+            bass: libbass.so
+            platform-name: linux-x64
+            package: tar
+          - label: macOS Intel
+            os: macos-15
+            rid: osx-x64
+            bass: libbass.dylib
+            platform-name: macos-x64
+            package: zip
+          - label: macOS Apple Silicon
+            os: macos-15
+            rid: osx-arm64
+            bass: libbass.dylib
+            platform-name: macos-arm64
+            package: zip
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          submodules: recursive
+
+      - uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: 9.0.304
+
+      - name: Restore local tools
+        run: dotnet tool restore
+
+      - name: Set up MonoGame effect compiler on Linux
+        if: runner.os == 'Linux'
+        shell: bash
+        run: |
+          sudo apt-get update
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y wine wine64 wget curl p7zip-full
+          wget -qO- https://monogame.net/downloads/net9_mgfxc_wine_setup.sh | bash
+          echo "MGFXC_WINE_PATH=$HOME/.winemonogame" >> "$GITHUB_ENV"
+
+      - name: Set up MonoGame effect compiler on macOS
+        if: runner.os == 'macOS'
+        shell: bash
+        run: |
+          brew install wget p7zip curl
+          brew install --cask wine-stable
+          xattr -dr com.apple.quarantine "/Applications/Wine Stable.app"
+          wget -qO- https://monogame.net/downloads/net9_mgfxc_wine_setup.sh | bash
+          echo "MGFXC_WINE_PATH=$HOME/.winemonogame" >> "$GITHUB_ENV"
+
+      - name: Require BASS native library
+        shell: pwsh
+        run: |
+          $bass = "SexyFramework/runtimes/${{ matrix.rid }}/native/${{ matrix.bass }}"
+          if (-not (Test-Path -LiteralPath $bass)) {
+            throw "Missing $bass. See docs/RELEASING.md."
+          }
+
+      - name: Publish
+        shell: pwsh
+        run: |
+          dotnet publish BejeweledLivePlus.Desktop/BejeweledLivePlus.Desktop.csproj `
+            --configuration Release `
+            --runtime "${{ matrix.rid }}" `
+            --self-contained true `
+            --output artifacts/publish `
+            -m:1 `
+            -p:PublishReadyToRun=false `
+            -p:Version="${{ needs.prepare.outputs.version }}"
+
+          Copy-Item `
+            -LiteralPath "SexyFramework/runtimes/${{ matrix.rid }}/native/${{ matrix.bass }}" `
+            -Destination artifacts/publish/
+
+      - name: Package Windows
+        if: matrix.package == 'zip' && runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force artifacts/release | Out-Null
+          Compress-Archive `
+            -Path artifacts/publish/* `
+            -DestinationPath "artifacts/release/BejeweledPlus-${{ needs.prepare.outputs.tag }}-${{ matrix.platform-name }}.zip"
+
+      - name: Package macOS
+        if: matrix.package == 'zip' && runner.os == 'macOS'
+        shell: bash
+        run: |
+          mkdir -p artifacts/release
+          ditto -c -k --sequesterRsrc artifacts/publish \
+            "artifacts/release/BejeweledPlus-${{ needs.prepare.outputs.tag }}-${{ matrix.platform-name }}.zip"
+
+      - name: Package Linux
+        if: matrix.package == 'tar'
+        shell: bash
+        run: |
+          mkdir -p artifacts/release
+          tar -C artifacts/publish -czf \
+            "artifacts/release/BejeweledPlus-${{ needs.prepare.outputs.tag }}-${{ matrix.platform-name }}.tar.gz" .
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: release-${{ matrix.platform-name }}
+          path: artifacts/release/*
+          if-no-files-found: error
+
+  android:
+    name: Android
+    needs: prepare
+    runs-on: ubuntu-latest
+    env:
+      ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+      ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+      ANDROID_STORE_PASSWORD: ${{ secrets.ANDROID_STORE_PASSWORD }}
+      ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          submodules: recursive
+
+      - uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: 9.0.304
+
+      - name: Install Android workload
+        run: dotnet workload install android --version 9.0.305
+
+      - name: Restore local tools
+        run: dotnet tool restore
+
+      - name: Set up MonoGame effect compiler
+        shell: bash
+        run: |
+          sudo apt-get update
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y wine wine64 wget curl p7zip-full
+          wget -qO- https://monogame.net/downloads/net9_mgfxc_wine_setup.sh | bash
+          echo "MGFXC_WINE_PATH=$HOME/.winemonogame" >> "$GITHUB_ENV"
+
+      - name: Require native libraries and signing secrets
+        shell: bash
+        run: |
+          test -f BejeweledLivePlus.Android/armeabi-v7a/libbass.so || {
+            echo "Missing BejeweledLivePlus.Android/armeabi-v7a/libbass.so" >&2
+            exit 1
+          }
+          test -f BejeweledLivePlus.Android/arm64-v8a/libbass.so || {
+            echo "Missing BejeweledLivePlus.Android/arm64-v8a/libbass.so" >&2
+            exit 1
+          }
+
+          for name in ANDROID_KEYSTORE_BASE64 ANDROID_KEY_ALIAS ANDROID_STORE_PASSWORD ANDROID_KEY_PASSWORD; do
+            test -n "${!name}" || {
+              echo "Missing GitHub Actions secret: $name" >&2
+              exit 1
+            }
+          done
+
+      - name: Prepare Android signing
+        shell: bash
+        run: |
+          mkdir -p "$RUNNER_TEMP/android-signing"
+          printf '%s' "$ANDROID_KEYSTORE_BASE64" | base64 --decode > "$RUNNER_TEMP/android-signing/release.keystore"
+          printf '%s' "$ANDROID_STORE_PASSWORD" > "$RUNNER_TEMP/android-signing/store-password.txt"
+          printf '%s' "$ANDROID_KEY_PASSWORD" > "$RUNNER_TEMP/android-signing/key-password.txt"
+
+      - name: Publish signed APK and AAB
+        shell: bash
+        run: |
+          dotnet publish BejeweledLivePlus.Android/BejeweledLivePlus.Android.csproj \
+            --configuration Release \
+            --framework net9.0-android \
+            -m:1 \
+            -p:ApplicationDisplayVersion="${{ needs.prepare.outputs.display-version }}" \
+            -p:ApplicationVersion="${{ github.run_number }}" \
+            '-p:AndroidPackageFormats=apk;aab' \
+            -p:AndroidKeyStore=true \
+            -p:AndroidSigningKeyStore="$RUNNER_TEMP/android-signing/release.keystore" \
+            -p:AndroidSigningKeyAlias="$ANDROID_KEY_ALIAS" \
+            -p:AndroidSigningStorePass="file:$RUNNER_TEMP/android-signing/store-password.txt" \
+            -p:AndroidSigningKeyPass="file:$RUNNER_TEMP/android-signing/key-password.txt"
+
+      - name: Collect Android packages
+        shell: bash
+        run: |
+          apk="$(find BejeweledLivePlus.Android/bin/Release/net9.0-android -maxdepth 1 -type f -iname '*-signed.apk' -print -quit)"
+          aab="$(find BejeweledLivePlus.Android/bin/Release/net9.0-android -maxdepth 1 -type f -iname '*-signed.aab' -print -quit)"
+          test -n "$apk" || { echo "Signed APK was not produced" >&2; exit 1; }
+          test -n "$aab" || { echo "Signed AAB was not produced" >&2; exit 1; }
+
+          unzip -l "$apk" | grep -q 'lib/armeabi-v7a/libbass.so'
+          unzip -l "$apk" | grep -q 'lib/arm64-v8a/libbass.so'
+
+          mkdir -p artifacts/release
+          cp "$apk" "artifacts/release/BejeweledPlus-${{ needs.prepare.outputs.tag }}-android.apk"
+          cp "$aab" "artifacts/release/BejeweledPlus-${{ needs.prepare.outputs.tag }}-android.aab"
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: release-android
+          path: artifacts/release/*
+          if-no-files-found: error
+
+  ios:
+    name: iOS (unsigned IPA)
+    needs: prepare
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          submodules: recursive
+
+      - uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: 9.0.304
+
+      - name: Select Xcode 16.4
+        run: sudo xcode-select -s /Applications/Xcode_16.4.app/Contents/Developer
+
+      - name: Install iOS workload
+        run: dotnet workload install ios --version 9.0.305
+
+      - name: Restore local tools
+        run: dotnet tool restore
+
+      - name: Set up MonoGame effect compiler
+        shell: bash
+        run: |
+          brew install wget p7zip curl
+          brew install --cask wine-stable
+          xattr -dr com.apple.quarantine "/Applications/Wine Stable.app"
+          wget -qO- https://monogame.net/downloads/net9_mgfxc_wine_setup.sh | bash
+          echo "MGFXC_WINE_PATH=$HOME/.winemonogame" >> "$GITHUB_ENV"
+
+      - name: Publish unsigned device app
+        shell: bash
+        run: |
+          dotnet publish BejeweledLivePlus.iOS/BejeweledLivePlus.iOS.csproj \
+            --configuration Release \
+            --framework net9.0-ios \
+            --runtime ios-arm64 \
+            --self-contained true \
+            -m:1 \
+            -p:BuildIpa=false \
+            -p:_RequireCodeSigning=false \
+            -p:CodesignRequireProvisioningProfile=false \
+            -p:EnableDefaultCodesignEntitlements=false \
+            -p:ApplicationDisplayVersion="${{ needs.prepare.outputs.display-version }}" \
+            -p:ApplicationVersion="${{ github.run_number }}"
+
+      - name: Package unsigned IPA
+        shell: bash
+        run: |
+          app="$(find BejeweledLivePlus.iOS/bin/Release/net9.0-ios/ios-arm64 -type d -name '*.app' -print -quit)"
+          test -n "$app" || { echo "iOS .app bundle was not produced" >&2; exit 1; }
+          find "$app" -type d -name 'bass.framework' -print -quit | grep -q . || {
+            echo "bass.framework is missing from the iOS app" >&2
+            exit 1
+          }
+
+          mkdir -p artifacts/ipa/Payload artifacts/release
+          cp -R "$app" artifacts/ipa/Payload/
+          ditto -c -k --sequesterRsrc --keepParent artifacts/ipa/Payload \
+            "artifacts/release/BejeweledPlus-${{ needs.prepare.outputs.tag }}-ios-unsigned.ipa"
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: release-ios
+          path: artifacts/release/*
+          if-no-files-found: error
+
+  release:
+    name: Publish GitHub Release
+    needs: [prepare, desktop, android, ios]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v8
+        with:
+          pattern: release-*
+          path: dist
+          merge-multiple: true
+
+      - name: Create checksums
+        shell: bash
+        run: |
+          cd dist
+          sha256sum * > SHA256SUMS.txt
+
+      - name: Create or update release
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ needs.prepare.outputs.tag }}
+          PRERELEASE: ${{ needs.prepare.outputs.prerelease }}
+        run: |
+          prerelease_args=()
+          if [[ "$PRERELEASE" == "true" ]]; then
+            prerelease_args+=(--prerelease)
+          fi
+
+          if gh release view "$TAG" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            gh release upload "$TAG" dist/* --clobber --repo "$GITHUB_REPOSITORY"
+            gh release edit "$TAG" --prerelease="$PRERELEASE" --repo "$GITHUB_REPOSITORY"
+          else
+            gh release create "$TAG" dist/* \
+              --target "$GITHUB_SHA" \
+              --generate-notes \
+              --title "BejeweledPlus $TAG" \
+              "${prerelease_args[@]}" \
+              --repo "$GITHUB_REPOSITORY"
+          fi

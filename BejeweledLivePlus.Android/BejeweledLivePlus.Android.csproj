@@ -11,13 +11,13 @@
     </PropertyGroup>
 
     <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
-      <AndroidSupportedAbis>armeabi-v7a;arm64-v8a</AndroidSupportedAbis>
+      <RuntimeIdentifiers>android-arm;android-arm64</RuntimeIdentifiers>
       <AndroidPackageFormat>apk</AndroidPackageFormat>
     </PropertyGroup>
 
     <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
-      <AndroidSupportedAbis>armeabi-v7a;arm64-v8a</AndroidSupportedAbis>
-      <AndroidPackageFormat>apk</AndroidPackageFormat>
+      <RuntimeIdentifiers>android-arm;android-arm64</RuntimeIdentifiers>
+      <AndroidPackageFormats>apk;aab</AndroidPackageFormats>
     </PropertyGroup>
 
     <ItemGroup>
@@ -27,7 +27,7 @@
     <ItemGroup>
         <AndroidAsset Include="..\BejeweledLivePlus\Content\effects\*.fx" Link="Content\effects\%(Filename)%(Extension)" />
     </ItemGroup>
-    
+
     <ItemGroup>
 	    <TrimmerRootDescriptor Include="TrimmerRoots.xml" />
     </ItemGroup>
