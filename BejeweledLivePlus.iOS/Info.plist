@@ -8,10 +8,6 @@
 	<string>BejeweledPlus</string>
 	<key>CFBundleIdentifier</key>
 	<string>com.ariidesu.BejeweledPlus</string>
-	<key>CFBundleIconFiles</key>
-	<array>
-		<string>Icon.png</string>
-	</array>
 	<key>MinimumOSVersion</key>
 	<string>12.2</string>
 	<key>UIRequiresFullScreen</key>
