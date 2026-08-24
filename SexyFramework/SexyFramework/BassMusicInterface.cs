@@ -1,14 +1,17 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection.Metadata;
+using System.Runtime.InteropServices;
 using Microsoft.Xna.Framework.Content;
 using ManagedBass;
 using SexyFramework.Resource;
 
 namespace SexyFramework
 {
-    public class BassMusicInfo
+    public class BassMusicInfo : IDisposable
     {
+        private GCHandle _dataHandle;
+
         public int mHMusic;
         public int mHStream;
         public double mVolume;
@@ -16,7 +19,20 @@ namespace SexyFramework
         public double mVolumeCap;
         public bool mStopOnFade;
 
+        public BassMusicInfo(byte[] data)
+        {
+            _dataHandle = GCHandle.Alloc(data, GCHandleType.Pinned);
+        }
+
+        public IntPtr DataPointer => _dataHandle.AddrOfPinnedObject();
+
         public int GetHandle() => mHMusic != 0 ? mHMusic : mHStream;
+
+        public void Dispose()
+        {
+            if (_dataHandle.IsAllocated)
+                _dataHandle.Free();
+        }
     }
 
     public class BassMusicInterface : MusicInterface
@@ -232,8 +248,9 @@ namespace SexyFramework
             return true;
         }
         
-        public void Dispose()
+        public override void Dispose()
         {
+            UnloadAllMusic();
             Bass.Stop();
             Bass.Free();
         }
@@ -249,33 +266,45 @@ namespace SexyFramework
             
             var data = pFile.GetData();
             int music = 0, stream = 0;
-            var ext = System.IO.Path.GetExtension(theFileName).ToLowerInvariant();
-            if (ext == ".wav" || ext == ".ogg" || ext == ".mp3")
+            var info = new BassMusicInfo(data);
+            try
             {
-                stream = Bass.CreateStream(data, 0, data.Length, BassFlags.Default);
-            }
-            else
-            {
-                music = Bass.MusicLoad(data, 0, data.Length, mMusicLoadFlags, 44100);
-            }
+                var ext = System.IO.Path.GetExtension(theFileName).ToLowerInvariant();
+                if (ext == ".wav" || ext == ".ogg" || ext == ".mp3")
+                {
+                    stream = Bass.CreateStream(info.DataPointer, 0, data.Length, BassFlags.Default);
+                }
+                else
+                {
+                    music = Bass.MusicLoad(info.DataPointer, 0, data.Length, mMusicLoadFlags, 44100);
+                }
 
-            if (music == 0 && stream == 0)
-            {
-                Console.WriteLine($"LoadMusic Error: {Bass.LastError}");
-                return false;
-            }
+                if (music == 0 && stream == 0)
+                {
+                    Console.WriteLine($"LoadMusic Error: {Bass.LastError}");
+                    info.Dispose();
+                    return false;
+                }
 
-            var info = new BassMusicInfo
+                info.mHMusic = music;
+                info.mHStream = stream;
+                info.mVolume = 1.0;
+                info.mVolumeAdd = 0.0;
+                info.mVolumeCap = 1.0;
+                info.mStopOnFade = false;
+                mMusicMap[theSongId] = info;
+                return true;
+            }
+            catch
             {
-                mHMusic   = music,
-                mHStream  = stream,
-                mVolume        = 1.0,
-                mVolumeAdd     = 0.0,
-                mVolumeCap     = 1.0,
-                mStopOnFade    = false
-            };
-            mMusicMap[theSongId] = info;
-            return true;
+                if (stream != 0)
+                    Bass.StreamFree(stream);
+                else if (music != 0)
+                    Bass.MusicFree(music);
+
+                info.Dispose();
+                throw;
+            }
         }
 
         public override void PlayMusic(int theSongId, int theOffset, bool noLoop, long theStartPos)
@@ -326,6 +355,7 @@ namespace SexyFramework
                 else if (info.mHMusic != 0)
                     Bass.MusicFree(info.mHMusic);
 
+                info.Dispose();
                 mMusicMap.Remove(theSongId);
             }
         }
@@ -339,6 +369,8 @@ namespace SexyFramework
                     Bass.StreamFree(info.mHStream);
                 else if (info.mHMusic != 0)
                     Bass.MusicFree(info.mHMusic);
+
+                info.Dispose();
             }
             mMusicMap.Clear();
         }

@@ -3,7 +3,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using ManagedBass;
 using Microsoft.Xna.Framework.Content;
@@ -73,6 +72,8 @@ namespace SexyFramework
 
     public class CustomBassMusicInterface : BassMusicInterface
     {
+        private static readonly SyncProcedure MusicSyncCallback = MusicSyncCallbackStub;
+
         private GCHandle _mGcHandle;
 
         public Dictionary<string, int> mLoadedMusicFiles = new(StringComparer.OrdinalIgnoreCase);
@@ -139,10 +140,11 @@ namespace SexyFramework
             base.StopAllMusic();
         }
 
-        public void MusicSyncCallbackStub(int handle, int channel, int data, IntPtr user)
+        [MonoPInvokeCallback(typeof(SyncProcedure))]
+        private static void MusicSyncCallbackStub(int handle, int channel, int data, IntPtr user)
         {
-            CustomBassMusicInterface aPtr = GCHandle.FromIntPtr(user).Target as CustomBassMusicInterface;
-            aPtr.CheckQueue();
+            if (GCHandle.FromIntPtr(user).Target is CustomBassMusicInterface musicInterface)
+                musicInterface.CheckQueue();
         }
 
         public void CheckQueue()
@@ -501,7 +503,7 @@ namespace SexyFramework
                 mLoadedMusicFiles[aUpperName] = musicId;
 
                 BassMusicInfo bassMusicInfo = mMusicMap[musicId];
-                Bass.ChannelSetSync(bassMusicInfo.mHMusic, (SyncFlags)1073741834, -1, MusicSyncCallbackStub,
+                Bass.ChannelSetSync(bassMusicInfo.mHMusic, (SyncFlags)1073741834, -1, MusicSyncCallback,
                     GCHandle.ToIntPtr(_mGcHandle));
             }
             else
@@ -702,7 +704,7 @@ namespace SexyFramework
             }
         }
 
-        public new void Dispose()
+        public override void Dispose()
         {
             base.Dispose();
             mXMLParser?.Dispose();
